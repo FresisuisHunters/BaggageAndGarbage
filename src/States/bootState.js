@@ -11,7 +11,7 @@ bootState.prototype = {
     },
     
     create: function() {
-        game.state.start("luggageDevState");
+        game.state.start("preloadState");
     }
 
 }

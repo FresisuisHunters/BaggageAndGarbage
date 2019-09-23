@@ -1,8 +1,4 @@
-class Path {
-
-    constructor() {
-        this.pathStartingPoint;
-        this.pathEndPoint;
-    }
-
+function Path(startingPoint, endingPoint) {
+    this.startingPoint = startingPoint;
+    this.endingPoint = endingPoint;
 }

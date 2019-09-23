@@ -1,48 +1,34 @@
-const LuggageType = {
-    Safe = {
-        Id = "Safe",
-        Texture = ["SafeLuggageTexture_1", "SafeLuggageTexture_2"]
-    },
-    Suspicious = {
-        Id = "Suspicious",
-        Texture = ["SuspiciosLuggageTexture_1", "SuspiciosLuggageTexture_2"]
-    },
-    Dangerous = {
-        Id = "Dangerous",
-        Texture = ["DangerousLuggageTexture_1", "DangerousLuggageTexture_2"]
-    }
-};
+const LUGGAGE_SPRITE_SHEET_KEY = "luggage_sprite_key";
+const LUGGAGE_SPRITE_SHEET_PATH = "/resources/sprites/luggage_placeholder.png";
 
-const LuggageDestinies = {
-    FirstDestiny = "FirstDestiny",
-    SecondDestiny = "SecondDestiny",
-    ThirdDestiny = "ThirdDestiny"
-};
+/**
+ * 
+ * @param {Number} destiny 
+ * @param {Number} luggageType 
+ * @param {Number} xSpawn 
+ * @param {Number} ySpawn 
+ */
+function Luggage(destiny, luggageType, xSpawn, ySpawn) {
+    this.destiny = destiny;
 
-const LuggageDestinyTextures = {
-    FirstDestiny = "FirstDestinyLuggageTexture",
-    SecondDestiny = "SecondDestinyLuggageTexture",
-    ThirdDestiny = "ThirdDestinyLuggageTexture"
-};
+    this.sprite = game.load.image(
+        xSpawn,
+        ySpawn,
+        LUGGAGE_SPRITE_SHEET_KEY
+    );
 
-class Luggage {
-
-    constructor(destiny, luggageType, x, y) {
-        this.intendedDestiny = destiny;
-
-        let spriteTexture = LuggageDestinyTextures[destiny];
-        this.sprite = new Sprite(game, x, y, spriteTexture);
-
-        let contentSpriteTexture = LuggageType[luggageType].Texture;
-        this.contentSprite = new Sprite(game, x, y, contentSpriteTexture);
-    }
-
-    move() {
-        
-    }
-
-    onDestinyMet() {
-        this.contentSprite.destroy();
-    }
+    this.insideSprite = undefined; // TODO
 }
 
+Luggage.prototype = {
+
+    moveLuggage : function(newX, newY) {
+        this.sprite.x = this.insideSprite.x = newX;
+        this.sprite.y = this.insideSprite.y = newY;
+    },
+
+    onDestinyMet : function(destiny) {
+
+    }
+
+}

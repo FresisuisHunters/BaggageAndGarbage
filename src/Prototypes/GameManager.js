@@ -1,10 +1,15 @@
 const LUGGAGE_SPAWN_DELAY = 10;
 
-class GameManager {
+function GameManager() {
+    this.wave = 0;
+    this.score = 0;
+    this.luggageArray = [];
+}
 
-    constructor() {
-        this.wave = 1;
-        this.score = 0;
+GameManager.prototype = {
+
+    spawnLuggage : function() {
+
     }
 
 }

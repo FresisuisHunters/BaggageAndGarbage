@@ -1,26 +1,19 @@
-class PathManager {
+function PathManager() {
+    this.grapth = undefined; // TODO
+}
 
-    constructor() {
-        // Tengo que pensar como hacer esto
-        this.firstConveyerBeltPath;
-        this.secondConveyerBeltPath;
-        this.thirdConveyerBeltPath;
-    }
+PathManager.prototype = {
 
-    calculateNewLuggagePosition(luggage) {
-        return new Vector2D(0, 0);
-    }
+    moveLuggage : function() {
 
-    createNewPath(startingPoint, endPoint) {
+    },
 
-    }
+    createPath : function() {
 
-    deletePath() {
+    },
 
-    }
+    clearGraph : function() {
 
-    clearPath() {
-        
     }
 
 }

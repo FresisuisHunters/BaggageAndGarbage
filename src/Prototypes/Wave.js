@@ -1,20 +1,20 @@
-class Wave {
-
-    constructor(id, luggage) {
-        this.waveId = id;
-        this.luggage = sortRandomly(luggage);
-    }
-
-    getLuggageLeft() {
-        return this.luggage.length;
-    }
-
-    getNextLuggage() {
-        return this.luggage.pop();
-    }
+function sortArrayRandomly(array) {
 
 }
 
-function sortRandomly(luggage) {
-    return [];
+function Wave(waveId, luggageArray) {
+    this.waveId = waveId;
+    this.luggageArray = sortArrayRandomly(luggageArray);
+}
+
+Wave.prototype = {
+
+    getLuggageLeft : function() {
+
+    },
+
+    getNextLuggage() {
+
+    }
+
 }
