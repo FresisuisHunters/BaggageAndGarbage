@@ -11,7 +11,8 @@ preloadState.prototype = {
     },
 
     create: function () {
-        game.state.start("luggageDevState");
+        //https://photonstorm.github.io/phaser-ce/Phaser.StateManager.html#start
+        game.state.start("levelLoadState", true, false, "resources/levels/devLevel.json");
     }
 
 }
