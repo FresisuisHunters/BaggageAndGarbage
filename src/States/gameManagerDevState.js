@@ -13,7 +13,14 @@ gameManagerDevState.prototype = {
         console.log("Entered gameManagerDevSate")
         
         this.gameManager = new GameManager(this.levelData);
+        this.gameManager.startNextWave();
+    },
+
+    update: function() {
+        
     }
+
+
 
 
 

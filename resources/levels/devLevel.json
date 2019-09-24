@@ -2,15 +2,16 @@
     "waves": [
         {
             "numA": 3,
-            "numB_Safe:": 2,
+            "numB_Safe": 2,
             "numB_Danger": 2,
             "numC": 1
         },
         {
             "numA": 1,
-            "numB_Safe:": 2,
+            "numB_Safe": 2,
             "numB_Danger": 2,
             "numC": 2
         }
-    ]
+    ],
+    "conveyorBeltCount": 4
 }

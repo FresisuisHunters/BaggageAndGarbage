@@ -1,6 +1,14 @@
 const LUGGAGE_SPRITE_SHEET_KEY = "luggage_sprite_key";
 const LUGGAGE_SPRITE_SHEET_PATH = "/resources/sprites/luggage_placeholder.png";
 
+const LuggageTypes = {
+    A: 0,
+    B_Safe: 1,
+    B_Danger: 2,
+    C: 3
+};
+
+
 /**
  * 
  * @param {Number} destiny 
