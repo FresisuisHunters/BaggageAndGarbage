@@ -4,7 +4,7 @@ function PathManager() {
 
 PathManager.prototype = {
 
-    moveLuggage : function() {
+    moveBag : function() {
 
     },
 

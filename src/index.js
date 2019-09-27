@@ -5,8 +5,8 @@ var game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.AUTO, '')
 
 //Add states
 game.state.add("bootState", bootState);
-game.state.add("luggageDevState", luggageDevState);
-game.state.add("gameManagerDevState", gameManagerDevState);
+game.state.add("bagDevState", bagDevState);
+game.state.add("waveManagerDevState", waveManagerDevState);
 game.state.add("preloadState", preloadState);
 game.state.add("levelLoadState", levelLoadState);
 

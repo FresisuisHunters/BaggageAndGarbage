@@ -1,5 +1,5 @@
-const LUGGAGE_SPRITE_SHEET_KEY = "conveyor_belt_sprite_key";
-const LUGGAGE_SPRITE_SHEET_PATH = "/resources/sprites/luggage_placeholder.png"; // TODO
+const BAG_SPRITE_SHEET_KEY = "conveyor_belt_sprite_key";
+const BAG_SPRITE_SHEET_PATH = "/resources/sprites/bag_placeholder.png"; // TODO
 
 const CONVEYOR_BELT_SPAWN_X = 0;
 const CONVEYOR_BELT_SPAWN_Y = 0;
@@ -11,5 +11,5 @@ function ConveyorBelt(id) {
     let y = CONVEYOR_BELT_SPAWN_Y;
     
     this.id = id;
-    this.sprite = game.add.sprite(x, y, LUGGAGE_SPRITE_SHEET_KEY);
+    this.sprite = game.add.sprite(x, y, BAG_SPRITE_SHEET_KEY);
 }
