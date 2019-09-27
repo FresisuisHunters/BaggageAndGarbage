@@ -3,10 +3,13 @@ var waveManagerDevState = function (game) {
 
 }
 
+/*
+El estado de gameplay no debería empezarse directamente. 
+Empieza levelLoadState con un path a un JSON de nivel. 
+levelLoadState se encargará de empezar el estado de gaemplay cuando todo esté listo.
+*/
 waveManagerDevState.prototype = {
 
-    //When starting the state game.state.start(), an already parsed levelData must be given.
-    //This state should only be started from levelLoadState, which receieves the path to the JSON and reads the data.
     init: function(levelData) {
         this.levelData = levelData;
     },

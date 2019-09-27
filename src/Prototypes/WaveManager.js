@@ -5,6 +5,12 @@ const CONVEYOR_SPAWN_COOLDOWN = 1;
 
 const TIME_BETWEEN_WAVES = 4;
 
+/*
+Para utilizar WaveManger desde un estado de gameplay, hay que hacer estas cosas:
+- Llamar startNextWave() para empezar la primera oleada.
+- Llamar update() desde el update() del estado.
+- Pasar un callback onLastWaveDone al constructor. El callback se llamará cuando se acabé la última oleada.
+*/
 function WaveManager(levelData, onLastWaveDone) {
     
     //Read the waves
