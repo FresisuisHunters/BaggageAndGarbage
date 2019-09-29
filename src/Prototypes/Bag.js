@@ -8,7 +8,6 @@ const BagTypes = {
     C: 3
 };
 
-
 /**
  * 
  * @param {Number} destiny 
@@ -17,7 +16,7 @@ const BagTypes = {
  * @param {Number} ySpawn 
  */
 function Bag(destiny, bagType, xSpawn, ySpawn) {
-    this.destiny = destiny;
+    this.position = new Vector2D(xSpawn, ySpawn);
 
     this.sprite = game.load.image(
         xSpawn,
@@ -35,7 +34,7 @@ Bag.prototype = {
         this.sprite.y = this.insideSprite.y = newY;
     },
 
-    onDestinyMet : function(destiny) {
+    onDestinyMet : function() {
 
     }
 
