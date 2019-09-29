@@ -15,6 +15,10 @@ Vector2D.prototype = {
 
     multiply : function(constant) {
         return new Vector2D(constant * this.x, constant * this.y);
+    },
+
+    toString : function() {
+        return "(" + this.x + ", " + this.y + ")";
     }
 
 }

@@ -1,5 +1,3 @@
-const BAG_SPEED = 10;
-
 function MovementParameters(startingNodePosition, endingNodePosition) {
     this.startingNodePosition = startingNodePosition;
     this.endingNodePosition = endingNodePosition;

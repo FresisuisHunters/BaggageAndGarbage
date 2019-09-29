@@ -12,15 +12,16 @@ const BagTypes = {
  * 
  * @param {Number} destiny 
  * @param {Number} bagType 
- * @param {Number} xSpawn 
- * @param {Number} ySpawn 
+ * @param {Vector2D} position
  */
-function Bag(destiny, bagType, xSpawn, ySpawn) {
-    this.position = new Vector2D(xSpawn, ySpawn);
+function Bag(destiny, bagType, position) {
+    this.position = position;
+
+    this.reachedTheEnd = false;
 
     this.sprite = game.load.image(
-        xSpawn,
-        ySpawn,
+        position.x,
+        position.y,
         BAG_SPRITE_SHEET_KEY
     );
 
@@ -35,7 +36,8 @@ Bag.prototype = {
     },
 
     onDestinyMet : function() {
-
+        this.reachedTheEnd = true;
+        console.log("The bag reached the end");
     }
 
 }
