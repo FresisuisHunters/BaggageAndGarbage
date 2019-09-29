@@ -154,12 +154,10 @@ Graph.prototype = {
         let v = dir.multiply(t * BAG_SPEED);
         let s = addVectors(s0, v);
 
-        bag.position = s;
+        bag.moveBag(s);
         bag.movementParameters.t += 0.5;   // TODO: Obtener de Phaser el tiempo ocurrido entre entre frames
 
         if (this.bagHasReachedItsDestiny(bag)) {
-            console.log(bag);
-
             reachedANewNode = true;
             bag.position = movementParameters.endingNodePosition;
 
@@ -184,7 +182,6 @@ Graph.prototype = {
     },
 
     displayGraph : function() {
-        // TODO: Tal cual y como esta ahora, si se llama muchas veces se dibuja un grafo sobre otro
         this.graph.forEach(function(value, key) {
             let nodePosition = value.position;
             let circle = new Phaser.Circle(nodePosition.x, nodePosition.y, 10);

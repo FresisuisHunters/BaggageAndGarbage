@@ -29,8 +29,4 @@ waveManagerDevState.prototype = {
         console.log("Game ended!");
     }
 
-
-
-
-
 }

@@ -16,6 +16,9 @@ const BagTypes = {
  */
 function Bag(destiny, bagType, position) {
     this.position = position;
+    this.debugGizmo = new Phaser.Rectangle(position.x, position.y, 20, 20);
+    this.debugGizmo.centerOn(position.x, position.y);
+    game.debug.geom(this.debugGizmo, "FE0101");
 
     this.reachedTheEnd = false;
 
@@ -30,9 +33,12 @@ function Bag(destiny, bagType, position) {
 
 Bag.prototype = {
 
-    moveBag : function(newX, newY) {
-        this.sprite.x = this.insideSprite.x = newX;
-        this.sprite.y = this.insideSprite.y = newY;
+    moveBag : function(newPosition) {
+        this.position = newPosition;
+        this.debugGizmo.centerOn(newPosition.x, newPosition.y);
+        game.debug.geom(this.debugGizmo, "FE0101");
+        this.debugGizmo.x = newPosition.x;
+        this.debugGizmo.y = newPosition.y;
     },
 
     onDestinyMet : function() {
