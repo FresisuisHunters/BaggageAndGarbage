@@ -41,11 +41,7 @@ graphTestingState.prototype = {
     update : function() {
         this.graph.displayGraph();
         if (!this.bag.reachedTheEnd) {
-            let reachedANode = this.graph.moveBag(this.bag);
-            if (reachedANode) {
-                console.log("The bag reached a node");
-                console.dir(this.bag);
-            }
+            this.bag.moveBag();
         }
     },
 
@@ -54,8 +50,7 @@ graphTestingState.prototype = {
         let x = CONVEYOR_BELT_SPAWN_X + conveyorBeltOriginId * CONVEYOR_BELT_HORIZONTAL_OFFSET;
         let y = CONVEYOR_BELT_SPAWN_Y;
         let position = new Vector2D(x, y);
-        this.bag = new Bag(0, 0, position);
-        this.graph.getMovementParameters(this.bag);
+        this.bag = new Bag(0, 0, position, this.graph);
 
         console.log("Creating a bag in node " + position);
     }

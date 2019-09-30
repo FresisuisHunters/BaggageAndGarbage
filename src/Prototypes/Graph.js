@@ -1,4 +1,4 @@
-const BAG_SPEED = 2;
+const BAG_SPEED = 20;
 
 function Graph() {
     this.graph = new Map();
@@ -23,10 +23,10 @@ Graph.prototype = {
     },
 
     // Esta funcion se debe llamar cuando se cree una maleta. El grafo la llama cada vez que una maleta alcanza un nodo no final
-    getMovementParameters : function(bag) {
-        let origin = bag.position;
+    getMovementParameters : function(position) {
+        let origin = position;
         let destiny = this.graph.get(origin.toString()).nextNode.position;  // Obtiene la posicion del nodo destino
-        bag.movementParameters = new MovementParameters(origin, destiny);
+        return new MovementParameters(origin, destiny);
     },
 
     // Origin y destiny son Vector2D
@@ -148,9 +148,7 @@ Graph.prototype = {
         this.initializeGraph();
     },
 
-    moveBag : function(bag) {
-        let reachedANewNode = false;
-
+    calculateNewPosition : function(bag) {
         let movementParameters = bag.movementParameters;
         let s0 = movementParameters.startingNodePosition;
         let dir = movementParameters.direction;
@@ -160,23 +158,22 @@ Graph.prototype = {
         let v = dir.multiply(t * BAG_SPEED);
         let s = addVectors(s0, v);
 
-        bag.moveBag(s);
-        bag.movementParameters.t += 0.5;   // TODO: Obtener de Phaser el tiempo ocurrido entre entre frames
+        bag.movementParameters.t += game.time.physicsElapsed;
 
         if (this.bagHasReachedItsDestiny(bag)) {
             reachedANewNode = true;
-            bag.position = movementParameters.endingNodePosition;
+            s = movementParameters.endingNodePosition;
 
-            let reachedNode = this.graph.get(bag.position.toString());
+            let reachedNode = this.graph.get(s.toString());
             if (reachedNode.hasOutput()) {
                 // Si no es un nodo final, actualizar las variables de movimiento de la maleta
-                this.getMovementParameters(bag);
+                bag.movementParameters = this.getMovementParameters(s);
             } else {
                 bag.onDestinyMet();
             }
         }
 
-        return reachedANewNode;
+        return s;
     },
 
     bagHasReachedItsDestiny(bag) {
