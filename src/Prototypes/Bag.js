@@ -16,12 +16,15 @@ const BagTypes = {
  */
 function Bag(destiny, bagType, position) {
     this.position = position;
+    this.reachedTheEnd = false;
+    // Los parametros de movimiento son añadidos por el grafo
+
+    // Gizmo utilizado como alternativa para visualizarlo
     this.debugGizmo = new Phaser.Rectangle(position.x, position.y, 20, 20);
     this.debugGizmo.centerOn(position.x, position.y);
     game.debug.geom(this.debugGizmo, "FE0101");
 
-    this.reachedTheEnd = false;
-
+    // TODO
     this.sprite = game.load.image(
         position.x,
         position.y,
@@ -35,6 +38,8 @@ Bag.prototype = {
 
     moveBag : function(newPosition) {
         this.position = newPosition;
+
+        // Actualizacion del Gizmo
         this.debugGizmo.centerOn(newPosition.x, newPosition.y);
         game.debug.geom(this.debugGizmo, "FE0101");
         this.debugGizmo.x = newPosition.x;

@@ -1,14 +1,13 @@
-const EPSILON = 0.1;
 const BAG_SPEED = 2;
 
-function Graph(visible) {
+function Graph() {
     this.graph = new Map();
     this.initializeGraph();
-    this.visible = visible;
 }
 
 Graph.prototype = {
 
+    // Inicializa usando las constantes definidas en ConveyorBelt.cs
     initializeGraph : function() {
         for (let i = 0; i < CONVEYOR_BELT_NUMBER; ++i) {
             let x = CONVEYOR_BELT_SPAWN_X + i * CONVEYOR_BELT_HORIZONTAL_OFFSET;
@@ -23,12 +22,14 @@ Graph.prototype = {
         }
     },
 
+    // Esta funcion se debe llamar cuando se cree una maleta. El grafo la llama cada vez que una maleta alcanza un nodo no final
     getMovementParameters : function(bag) {
         let origin = bag.position;
-        let destiny = this.graph.get(origin.toString()).nextNode.position;
+        let destiny = this.graph.get(origin.toString()).nextNode.position;  // Obtiene la posicion del nodo destino
         bag.movementParameters = new MovementParameters(origin, destiny);
     },
 
+    // Origin y destiny son Vector2D
     addPath : function(origin, destiny) {
         if (origin.y >= destiny.y) {
             console.log("Error adding a path to the graph. Origin's Y must be higher than destiny's");
@@ -48,7 +49,7 @@ Graph.prototype = {
         }
 
         if (this.graph.has(origin) || this.graph.has(destiny)) {
-            console.log("Error adding a path to the graph. Either origin or destiny already exists in the graph");
+            console.log("Error adding a path to the graph. Either origin or destiny already exist in the graph");
             return;
         }
 
@@ -61,11 +62,13 @@ Graph.prototype = {
         this.graph.set(destiny.toString(), destinyNode);
     },
 
+    // Debiera tener caracter privado
     updateOriginColumn : function(originNode) {
         let previousNode = this.getPreviousNode(originNode.position);
         previousNode.nextNode = originNode;
     },
 
+    // Debiera tener caracter privado
     updateDestinyColumn : function(destinyNode) {
         let previousNode  = this.getPreviousNode(destinyNode.position);
         let nextNode = this.getNextNode(destinyNode.position);
@@ -75,18 +78,19 @@ Graph.prototype = {
     },
 
     getPreviousNode : function(position) {
-        let nodeList = this.getNodesInSameColumn(position);
+        let nodesInColumn = this.getNodesInSameColumn(position);
 
-        let i = nodeList.length;
+        // Descarta los nodos que estan por debajo de la posicion argumento
+        let i = nodesInColumn.length;
         while (i--) {
-            let node = nodeList[i];
-            let distance = node.position.y - position.y;
-            if (distance >= 0) {
-                nodeList.splice(i, 1);
+            let node = nodesInColumn[i];
+            if (node.position.y >= position.y) {
+                nodesInColumn.splice(i, 1);
             }
         }
 
-        nodeList.sort(function(n1, n2) {
+        // Ordena los nodos restantes de tal forma que el primero sea el previo a la posicion argumento
+        nodesInColumn.sort(function(n1, n2) {
             if (n1.position.y > n2.position.y) {
                 return -1;
             } else if (n1.position.y < n2.position.y) {
@@ -96,22 +100,23 @@ Graph.prototype = {
             }
         });
 
-        return nodeList[0];
+        return nodesInColumn[0];
     },
 
     getNextNode : function(position) {
-        let nodeList = this.getNodesInSameColumn(position);
+        let nodesInColumn = this.getNodesInSameColumn(position);
         
-        let i = nodeList.length;
+        // Descarta de los nodos que estan por encima de la posicion argumento
+        let i = nodesInColumn.length;
         while (i--) {
-            let node = nodeList[i];
-            let distance = node.position.y - position.y;
-            if (distance <= 0) {
-                nodeList.splice(i, 1);
+            let node = nodesInColumn[i];
+            if (node.position.y <= position.y) {
+                nodesInColumn.splice(i, 1);
             }
         }
 
-        nodeList.sort(function(n1, n2) {
+        // Ordena los nodos restantes de tal forma que el primero sea el siguiente a la posicion argumento
+        nodesInColumn.sort(function(n1, n2) {
             if (n1.position.y < n2.position.y) {
                 return -1;
             } else if (n1.position.y > n2.position.y) {
@@ -121,7 +126,7 @@ Graph.prototype = {
             }
         });
 
-        return nodeList[0];
+        return nodesInColumn[0];
     },
 
     getNodesInSameColumn(position) {
@@ -151,6 +156,7 @@ Graph.prototype = {
         let dir = movementParameters.direction;
         let t = movementParameters.t;
 
+        // Movimiento rectilineo uniforme
         let v = dir.multiply(t * BAG_SPEED);
         let s = addVectors(s0, v);
 
@@ -161,8 +167,9 @@ Graph.prototype = {
             reachedANewNode = true;
             bag.position = movementParameters.endingNodePosition;
 
-            let currentNode = this.graph.get(bag.position.toString());
-            if (currentNode.hasOutput()) {
+            let reachedNode = this.graph.get(bag.position.toString());
+            if (reachedNode.hasOutput()) {
+                // Si no es un nodo final, actualizar las variables de movimiento de la maleta
                 this.getMovementParameters(bag);
             } else {
                 bag.onDestinyMet();

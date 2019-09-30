@@ -12,7 +12,7 @@ graphTestingState.prototype = {
     create : function() {
         console.log("Entered grapthTestingState")
         
-        this.graph = new Graph(true);
+        this.graph = new Graph();
         console.log("Original state of the graph");
         this.graph.printGraph();
 
@@ -20,10 +20,6 @@ graphTestingState.prototype = {
         this.createSecondPath();
         this.createThirdPath();
         this.createBag();
-
-        if (this.graph.visible) {
-            this.graph.displayGraph();
-        }
     },
 
     update : function() {

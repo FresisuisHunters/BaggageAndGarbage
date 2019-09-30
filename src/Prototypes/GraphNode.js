@@ -1,6 +1,6 @@
 function GraphNode(nodePosition, nextNode) {
     this.position = nodePosition;
-    this.nextNode = nextNode;
+    this.nextNode = nextNode;   // Los nodos finales almacenan undefined
 }
 
 GraphNode.prototype = {

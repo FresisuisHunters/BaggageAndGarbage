@@ -6,15 +6,18 @@ function Vector2D(x, y) {
 Vector2D.prototype = {
 
     normalize : function() {
-        let xSquare = this.x * this.x;
-        let ySquare = this.y * this.y;
-        let module = Math.sqrt(xSquare + ySquare);
-
+        let module = this.module();
         return new Vector2D(this.x / module, this.y / module);
     },
 
     multiply : function(constant) {
         return new Vector2D(constant * this.x, constant * this.y);
+    },
+
+    module : function() {
+        let xSquare = this.x * this.x;
+        let ySquare = this.y * this.y;
+        return Math.sqrt(xSquare + ySquare);
     },
 
     toString : function() {
