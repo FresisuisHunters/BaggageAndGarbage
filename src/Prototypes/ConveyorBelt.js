@@ -2,11 +2,11 @@ const CONVEYOR_BELT_SPRITE_SHEET_KEY = "conveyor_belt_sprite_key";
 const CONVEYOR_BELT_SPRITE_SHEET_PATH = "/resources/sprites/bag_placeholder.png"; // TODO
 
 // El grafo utiliza estos valores para inicializarse
-const CONVEYOR_BELT_NUMBER = 4;
+const CONVEYOR_BELT_NUMBER = 2;
 const CONVEYOR_BELT_SPAWN_X = 100;
 const CONVEYOR_BELT_SPAWN_Y = 100;
 const CONVEYOR_BELT_HORIZONTAL_OFFSET = 100;
-const CONVEYOR_BELT_VERTICAL_DISTANCE = 100;
+const CONVEYOR_BELT_VERTICAL_DISTANCE = 500;
 
 function ConveyorBelt(id) {
     let x = CONVEYOR_BELT_SPAWN_X + id * CONVEYOR_BELT_HORIZONTAL_OFFSET;

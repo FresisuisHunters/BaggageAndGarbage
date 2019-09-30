@@ -18,7 +18,8 @@ graphTestingState.prototype = {
 
         this.createFirstPath();
         this.createSecondPath();
-        this.createThirdPath();
+        // this.createThirdPath();
+        this.createFourthPath();
         this.createBag();
     },
 
@@ -35,11 +36,11 @@ graphTestingState.prototype = {
 
     createFirstPath : function() {
         let x0 = CONVEYOR_BELT_SPAWN_X;
-        let y0 = 150;
+        let y0 = 250;
         let origin = new Vector2D(x0, y0);
 
         let xF = CONVEYOR_BELT_SPAWN_X + CONVEYOR_BELT_HORIZONTAL_OFFSET;
-        let yF = 170;
+        let yF = 270;
         let destiny = new Vector2D(xF, yF);
 
         console.log("Creating a path between points " + origin + " and " + destiny);
@@ -52,11 +53,11 @@ graphTestingState.prototype = {
 
     createSecondPath : function() {
         let x0 = CONVEYOR_BELT_SPAWN_X + CONVEYOR_BELT_HORIZONTAL_OFFSET;
-        let y0 = 110;
+        let y0 = 210;
         let origin = new Vector2D(x0, y0);
 
         let xF = CONVEYOR_BELT_SPAWN_X;
-        let yF = 125;
+        let yF = 225;
         let destiny = new Vector2D(xF, yF);
 
         console.log("Creating a path between points " + origin + " and " + destiny);
@@ -74,6 +75,23 @@ graphTestingState.prototype = {
 
         let xF = CONVEYOR_BELT_SPAWN_X + 2 * CONVEYOR_BELT_HORIZONTAL_OFFSET;
         let yF = 190;
+        let destiny = new Vector2D(xF, yF);
+
+        console.log("Creating a path between points " + origin + " and " + destiny);
+
+        this.graph.addPath(origin, destiny);
+
+        console.log("Graph after adding this path");
+        this.graph.printGraph();
+    },
+
+    createFourthPath : function() {
+        let x0 = CONVEYOR_BELT_SPAWN_X + 1 * CONVEYOR_BELT_HORIZONTAL_OFFSET;
+        let y0 = 300;
+        let origin = new Vector2D(x0, y0);
+
+        let xF = CONVEYOR_BELT_SPAWN_X + 0 * CONVEYOR_BELT_HORIZONTAL_OFFSET;
+        let yF = 400;
         let destiny = new Vector2D(xF, yF);
 
         console.log("Creating a path between points " + origin + " and " + destiny);
