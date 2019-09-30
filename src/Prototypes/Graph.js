@@ -169,7 +169,7 @@ Graph.prototype = {
                 // Si no es un nodo final, actualizar las variables de movimiento de la maleta
                 bag.movementParameters = this.getMovementParameters(s);
             } else {
-                bag.onDestinyMet();
+                bag.onDestinyMet(reachedNode);
             }
         }
 

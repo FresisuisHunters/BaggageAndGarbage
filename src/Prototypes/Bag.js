@@ -48,9 +48,10 @@ Bag.prototype = {
         this.debugGizmo.y = newPosition.y;
     },
 
-    onDestinyMet : function() {
+    onDestinyMet : function(outputNode) {
         this.reachedTheEnd = true;
-        console.log("The bag reached the end");
+        console.log("The bag reached an output node");
+        console.dir(outputNode);
     }
 
 }
