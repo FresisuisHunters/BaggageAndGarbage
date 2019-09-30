@@ -176,9 +176,7 @@ Graph.prototype = {
         let bagPosition = bag.position;
         let bagDestiny = bag.movementParameters.endingNodePosition;
 
-        let nearX = Math.abs(bagDestiny.x - bagPosition.x) < EPSILON;
-        let nearY = Math.abs(bagDestiny.y - bagPosition.y) < EPSILON;
-        return nearX && nearY;
+        return bagPosition.y >= bagDestiny.y;
     },
 
     displayGraph : function() {
