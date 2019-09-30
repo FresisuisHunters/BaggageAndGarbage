@@ -8,20 +8,26 @@ const BagTypes = {
     C: 3
 };
 
-
 /**
  * 
  * @param {Number} destiny 
  * @param {Number} bagType 
- * @param {Number} xSpawn 
- * @param {Number} ySpawn 
+ * @param {Vector2D} position
  */
-function Bag(destiny, bagType, xSpawn, ySpawn) {
-    this.destiny = destiny;
+function Bag(destiny, bagType, position) {
+    this.position = position;
+    this.reachedTheEnd = false;
+    // Los parametros de movimiento son añadidos por el grafo
 
+    // Gizmo utilizado como alternativa para visualizarlo
+    this.debugGizmo = new Phaser.Rectangle(position.x, position.y, 20, 20);
+    this.debugGizmo.centerOn(position.x, position.y);
+    game.debug.geom(this.debugGizmo, "FE0101");
+
+    // TODO
     this.sprite = game.load.image(
-        xSpawn,
-        ySpawn,
+        position.x,
+        position.y,
         BAG_SPRITE_SHEET_KEY
     );
 
@@ -30,13 +36,19 @@ function Bag(destiny, bagType, xSpawn, ySpawn) {
 
 Bag.prototype = {
 
-    moveBag : function(newX, newY) {
-        this.sprite.x = this.insideSprite.x = newX;
-        this.sprite.y = this.insideSprite.y = newY;
+    moveBag : function(newPosition) {
+        this.position = newPosition;
+
+        // Actualizacion del Gizmo
+        this.debugGizmo.centerOn(newPosition.x, newPosition.y);
+        game.debug.geom(this.debugGizmo, "FE0101");
+        this.debugGizmo.x = newPosition.x;
+        this.debugGizmo.y = newPosition.y;
     },
 
-    onDestinyMet : function(destiny) {
-
+    onDestinyMet : function() {
+        this.reachedTheEnd = true;
+        console.log("The bag reached the end");
     }
 
 }
