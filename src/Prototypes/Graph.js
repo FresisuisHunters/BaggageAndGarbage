@@ -1,4 +1,4 @@
-const BAG_SPEED = 20;
+const BAG_SPEED = 50;
 
 function Graph() {
     this.graph = new Map();
@@ -64,7 +64,9 @@ Graph.prototype = {
 
     updateOriginColumn : function(originNode) {
         let previousNode = this.getPreviousNode(originNode.position);
-        previousNode.nextNode = originNode;
+        if (!previousNode.outputIsInDifferentColumn()) {
+            previousNode.nextNode = originNode;
+        }
     },
 
     updateDestinyColumn : function(destinyNode) {

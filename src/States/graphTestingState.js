@@ -16,10 +16,14 @@ graphTestingState.prototype = {
         console.log("Original state of the graph");
         this.graph.printGraph();
 
-        let pathsToCreate = 3;
+        let pathsToCreate = 8;
         for (let i = 0; i < pathsToCreate; ++i) {
             this.createRandomPath();
         }
+
+        console.log("State of the graph after creating the new paths");
+        this.graph.printGraph();
+
         this.createRandomBag();
     },
 
