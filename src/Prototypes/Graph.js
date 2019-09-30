@@ -62,18 +62,18 @@ Graph.prototype = {
         this.graph.set(destiny.toString(), destinyNode);
     },
 
-    // Debiera tener caracter privado
     updateOriginColumn : function(originNode) {
         let previousNode = this.getPreviousNode(originNode.position);
         previousNode.nextNode = originNode;
     },
 
-    // Debiera tener caracter privado
     updateDestinyColumn : function(destinyNode) {
         let previousNode  = this.getPreviousNode(destinyNode.position);
         let nextNode = this.getNextNode(destinyNode.position);
 
-        previousNode.nextNode = destinyNode;
+        if (!previousNode.outputIsInDifferentColumn()) {
+            previousNode.nextNode = destinyNode;
+        }
         destinyNode.nextNode = nextNode;
     },
 
