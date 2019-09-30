@@ -12,7 +12,7 @@ Graph.prototype = {
         for (let i = 0; i < CONVEYOR_BELT_NUMBER; ++i) {
             let x = CONVEYOR_BELT_SPAWN_X + i * CONVEYOR_BELT_HORIZONTAL_OFFSET;
             let originNodePosition = new Vector2D(x, CONVEYOR_BELT_SPAWN_Y);
-            let destinyNodePosition = new Vector2D(x, CONVEYOR_BELT_SPAWN_X + CONVEYOR_BELT_VERTICAL_DISTANCE);
+            let destinyNodePosition = new Vector2D(x, CONVEYOR_BELT_SPAWN_Y + CONVEYOR_BELT_VERTICAL_DISTANCE);
 
             let destinyNode = new GraphNode(destinyNodePosition, undefined);
             let originNode = new GraphNode(originNodePosition, destinyNode);
