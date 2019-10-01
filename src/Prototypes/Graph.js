@@ -189,6 +189,12 @@ Graph.prototype = {
 
         return reachedANewNode;
     },
+    getIntoScanner(bag, scanner)
+    {
+        this.activeScanner = scanner;
+        scanner.EnterBag(bag);
+        new 
+    },
 
     bagHasReachedItsDestiny(bag) {
         let bagPosition = bag.position;
