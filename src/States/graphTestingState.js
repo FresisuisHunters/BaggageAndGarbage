@@ -1,3 +1,5 @@
+const DEBUG_GRAPH = false;
+
 "use strict";
 var graphTestingState = function (game) {
 
@@ -13,16 +15,20 @@ graphTestingState.prototype = {
         console.log("Entered grapthTestingState")
         
         this.graph = new Graph();
-        console.log("Original state of the graph");
-        this.graph.printGraph();
-
-        let pathsToCreate = 8;
+        if (DEBUG_GRAPH) {
+            console.log("Original state of the graph");
+            this.graph.printGraph();
+        }
+        
+        let pathsToCreate = 20;
         for (let i = 0; i < pathsToCreate; ++i) {
             this.createRandomPath();
         }
 
-        console.log("State of the graph after creating the new paths");
-        this.graph.printGraph();
+        if (DEBUG_GRAPH) {
+            console.log("State of the graph after creating the new paths");
+            this.graph.printGraph();
+        }
 
         this.createRandomBag();
     },
@@ -38,7 +44,9 @@ graphTestingState.prototype = {
         let yF = Math.floor(Math.random() * (CONVEYOR_BELT_VERTICAL_DISTANCE - y0) + y0);
         let destiny = new Vector2D(xF, yF);
 
-        console.log("Creating a path between points " + origin + " and " + destiny);
+        if (DEBUG_GRAPH) {
+            console.log("Creating a path between points " + origin + " and " + destiny);
+        }
         this.graph.addPath(origin, destiny);
     },
 
@@ -56,7 +64,9 @@ graphTestingState.prototype = {
         let position = new Vector2D(x, y);
         this.bag = new Bag(0, 0, position, this.graph);
 
-        console.log("Creating a bag in node " + position);
+        if (DEBUG_GRAPH) {
+            console.log("Creating a bag in node " + position);
+        }
     }
 
 }

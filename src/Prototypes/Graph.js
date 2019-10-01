@@ -31,25 +31,23 @@ Graph.prototype = {
 
     // Origin y destiny son Vector2D
     addPath : function(origin, destiny) {
-        if (origin.y >= destiny.y) {
-            console.log("Error adding a path to the graph. Origin's Y must be higher than destiny's");
+        if (!this.pointsBelongToAdjacentConveyors(origin, destiny)) {
+            console.error("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
+            return;
+        }
+        
+        if (this.pointIsOnScanner(origin) || this.pointIsOnScanner(destiny)) {
+            console.error("Error adding a path to the graph. Either origin or destiny are placed on top of a scanner");
             return;
         }
 
-        if (origin.y <= CONVEYOR_BELT_SPAWN_Y || origin.y > (CONVEYOR_BELT_SPAWN_Y + CONVEYOR_BELT_VERTICAL_DISTANCE)
-            || destiny.y <= CONVEYOR_BELT_SPAWN_Y || destiny.y > (CONVEYOR_BELT_SPAWN_Y + CONVEYOR_BELT_VERTICAL_DISTANCE)) {
-            console.log("Error adding a path to the graph. Origin or destiny Y are not in range (SPAWN_Y, SPAWN_Y + VERTICAL_DISTANCE)");
-            return;
-        }
-
-        let distance = Math.abs(origin.x - destiny.x);
-        if (distance != CONVEYOR_BELT_HORIZONTAL_OFFSET) {
-            console.log("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
+        if (this.pathIntersectsAnyOfTheExistent(origin, destiny)) {
+            console.error("Error adding a path to the graph. Paths can't intersect");
             return;
         }
 
         if (this.graph.has(origin) || this.graph.has(destiny)) {
-            console.log("Error adding a path to the graph. Either origin or destiny already exist in the graph");
+            console.error("Error adding a path to the graph. Either origin or destiny already exist in the graph");
             return;
         }
 
@@ -60,6 +58,77 @@ Graph.prototype = {
         this.updateDestinyColumn(destinyNode);
         this.graph.set(origin.toString(), originNode);
         this.graph.set(destiny.toString(), destinyNode);
+    },
+
+    pointsBelongToAdjacentConveyors : function(origin, destiny) {
+        let distance = Math.abs(origin.x - destiny.x);
+        return distance == CONVEYOR_BELT_HORIZONTAL_OFFSET;
+    },
+
+    pointIsOnScanner : function(point) {
+        // TODO
+        return false;
+    },
+
+    pathIntersectsAnyOfTheExistent : function(origin, destiny) {
+        let graph = this;
+        let intersects = false;
+        this.graph.forEach(function(value, key) {
+            let node = value;
+
+            // Ignore input nodes
+            if (node.hasOutput() && node.position.y != CONVEYOR_BELT_SPAWN_Y) {
+                let p1 = origin;
+                let q1 = destiny;
+                let p2 = node.position;
+                let q2 = node.nextNode.position;
+
+                if (graph.linesIntersect(p1, q1, p2, q2)) {
+                    intersects = true;
+                    return;
+                }
+            }
+        });
+        return intersects;
+    },
+
+    linesIntersect : function(p1, q1, p2, q2) {
+        // Source: https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
+
+        let o1 = this.orientation(p1, q1, p2);
+        let o2 = this.orientation(p1, q1, q2);
+        let o3 = this.orientation(p2, q2, p1);
+        let o4 = this.orientation(p2, q2, q1);
+
+        if (o1 != o2 && o3 != o4) {
+            return true;
+        }
+
+        if (o1 == 0 && this.onSegment(p1, p2, q1)) {
+            return true;
+        } else if (o2 == 0 && this.onSegment(p1, q2, q1)) {
+            return true;
+        } else if (o3 == 0 && this.onSegment(p2, p1, q2)) {
+            return true;
+        } else if (o4 == 0 && this.onSegment(p2, q1, q2)) {
+            return true;
+        }
+
+        return false;
+    },
+
+    orientation : function(p, q, r) {
+        let val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
+        if (val == 0) {
+            return 0;
+        }
+
+        return (val > 0) ? 1 : 2;
+    },
+
+    onSegment : function(p, q, r) {
+        return q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) &&
+            q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y)
     },
 
     updateOriginColumn : function(originNode) {
@@ -151,6 +220,19 @@ Graph.prototype = {
     },
 
     calculateNewPosition : function(bag) {
+        if (this.bagHasReachedItsDestiny(bag)) {
+            let bagDestiny = bag.movementParameters.endingNodePosition;
+            let reachedNode = this.graph.get(bagDestiny.toString());
+
+            if (reachedNode.hasOutput()) {
+                // Si no es un nodo final, actualizar las variables de movimiento de la maleta
+                bag.movementParameters = this.getMovementParameters(reachedNode.position);
+            } else {
+                bag.onDestinyMet(reachedNode);
+            }
+            return reachedNode.position;
+        }
+
         let movementParameters = bag.movementParameters;
         let s0 = movementParameters.startingNodePosition;
         let dir = movementParameters.direction;
@@ -159,21 +241,7 @@ Graph.prototype = {
         // Movimiento rectilineo uniforme
         let v = dir.multiply(t * BAG_SPEED);
         let s = addVectors(s0, v);
-
         bag.movementParameters.t += game.time.physicsElapsed;
-
-        if (this.bagHasReachedItsDestiny(bag)) {
-            reachedANewNode = true;
-            s = movementParameters.endingNodePosition;
-
-            let reachedNode = this.graph.get(s.toString());
-            if (reachedNode.hasOutput()) {
-                // Si no es un nodo final, actualizar las variables de movimiento de la maleta
-                bag.movementParameters = this.getMovementParameters(s);
-            } else {
-                bag.onDestinyMet(reachedNode);
-            }
-        }
 
         return s;
     },
@@ -181,8 +249,18 @@ Graph.prototype = {
     bagHasReachedItsDestiny(bag) {
         let bagPosition = bag.position;
         let bagDestiny = bag.movementParameters.endingNodePosition;
+        let distance = Math.sqrt(
+            Math.pow(bagPosition.x - bagDestiny.x, 2)
+            + Math.pow(bagPosition.y - bagDestiny.y, 2));
 
-        return bagPosition.y >= bagDestiny.y;
+        let previousDistance = bag.movementParameters.distanceToEndingNode;
+        if (previousDistance < distance) {
+            // Quiere decir que ha alcanzado el nodo y se esta alejando de el
+            return true;
+        }
+
+        bag.movementParameters.distanceToEndingNode = distance;
+        return false;
     },
 
     displayGraph : function() {
