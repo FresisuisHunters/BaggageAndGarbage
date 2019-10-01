@@ -1,3 +1,5 @@
+const DEBUG_GRAPH = false;
+
 "use strict";
 var graphTestingState = function (game) {
 
@@ -12,19 +14,22 @@ graphTestingState.prototype = {
     create : function() {
         console.log("Entered grapthTestingState")
         
-        //tolerancia en torno al punto donde se hace click
-        this.clickTolerance = 20;
-
-        game.input.onDown.add(this.tryStartNewPath, this);
-
         this.graph = new Graph(CONVEYOR_BELT_NUMBER, CONVEYOR_BELT_SPAWN_X, CONVEYOR_BELT_SPAWN_Y, CONVEYOR_BELT_HORIZONTAL_OFFSET, CONVEYOR_BELT_VERTICAL_DISTANCE);
-        console.log("Original state of the graph");
-        this.graph.printGraph();
-
-        let pathsToCreate = 3;
+        if (DEBUG_GRAPH) {
+            console.log("Original state of the graph");
+            this.graph.printGraph();
+        }
+        
+        let pathsToCreate = 20;
         for (let i = 0; i < pathsToCreate; ++i) {
             this.createRandomPath();
         }
+
+        if (DEBUG_GRAPH) {
+            console.log("State of the graph after creating the new paths");
+            this.graph.printGraph();
+        }
+
         this.createRandomBag();
     },
 
@@ -39,18 +44,16 @@ graphTestingState.prototype = {
         let yF = Math.floor(Math.random() * (CONVEYOR_BELT_VERTICAL_DISTANCE - y0) + y0);
         let destiny = new Vector2D(xF, yF);
 
-        console.log("Creating a path between points " + origin + " and " + destiny);
+        if (DEBUG_GRAPH) {
+            console.log("Creating a path between points " + origin + " and " + destiny);
+        }
         this.graph.addPath(origin, destiny);
     },
 
     update : function() {
         this.graph.displayGraph();
         if (!this.bag.reachedTheEnd) {
-            let reachedANode = this.graph.moveBag(this.bag);
-            if (reachedANode) {
-                console.log("The bag reached a node");
-                console.dir(this.bag);
-            }
+            this.bag.moveBag();
         }
     },
 
@@ -59,10 +62,11 @@ graphTestingState.prototype = {
         let x = CONVEYOR_BELT_SPAWN_X + conveyorBeltOriginId * CONVEYOR_BELT_HORIZONTAL_OFFSET;
         let y = CONVEYOR_BELT_SPAWN_Y;
         let position = new Vector2D(x, y);
-        this.bag = new Bag(0, 0, position);
-        this.graph.getMovementParameters(this.bag);
+        this.bag = new Bag(0, 0, position, this.graph);
 
-        console.log("Creating a bag in node " + position);
+        if (DEBUG_GRAPH) {
+            console.log("Creating a bag in node " + position);
+        }
     }
 
 }
