@@ -129,6 +129,16 @@ Graph.prototype = {
         return nodesInColumn[0];
     },
 
+    getColumns: function()
+    {
+        let columns = [];
+        for(var i = 0; i ++; i<CONVEYOR_BELT_NUMBER)
+        {
+            columns[i]=CONVEYOR_BELT_SPAWN_X + i * CONVEYOR_BELT_HORIZONTAL_OFFSET;
+        }
+        return columns;
+    },
+
     getNodesInSameColumn(position) {
         let nodes = Array.from(this.graph.values());
         let i = nodes.length;
@@ -142,6 +152,7 @@ Graph.prototype = {
         
         return nodes;
     },
+
 
     resetGraph : function() {
         this.graph.clear();
