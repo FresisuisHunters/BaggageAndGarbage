@@ -12,6 +12,7 @@ waveManagerDevState.prototype = {
 
     init: function(levelData) {
         this.levelData = levelData;
+        this.graph = new Graph(4, 20, 20, 80, 500);
     },
 
     create: function() {
@@ -22,6 +23,7 @@ waveManagerDevState.prototype = {
     },
 
     update: function() {
+        this.graph.displayGraph();
         this.waveManager.update(game.time.physicsElapsed);
     },
 

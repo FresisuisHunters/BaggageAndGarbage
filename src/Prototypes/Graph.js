@@ -1,18 +1,25 @@
 const BAG_SPEED = 2;
 
-function Graph() {
+function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight) {
     this.graph = new Map();
-    this.initializeGraph();
+    this.initializeGraph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight);
 }
 
 Graph.prototype = {
 
     // Inicializa usando las constantes definidas en ConveyorBelt.cs
-    initializeGraph : function() {
-        for (let i = 0; i < CONVEYOR_BELT_NUMBER; ++i) {
-            let x = CONVEYOR_BELT_SPAWN_X + i * CONVEYOR_BELT_HORIZONTAL_OFFSET;
-            let originNodePosition = new Vector2D(x, CONVEYOR_BELT_SPAWN_Y);
-            let destinyNodePosition = new Vector2D(x, CONVEYOR_BELT_SPAWN_Y + CONVEYOR_BELT_VERTICAL_DISTANCE);
+    initializeGraph : function(laneCount, spawnX, spawnY, horizontalOffset, laneHeight) {
+
+        this.laneCount = laneCount;
+        this.spawnX = spawnX;
+        this.spawnY = spawnY;
+        this.horizontalOffset = horizontalOffset;
+        this.laneHeight = laneHeight;
+
+        for (let i = 0; i < laneCount; ++i) {
+            let x = spawnX + i * horizontalOffset;
+            let originNodePosition = new Vector2D(x, spawnY);
+            let destinyNodePosition = new Vector2D(x, spawnY + laneHeight);
 
             let destinyNode = new GraphNode(destinyNodePosition, undefined);
             let originNode = new GraphNode(originNodePosition, destinyNode);
@@ -36,14 +43,14 @@ Graph.prototype = {
             return;
         }
 
-        if (origin.y <= CONVEYOR_BELT_SPAWN_Y || origin.y > (CONVEYOR_BELT_SPAWN_Y + CONVEYOR_BELT_VERTICAL_DISTANCE)
-            || destiny.y <= CONVEYOR_BELT_SPAWN_Y || destiny.y > (CONVEYOR_BELT_SPAWN_Y + CONVEYOR_BELT_VERTICAL_DISTANCE)) {
-            console.log("Error adding a path to the graph. Origin or destiny Y are not in range (SPAWN_Y, SPAWN_Y + VERTICAL_DISTANCE)");
+        if (origin.y <= this.spawnY || origin.y > (this.spawnY + this.laneHeight)
+            || destiny.y <= this.spawnY || destiny.y > (this.spawnY + this.laneHeight)) {
+            console.log("Error adding a path to the graph. Origin or destiny Y are not in range (spawnY, spawnY + laneHeight)");
             return;
         }
 
         let distance = Math.abs(origin.x - destiny.x);
-        if (distance != CONVEYOR_BELT_HORIZONTAL_OFFSET) {
+        if (distance != this.horizontalOffset) {
             console.log("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
             return;
         }
@@ -132,9 +139,9 @@ Graph.prototype = {
     getColumns: function()
     {
         let columns = [];
-        for(var i = 0; i ++; i<CONVEYOR_BELT_NUMBER)
+        for(var i = 0; i ++; i<this.laneCount)
         {
-            columns[i]=CONVEYOR_BELT_SPAWN_X + i * CONVEYOR_BELT_HORIZONTAL_OFFSET;
+            columns[i] = this.spawnX + i * this.horizontalOffset;
         }
         return columns;
     },

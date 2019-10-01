@@ -15,9 +15,9 @@ graphTestingState.prototype = {
         //tolerancia en torno al punto donde se hace click
         this.clickTolerance = 20;
 
-        game.input.onDown.add(this.startNewPath, this);
+        game.input.onDown.add(this.tryStartNewPath, this);
 
-        this.graph = new Graph();
+        this.graph = new Graph(CONVEYOR_BELT_NUMBER, CONVEYOR_BELT_SPAWN_X, CONVEYOR_BELT_SPAWN_Y, CONVEYOR_BELT_HORIZONTAL_OFFSET, CONVEYOR_BELT_VERTICAL_DISTANCE);
         console.log("Original state of the graph");
         this.graph.printGraph();
 
@@ -67,7 +67,7 @@ graphTestingState.prototype = {
 
     //función que se llama cuando se hace click para ver si el punto es válido para iniciar un camino
     //y guardarlo en caso afirmativo
-    startNewPath(pointer)
+    tryStartNewPath(pointer)
     {
         let columns = this.graph.getColumns();
         let closestX=null;
