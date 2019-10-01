@@ -63,29 +63,6 @@ graphTestingState.prototype = {
         this.graph.getMovementParameters(this.bag);
 
         console.log("Creating a bag in node " + position);
-    },
-
-    //función que se llama cuando se hace click para ver si el punto es válido para iniciar un camino
-    //y guardarlo en caso afirmativo
-    tryStartNewPath(pointer)
-    {
-        let columns = this.graph.getColumns();
-        let closestX=null;
-        for(var i = 0; i ++; i<columns.length)
-        {
-            if(Math.abs(columns[i]-pointer.x)<=clickTolerance)
-            {
-                closestX=columns[i];
-            }
-        }
-        if(closestX==null)
-        {
-            console.log("Selected point too far from any conveyor belt")
-        }
-        else
-        {
-            this.newBeltStartPoint=new Vector2D(closestX,pointer.y);
-        }
     }
 
 }

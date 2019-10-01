@@ -39,24 +39,24 @@ Graph.prototype = {
     // Origin y destiny son Vector2D
     addPath : function(origin, destiny) {
         if (origin.y >= destiny.y) {
-            console.log("Error adding a path to the graph. Origin's Y must be higher than destiny's");
+            console.error("Error adding a path to the graph. Origin's Y must be higher than destiny's");
             return;
         }
 
         if (origin.y <= this.spawnY || origin.y > (this.spawnY + this.laneHeight)
             || destiny.y <= this.spawnY || destiny.y > (this.spawnY + this.laneHeight)) {
-            console.log("Error adding a path to the graph. Origin or destiny Y are not in range (spawnY, spawnY + laneHeight)");
+            console.error("Error adding a path to the graph. Origin or destiny Y are not in range (spawnY, spawnY + laneHeight)");
             return;
         }
 
         let distance = Math.abs(origin.x - destiny.x);
         if (distance != this.horizontalOffset) {
-            console.log("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
+            console.error("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
             return;
         }
 
         if (this.graph.has(origin) || this.graph.has(destiny)) {
-            console.log("Error adding a path to the graph. Either origin or destiny already exist in the graph");
+            console.error("Error adding a path to the graph. Either origin or destiny already exist in the graph");
             return;
         }
 
@@ -139,7 +139,7 @@ Graph.prototype = {
     getColumns: function()
     {
         let columns = [];
-        for(var i = 0; i ++; i<this.laneCount)
+        for(let i = 0; i < this.laneCount; i++)
         {
             columns[i] = this.spawnX + i * this.horizontalOffset;
         }
@@ -159,7 +159,6 @@ Graph.prototype = {
         
         return nodes;
     },
-
 
     resetGraph : function() {
         this.graph.clear();
