@@ -21,7 +21,7 @@ function WaveManager(levelData, onLastWaveDone) {
 
     //Initialize the conveyor belt spawn timers
     this.timesSinceSpawnAtConveyorBelt = [];
-    for (let i = 0; i < levelData.conveyorBeltCount; i++) {
+    for (let i = 0; i < levelData.lanes.count; i++) {
         this.timesSinceSpawnAtConveyorBelt.push(100000);
     }
 

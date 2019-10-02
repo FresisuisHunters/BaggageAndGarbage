@@ -3,6 +3,7 @@ var waveManagerDevState = function (game) {
 
 }
 
+const PATH_DRAW_TOLERANCE = 20;
 /*
 El estado de gameplay no debería empezarse directamente. 
 Empieza levelLoadState con un path a un JSON de nivel. 
@@ -10,6 +11,9 @@ levelLoadState se encargará de empezar el estado de gaemplay cuando todo esté 
 */
 waveManagerDevState.prototype = {
 
+
+    //INITIALIZACIÓN//
+    //////////////////
     init: function(levelData) {
         this.levelData = levelData;
     },
@@ -17,16 +21,34 @@ waveManagerDevState.prototype = {
     create: function() {
         console.log("Entered waveManagerDevSate")
         
+        //Create managers and such
+        this.createGraph(this.levelData.lanes);
+        this.pathCreator = new PathCreator(this.graph, this.levelData, this.lanes);
         this.waveManager = new WaveManager(this.levelData, this.endGame);
+
         this.waveManager.startNextWave();
     },
 
-    update: function() {
-        this.waveManager.update(game.time.physicsElapsed);
+    createGraph: function(laneInfo) {
+        this.graph = new Graph(laneInfo.count, laneInfo.startX, laneInfo.startY, laneInfo.gap, laneInfo.height);
+        this.lanes = this.graph.getColumns();
     },
+
+    //GAME LOOP//
+    /////////////
+    update: function() {
+        //Visualización provisional
+        this.graph.displayGraph();
+        
+        this.pathCreator.update();
+        this.waveManager.update(game.time.physicsElapsed);        
+    },
+
+    
 
     endGame: function() {
         console.log("Game ended!");
     }
+
 
 }
