@@ -1,5 +1,3 @@
-
-
 function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight) {
     this.graph = new Map();
     this.initializeGraph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight);
@@ -54,6 +52,7 @@ Graph.prototype = {
         this.graph.set(destiny.toString(), destinyNode);
 
         originNode.isTheStartOfAPath = true;
+        destinyNode.isTheEndOfAPath = true;
     },
 
     pathIsValid: function(origin, destiny) {
@@ -230,13 +229,31 @@ Graph.prototype = {
         let nextNode;
 
         if (previousNode.isTheStartOfAPath) {
+            
+            //Nuestro siguiente nodo es el final de este camino.
             nextNode = previousNode.nextNode;
-        } else {
-            //We need to check wether we should change targets
-            //Look at all paths starting in this lane (and ending node), see what the next node is.
+        } 
+        else {
+            //Busca el siguiente nodo en este carril
+            let currentClosestNode = null;
+            let nodesInColumn = this.getNodesInSameColumn(currentPosition);
+            for (let i = 0; i < nodesInColumn.length; i++) {
+                let node = nodesInColumn[i];
+
+                //El nodo debe estar por debajo de nuestra posición actual, y no puede ser el final de un camino
+                if (node.position.y > currentPosition.y && !node.isTheEndOfAPath) {
+                    
+                    //¿Es este el nodo válido más cercano que hemos encontrado?
+                    if (currentClosestNode == null || node.position.y < currentClosestNode.position.y) {
+                        currentClosestNode = nodesInColumn[i];    
+                    }
+                }
+            }
+
+            nextNode = currentClosestNode;
         }
 
-        let vectorToNextNode = substractVectors(nextNode, currentPosition)
+        let vectorToNextNode = substractVectors(nextNode.position, currentPosition)
         let distanceToNextNode = vectorToNextNode.module();
             
         //Se mueve lo que sea menos, la distancia normal o la distancia hasta el nodo. 
@@ -249,14 +266,15 @@ Graph.prototype = {
             movedDistance = distance;
         }
         
-        let finalPosition = addVectors(currentPosition, vectorToNextNode.normalize() * movedDistance);
+        let finalPosition = addVectors(currentPosition, vectorToNextNode.normalize().multiply(movedDistance));
         distance -= movedDistance;
 
         if (distance != 0) {
             console.log("Calling with distance " + distance);
-            this.requestMove(finalPosition, movementParameters, distance);
+            return this.requestMove(finalPosition, movementParameters, distance);
+        } else {
+            return finalPosition;
         }
-
     },
 
     calculateNewPosition : function(bag) {

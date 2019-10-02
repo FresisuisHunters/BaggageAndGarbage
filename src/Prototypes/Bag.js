@@ -49,14 +49,14 @@ Bag.prototype = {
     },
 
     move : function() {
-        this.graph.requestMove(this.position, this.movementParameters, BAG_MOVEMENT_SPEED * game.time.physicsElapsed);
+        this.position = this.graph.requestMove(this.position, this.movementParameters, BAG_MOVEMENT_SPEED * game.time.physicsElapsed);
     },
 
     displayGizmo: function() {
         this.debugGizmo.centerOn(this.position.x, this.position.y);
         game.debug.geom(this.debugGizmo, "FE0101");
         this.debugGizmo.x = this.position.x;
-        this.debugGizmo.y = this.newPosition.y;
+        this.debugGizmo.y = this.position.y;
     },
 
     onDestinyMet : function(outputNode) {
