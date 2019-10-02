@@ -36,28 +36,14 @@ Graph.prototype = {
         return new MovementParameters(origin, destiny);
     },
 
+    ///////////
+    //CAMINOS//
+    ///////////
     // Origin y destiny son Vector2D
     addPath : function(origin, destiny) {
-        if (!this.pointsBelongToAdjacentConveyors(origin, destiny)) {
-            console.error("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
-            return;
-        }
         
-        if (this.pointIsOnScanner(origin) || this.pointIsOnScanner(destiny)) {
-            console.error("Error adding a path to the graph. Either origin or destiny are placed on top of a scanner");
-            return;
-        }
-
-        if (this.pathIntersectsAnyOfTheExistent(origin, destiny)) {
-            console.error("Error adding a path to the graph. Paths can't intersect");
-            return;
-        }
-
-        if (this.graph.has(origin) || this.graph.has(destiny)) {
-            console.error("Error adding a path to the graph. Either origin or destiny already exist in the graph");
-            return;
-        }
-
+        if (!this.pathIsValid(origin, destiny)) return;
+    
         let destinyNode = new GraphNode(destiny, undefined);
         let originNode = new GraphNode(origin, destinyNode);
 
@@ -65,6 +51,32 @@ Graph.prototype = {
         this.updateDestinyColumn(destinyNode);
         this.graph.set(origin.toString(), originNode);
         this.graph.set(destiny.toString(), destinyNode);
+
+        originNode.isTheStartOfAPath = true;
+    },
+
+    pathIsValid: function(origin, destiny) {
+        if (!this.pointsBelongToAdjacentConveyors(origin, destiny)) {
+            console.error("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
+            return false;
+        }
+        
+        if (this.pointIsOnScanner(origin) || this.pointIsOnScanner(destiny)) {
+            console.error("Error adding a path to the graph. Either origin or destiny are placed on top of a scanner");
+            return false;
+        }
+
+        if (this.pathIntersectsOtherPaths(origin, destiny)) {
+            console.error("Error adding a path to the graph. Paths can't intersect");
+            return false;
+        }
+
+        if (this.graph.has(origin) || this.graph.has(destiny)) {
+            console.error("Error adding a path to the graph. Either origin or destiny already exist in the graph");
+            return;
+        }
+
+        return true;
     },
 
     pointsBelongToAdjacentConveyors : function(origin, destiny) {
@@ -77,65 +89,40 @@ Graph.prototype = {
         return false;
     },
 
-    pathIntersectsAnyOfTheExistent : function(origin, destiny) {
-        let graph = this;
-        let intersects = false;
-        this.graph.forEach(function(value, key) { 
-            let node = value;
+    pathIntersectsOtherPaths: function(origin, destiny) {
+        let pathsFromOriginSide = this.getPathOriginsFromLaneToLane(origin.x, destiny.x);
+        let pathsFromDestinySide = this.getPathOriginsFromLaneToLane(destiny.x, origin.x);
 
-            // Ignore input nodes
-            if (node.hasOutput() && node.position.y != this.spawnY) {
-                let p1 = origin;
-                let q1 = destiny;
-                let p2 = node.position;
-                let q2 = node.nextNode.position;
+        for (let i = 0; i < pathsFromOriginSide.length; i++) {
+            let checkedIsHigherOnOriginSide = origin.y > pathsFromOriginSide[i].position.y;
+            let checkedIsHigherOnDestinySide = destiny.y > pathsFromOriginSide[i].nextNode.position.y;
 
-                if (graph.linesIntersect(p1, q1, p2, q2)) {
-                    intersects = true;
-                    return;
-                }
-            }
-        }, this);   //El parámetro this es para decir el valor de this durante el loop. Sin esto, this es Window.
-        return intersects;
-    },
-
-    linesIntersect : function(p1, q1, p2, q2) {
-        // Source: https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
-
-        let o1 = this.orientation(p1, q1, p2);
-        let o2 = this.orientation(p1, q1, q2);
-        let o3 = this.orientation(p2, q2, p1);
-        let o4 = this.orientation(p2, q2, q1);
-
-        if (o1 != o2 && o3 != o4) {
-            return true;
+            if (checkedIsHigherOnOriginSide != checkedIsHigherOnDestinySide) return true;
         }
 
-        if (o1 == 0 && this.onSegment(p1, p2, q1)) {
-            return true;
-        } else if (o2 == 0 && this.onSegment(p1, q2, q1)) {
-            return true;
-        } else if (o3 == 0 && this.onSegment(p2, p1, q2)) {
-            return true;
-        } else if (o4 == 0 && this.onSegment(p2, q1, q2)) {
-            return true;
+        for(let i = 0; i < pathsFromDestinySide.length; i++) {
+            let checkedIsHigherOnDestinySide = destiny.y > pathsFromDestinySide[i].position.y;
+            let checkedIsHigherOnOriginSide = origin.y > pathsFromDestinySide[i].nextNode.position.y;
+
+            if (checkedIsHigherOnDestinySide != checkedIsHigherOnOriginSide) return true;
         }
 
+        //Si hemos llegado aquí, es que no intersecta ningún camino existente.
         return false;
     },
 
-    orientation : function(p, q, r) {
-        let val = (q.y - p.y) * (r.x - q.x) - (q.x - p.x) * (r.y - q.y);
-        if (val == 0) {
-            return 0;
-        }
+    getPathOriginsFromLaneToLane: function(originLaneX, destinyLaneX) {
+        let nodes = [];
+        this.graph.forEach(function(value, key) { 
+            let node = value;
+            if (node.isTheStartOfAPath) {
+                if (node.position.x == originLaneX && node.nextNode.position.x == destinyLaneX)  {
+                    nodes.push(node);
+                }
+            }    
+        }, this);
 
-        return (val > 0) ? 1 : 2;
-    },
-
-    onSegment : function(p, q, r) {
-        return q.x <= Math.max(p.x, r.x) && q.x >= Math.min(p.x, r.x) &&
-            q.y <= Math.max(p.y, r.y) && q.y >= Math.min(p.y, r.y)
+        return nodes;
     },
 
     updateOriginColumn : function(originNode) {
