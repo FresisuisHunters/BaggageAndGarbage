@@ -11,6 +11,9 @@ levelLoadState se encargará de empezar el estado de gaemplay cuando todo esté 
 */
 waveManagerDevState.prototype = {
 
+    //////////////////
+    //INITIALIZACIÓN//
+    //////////////////
     init: function(levelData) {
         this.levelData = levelData;
     },
@@ -33,11 +36,38 @@ waveManagerDevState.prototype = {
         this.lanes = this.graph.getColumns();
     },
 
+    /////////////
+    //GAME LOOP//
+    /////////////
     update: function() {
+        //Visualización provisional
         this.graph.displayGraph();
+        if (this.pathDrawProcess != null) this.displayCurrentDrawnPath(this.pathDrawProcess);
+
+
+
         this.waveManager.update(game.time.physicsElapsed);        
     },
 
+    displayCurrentDrawnPath: function(pathDrawProcess) {
+        let currentTouchedPoint = new Vector2D(game.input.x, game.input.y);
+        let graphPoint = this.getGraphPointFromTouch(currentTouchedPoint);
+
+        let wrongPathColor = "rgb(128, 0, 0)";
+        let correctPathColor = "rgb(0, 128, 0)";
+        let isValidPath = graphPoint != null && this.graph.pathIsValid(pathDrawProcess.startPoint, graphPoint);
+
+
+        if (isValidPath) {
+            this.graph.displaySection(pathDrawProcess.startPoint, graphPoint, correctPathColor);
+        } else {    
+            this.graph.displaySection(pathDrawProcess.startPoint, currentTouchedPoint, wrongPathColor);
+        }
+    },
+
+    ////////////////////
+    //EVENTOS DE INPUT//
+    ////////////////////
     onTouchStart: function(pointer) {
         let point = this.getGraphPointFromTouch(new Vector2D(pointer.x, pointer.y));
     
@@ -53,14 +83,14 @@ waveManagerDevState.prototype = {
         if (this.pathDrawProcess != null) {
             let endPoint = this.getGraphPointFromTouch(new Vector2D(pointer.x, pointer.y));
             if (endPoint != null) {
-                console.log("Creating path");
                 this.graph.addPath(this.pathDrawProcess.startPoint, endPoint);
-                
             }
 
             this.pathDrawProcess = null;
         }
     },
+    
+
 
     //Devuelve null si el punto no es válido para dibujar un camino, el punto tocado si no
     getGraphPointFromTouch: function(touchPoint) {

@@ -3,6 +3,7 @@ const BAG_SPEED = 50;
 function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight) {
     this.graph = new Map();
     this.initializeGraph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight);
+    this.verboseMode = false;
 }
 
 Graph.prototype = {
@@ -57,22 +58,22 @@ Graph.prototype = {
 
     pathIsValid: function(origin, destiny) {
         if (!this.pointsBelongToAdjacentConveyors(origin, destiny)) {
-            console.error("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
+            if (this.verboseMode) console.error("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
             return false;
         }
         
         if (this.pointIsOnScanner(origin) || this.pointIsOnScanner(destiny)) {
-            console.error("Error adding a path to the graph. Either origin or destiny are placed on top of a scanner");
+            if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny are placed on top of a scanner");
             return false;
         }
 
         if (this.pathIntersectsOtherPaths(origin, destiny)) {
-            console.error("Error adding a path to the graph. Paths can't intersect");
+            if (this.verboseMode) console.error("Error adding a path to the graph. Paths can't intersect");
             return false;
         }
 
         if (this.graph.has(origin) || this.graph.has(destiny)) {
-            console.error("Error adding a path to the graph. Either origin or destiny already exist in the graph");
+            if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny already exist in the graph");
             return;
         }
 
@@ -279,10 +280,15 @@ Graph.prototype = {
 
                 let nodePosition = node.position;
                 let outputNodePosition = outputNode.position;
-                let line = new Phaser.Line(nodePosition.x, nodePosition.y, outputNodePosition.x, outputNodePosition.y);
-                game.debug.geom(line);
+                this.displaySection(nodePosition, outputNodePosition, "rgb(0, 255, 0)");
             }
-        })
+        }, this)
+    },
+
+    //Recibe el color en formato color de CSS. Ej: "rgb(255, 255, 255)"
+    displaySection: function(origin, destiny, color) {
+        let line = new Phaser.Line(origin.x, origin.y, destiny.x, destiny.y);
+        game.debug.geom(line, color);
     },
 
     getNodes : function() {
