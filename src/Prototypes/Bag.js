@@ -14,10 +14,11 @@ const BagTypes = {
  * @param {Number} bagType 
  * @param {Vector2D} position
  */
-function Bag(destiny, bagType, position) {
+function Bag(destiny, bagType, position, graph) {
+    this.graph = graph;
     this.position = position;
+    this.movementParameters = graph.getMovementParameters(position);
     this.reachedTheEnd = false;
-    // Los parametros de movimiento son añadidos por el grafo
 
     // Gizmo utilizado como alternativa para visualizarlo
     this.debugGizmo = new Phaser.Rectangle(position.x, position.y, 20, 20);
@@ -36,7 +37,8 @@ function Bag(destiny, bagType, position) {
 
 Bag.prototype = {
 
-    moveBag : function(newPosition) {
+    moveBag : function() {
+        let newPosition = this.graph.calculateNewPosition(this);
         this.position = newPosition;
 
         // Actualizacion del Gizmo
@@ -46,9 +48,10 @@ Bag.prototype = {
         this.debugGizmo.y = newPosition.y;
     },
 
-    onDestinyMet : function() {
+    onDestinyMet : function(outputNode) {
         this.reachedTheEnd = true;
-        console.log("The bag reached the end");
+        console.log("The bag reached an output node");
+        console.dir(outputNode);
     }
 
 }

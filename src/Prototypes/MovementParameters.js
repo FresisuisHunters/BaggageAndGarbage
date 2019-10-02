@@ -6,4 +6,5 @@ function MovementParameters(startingNodePosition, endingNodePosition) {
         endingNodePosition.y - startingNodePosition.y
     ).normalize();
     this.t = 0;     // Tiempo transcurrido desde que comenzo el movimiento desde startingNode a endingNode
+    this.distanceToEndingNode = Number.POSITIVE_INFINITY;
 }
