@@ -69,7 +69,7 @@ Graph.prototype = {
 
     pointsBelongToAdjacentConveyors : function(origin, destiny) {
         let distance = Math.abs(origin.x - destiny.x);
-        return distance == CONVEYOR_BELT_HORIZONTAL_OFFSET;
+        return distance == this.horizontalOffset;
     },
 
     pointIsOnScanner : function(point) {
@@ -80,11 +80,11 @@ Graph.prototype = {
     pathIntersectsAnyOfTheExistent : function(origin, destiny) {
         let graph = this;
         let intersects = false;
-        this.graph.forEach(function(value, key) {
+        this.graph.forEach(function(value, key) { 
             let node = value;
 
             // Ignore input nodes
-            if (node.hasOutput() && node.position.y != CONVEYOR_BELT_SPAWN_Y) {
+            if (node.hasOutput() && node.position.y != this.spawnY) {
                 let p1 = origin;
                 let q1 = destiny;
                 let p2 = node.position;
@@ -95,7 +95,7 @@ Graph.prototype = {
                     return;
                 }
             }
-        });
+        }, this);   //El parámetro this es para decir el valor de this durante el loop. Sin esto, this es Window.
         return intersects;
     },
 
