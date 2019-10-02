@@ -11,8 +11,10 @@ Para utilizar WaveManger desde un estado de gameplay, hay que hacer estas cosas:
 - Llamar update() desde el update() del estado.
 - Pasar un callback onLastWaveDone al constructor. El callback se llamará cuando se acabé la última oleada.
 */
-function WaveManager(levelData, onLastWaveDone) {
+function WaveManager(levelData, lanes, onLastWaveDone) {
     
+    this.lanes = lanes;
+
     //Read the waves
     this.remainingWaves = [];
     for (let wave of levelData.waves) {
@@ -121,10 +123,14 @@ WaveManager.prototype = {
         //Reset the belt's cooldown
         this.timesSinceSpawnAtConveyorBelt[beltIndex] = 0;
 
-        //TODO: Actually spawn it, once there's a way of doing so.
-        console.log("Creating bag of type " + bagType + " at conveyor belt nº" + beltIndex);
+        this.spawnBag(bagType, beltIndex);
         
-        
+    },
+
+    spawnBag: function(type, beltIndex) {
+
+
+        console.log("Creating bag of type " + type + " at conveyor belt nº" + beltIndex);
     },
 
     waveIsEmpty: function(wave) {

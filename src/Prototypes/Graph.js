@@ -1,4 +1,4 @@
-const BAG_SPEED = 50;
+
 
 function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight) {
     this.graph = new Map();
@@ -222,6 +222,41 @@ Graph.prototype = {
     resetGraph : function() {
         this.graph.clear();
         this.initializeGraph();
+    },
+
+    requestMove: function(currentPosition, movementParameters, distance) {
+        
+        let previousNode = movementParameters.previousNode;
+        let nextNode;
+
+        if (previousNode.isTheStartOfAPath) {
+            nextNode = previousNode.nextNode;
+        } else {
+            //We need to check wether we should change targets
+            //Look at all paths starting in this lane (and ending node), see what the next node is.
+        }
+
+        let vectorToNextNode = substractVectors(nextNode, currentPosition)
+        let distanceToNextNode = vectorToNextNode.module();
+            
+        //Se mueve lo que sea menos, la distancia normal o la distancia hasta el nodo. 
+        //En el segundo caso se llama requestMove otra vez, con la distancia que no se haya viajado.
+        let movedDistance;
+        if (distanceToNextNode <= distance) {
+            movedDistance = distanceToNextNode;
+            movementParameters.previousNode = nextNode;
+        } else {
+            movedDistance = distance;
+        }
+        
+        let finalPosition = addVectors(currentPosition, vectorToNextNode.normalize() * movedDistance);
+        distance -= movedDistance;
+
+        if (distance != 0) {
+            console.log("Calling with distance " + distance);
+            this.requestMove(finalPosition, movementParameters, distance);
+        }
+
     },
 
     calculateNewPosition : function(bag) {

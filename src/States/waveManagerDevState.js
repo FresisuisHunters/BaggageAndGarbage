@@ -26,7 +26,8 @@ waveManagerDevState.prototype = {
         this.pathCreator = new PathCreator(this.graph, this.levelData, this.lanes);
         this.waveManager = new WaveManager(this.levelData, this.endGame);
 
-        this.waveManager.startNextWave();
+        //this.waveManager.startNextWave();
+        this.testBag = new Bag(0, new Vector2D(this.levelData.lanes.startX, this.levelData.lanes.startY), this.graph);
     },
 
     createGraph: function(laneInfo) {
@@ -42,6 +43,8 @@ waveManagerDevState.prototype = {
         
         this.pathCreator.update();
         this.waveManager.update(game.time.physicsElapsed);        
+
+        this.testBag.update();
     },
 
     

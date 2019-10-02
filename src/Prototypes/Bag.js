@@ -1,6 +1,8 @@
 const BAG_SPRITE_SHEET_KEY = "bag_sprite_key";
 const BAG_SPRITE_SHEET_PATH = "/resources/sprites/bag_placeholder.png";
 
+const BAG_MOVEMENT_SPEED = 50;
+
 const BagTypes = {
     A: 0,
     B_Safe: 1,
@@ -14,11 +16,15 @@ const BagTypes = {
  * @param {Number} bagType 
  * @param {Vector2D} position
  */
-function Bag(destiny, bagType, position, graph) {
-    this.graph = graph;
+function Bag(bagType, position, graph) {
+    
+    this.type = bagType;
     this.position = position;
-    this.movementParameters = graph.getMovementParameters(position);
+    this.graph = graph;
+    
     this.reachedTheEnd = false;
+
+    this.movementParameters = new MovementParameters(this.graph.graph.get(this.position.toString()));
 
     // Gizmo utilizado como alternativa para visualizarlo
     this.debugGizmo = new Phaser.Rectangle(position.x, position.y, 20, 20);
@@ -37,15 +43,20 @@ function Bag(destiny, bagType, position, graph) {
 
 Bag.prototype = {
 
-    moveBag : function() {
-        let newPosition = this.graph.calculateNewPosition(this);
-        this.position = newPosition;
+    update: function() {
+        this.move();
+        this.displayGizmo();
+    },
 
-        // Actualizacion del Gizmo
-        this.debugGizmo.centerOn(newPosition.x, newPosition.y);
+    move : function() {
+        this.graph.requestMove(this.position, this.movementParameters, BAG_MOVEMENT_SPEED * game.time.physicsElapsed);
+    },
+
+    displayGizmo: function() {
+        this.debugGizmo.centerOn(this.position.x, this.position.y);
         game.debug.geom(this.debugGizmo, "FE0101");
-        this.debugGizmo.x = newPosition.x;
-        this.debugGizmo.y = newPosition.y;
+        this.debugGizmo.x = this.position.x;
+        this.debugGizmo.y = this.newPosition.y;
     },
 
     onDestinyMet : function(outputNode) {
