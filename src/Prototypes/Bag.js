@@ -1,7 +1,7 @@
 const BAG_SPRITE_SHEET_KEY = "bag_sprite_key";
 const BAG_SPRITE_SHEET_PATH = "/resources/sprites/bag_placeholder.png";
 
-const BAG_MOVEMENT_SPEED = 50;
+const BAG_MOVEMENT_SPEED = 30;
 
 const BagTypes = {
     A: 0,

@@ -11,9 +11,12 @@ Para utilizar WaveManger desde un estado de gameplay, hay que hacer estas cosas:
 - Llamar update() desde el update() del estado.
 - Pasar un callback onLastWaveDone al constructor. El callback se llamará cuando se acabé la última oleada.
 */
-function WaveManager(levelData, lanes, onLastWaveDone) {
+function WaveManager(levelData, lanes, graph, onLastWaveDone, bagList) {
     
+    this.levelData = levelData;
     this.lanes = lanes;
+    this.graph = graph;
+    this.bags = bagList;
 
     //Read the waves
     this.remainingWaves = [];
@@ -129,7 +132,8 @@ WaveManager.prototype = {
 
     spawnBag: function(type, beltIndex) {
 
-
+        let bag = new Bag(type, new Vector2D(this.lanes[beltIndex], this.levelData.lanes.startY), this.graph);
+        this.bags.push(bag);
         console.log("Creating bag of type " + type + " at conveyor belt nº" + beltIndex);
     },
 

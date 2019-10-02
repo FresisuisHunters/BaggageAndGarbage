@@ -16,6 +16,7 @@ waveManagerDevState.prototype = {
     //////////////////
     init: function(levelData) {
         this.levelData = levelData;
+        this.bags = [];
     },
 
     create: function() {
@@ -24,10 +25,10 @@ waveManagerDevState.prototype = {
         //Create managers and such
         this.createGraph(this.levelData.lanes);
         this.pathCreator = new PathCreator(this.graph, this.levelData, this.lanes);
-        this.waveManager = new WaveManager(this.levelData, this.endGame);
+        this.waveManager = new WaveManager(this.levelData, this.lanes, this.graph, this.endGame, this.bags);
 
-        //this.waveManager.startNextWave();
-        this.testBag = new Bag(0, new Vector2D(this.levelData.lanes.startX, this.levelData.lanes.startY), this.graph);
+        this.waveManager.startNextWave();
+        //this.testBag = new Bag(0, new Vector2D(this.levelData.lanes.startX, this.levelData.lanes.startY), this.graph);
     },
 
     createGraph: function(laneInfo) {
@@ -44,7 +45,9 @@ waveManagerDevState.prototype = {
         this.pathCreator.update();
         this.waveManager.update(game.time.physicsElapsed);        
 
-        this.testBag.update();
+        for (let i = 0; i < this.bags.length; i++) {
+            this.bags[i].update();
+        }
     },
 
     
