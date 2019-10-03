@@ -1,7 +1,7 @@
 const GAME_WIDTH = 506;
 const GAME_HEIGHT = 900;
 
-var game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.AUTO, '')
+var game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.AUTO, 'gameDiv');
 
 //Add states
 game.state.add("bootState", bootState);
