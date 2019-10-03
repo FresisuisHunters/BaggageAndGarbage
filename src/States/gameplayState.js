@@ -1,5 +1,5 @@
 "use strict";
-var waveManagerDevState = function (game) {
+var gameplayState = function (game) {
 
 }
 
@@ -8,8 +8,7 @@ El estado de gameplay no debería empezarse directamente.
 Empieza levelLoadState con un path a un JSON de nivel. 
 levelLoadState se encargará de empezar el estado de gaemplay cuando todo esté listo.
 */
-waveManagerDevState.prototype = {
-
+gameplayState.prototype = {
 
     //INITIALIZACIÓN//
     //////////////////
