@@ -12,10 +12,10 @@ preloadState.prototype = {
 
     create: function () {
         // TODO: Borrar la siguiente linea y descomentar la segunda
-        game.state.start("graphTestingState");
+        //game.state.start("graphTestingState");
 
         //https://photonstorm.github.io/phaser-ce/Phaser.StateManager.html#start
-        // game.state.start("levelLoadState", true, false, "resources/levels/devLevel.json");
+        game.state.start("levelLoadState", true, false, "resources/levels/devLevel.json");
     }
 
 }

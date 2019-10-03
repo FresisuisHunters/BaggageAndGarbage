@@ -1,18 +1,26 @@
-const BAG_SPEED = 2;
+const BAG_SPEED = 50;
 
-function Graph() {
+function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight) {
     this.graph = new Map();
-    this.initializeGraph();
+    this.initializeGraph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight);
+    this.verboseMode = false;
 }
 
 Graph.prototype = {
 
     // Inicializa usando las constantes definidas en ConveyorBelt.cs
-    initializeGraph : function() {
-        for (let i = 0; i < CONVEYOR_BELT_NUMBER; ++i) {
-            let x = CONVEYOR_BELT_SPAWN_X + i * CONVEYOR_BELT_HORIZONTAL_OFFSET;
-            let originNodePosition = new Vector2D(x, CONVEYOR_BELT_SPAWN_Y);
-            let destinyNodePosition = new Vector2D(x, CONVEYOR_BELT_SPAWN_Y + CONVEYOR_BELT_VERTICAL_DISTANCE);
+    initializeGraph : function(laneCount, spawnX, spawnY, horizontalOffset, laneHeight) {
+
+        this.laneCount = laneCount;
+        this.spawnX = spawnX;
+        this.spawnY = spawnY;
+        this.horizontalOffset = horizontalOffset;
+        this.laneHeight = laneHeight;
+
+        for (let i = 0; i < laneCount; ++i) {
+            let x = spawnX + i * horizontalOffset;
+            let originNodePosition = new Vector2D(x, spawnY);
+            let destinyNodePosition = new Vector2D(x, spawnY + laneHeight);
 
             let destinyNode = new GraphNode(destinyNodePosition, undefined);
             let originNode = new GraphNode(originNodePosition, destinyNode);
@@ -23,36 +31,20 @@ Graph.prototype = {
     },
 
     // Esta funcion se debe llamar cuando se cree una maleta. El grafo la llama cada vez que una maleta alcanza un nodo no final
-    getMovementParameters : function(bag) {
-        let origin = bag.position;
+    getMovementParameters : function(position) {
+        let origin = position;
         let destiny = this.graph.get(origin.toString()).nextNode.position;  // Obtiene la posicion del nodo destino
-        bag.movementParameters = new MovementParameters(origin, destiny);
+        return new MovementParameters(origin, destiny);
     },
 
+    ///////////
+    //CAMINOS//
+    ///////////
     // Origin y destiny son Vector2D
     addPath : function(origin, destiny) {
-        if (origin.y >= destiny.y) {
-            console.log("Error adding a path to the graph. Origin's Y must be higher than destiny's");
-            return;
-        }
-
-        if (origin.y <= CONVEYOR_BELT_SPAWN_Y || origin.y > (CONVEYOR_BELT_SPAWN_Y + CONVEYOR_BELT_VERTICAL_DISTANCE)
-            || destiny.y <= CONVEYOR_BELT_SPAWN_Y || destiny.y > (CONVEYOR_BELT_SPAWN_Y + CONVEYOR_BELT_VERTICAL_DISTANCE)) {
-            console.log("Error adding a path to the graph. Origin or destiny Y are not in range (SPAWN_Y, SPAWN_Y + VERTICAL_DISTANCE)");
-            return;
-        }
-
-        let distance = Math.abs(origin.x - destiny.x);
-        if (distance != CONVEYOR_BELT_HORIZONTAL_OFFSET) {
-            console.log("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
-            return;
-        }
-
-        if (this.graph.has(origin) || this.graph.has(destiny)) {
-            console.log("Error adding a path to the graph. Either origin or destiny already exist in the graph");
-            return;
-        }
-
+        
+        if (!this.pathIsValid(origin, destiny)) return;
+    
         let destinyNode = new GraphNode(destiny, undefined);
         let originNode = new GraphNode(origin, destinyNode);
 
@@ -60,11 +52,85 @@ Graph.prototype = {
         this.updateDestinyColumn(destinyNode);
         this.graph.set(origin.toString(), originNode);
         this.graph.set(destiny.toString(), destinyNode);
+
+        originNode.isTheStartOfAPath = true;
+    },
+
+    pathIsValid: function(origin, destiny) {
+        if (!this.pointsBelongToAdjacentConveyors(origin, destiny)) {
+            if (this.verboseMode) console.error("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
+            return false;
+        }
+        
+        if (this.pointIsOnScanner(origin) || this.pointIsOnScanner(destiny)) {
+            if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny are placed on top of a scanner");
+            return false;
+        }
+
+        if (this.pathIntersectsOtherPaths(origin, destiny)) {
+            if (this.verboseMode) console.error("Error adding a path to the graph. Paths can't intersect");
+            return false;
+        }
+
+        if (this.graph.has(origin) || this.graph.has(destiny)) {
+            if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny already exist in the graph");
+            return;
+        }
+
+        return true;
+    },
+
+    pointsBelongToAdjacentConveyors : function(origin, destiny) {
+        let distance = Math.abs(origin.x - destiny.x);
+        return distance == this.horizontalOffset;
+    },
+
+    pointIsOnScanner : function(point) {
+        // TODO
+        return false;
+    },
+
+    pathIntersectsOtherPaths: function(origin, destiny) {
+        let pathsFromOriginSide = this.getPathOriginsFromLaneToLane(origin.x, destiny.x);
+        let pathsFromDestinySide = this.getPathOriginsFromLaneToLane(destiny.x, origin.x);
+
+        for (let i = 0; i < pathsFromOriginSide.length; i++) {
+            let checkedIsHigherOnOriginSide = origin.y > pathsFromOriginSide[i].position.y;
+            let checkedIsHigherOnDestinySide = destiny.y > pathsFromOriginSide[i].nextNode.position.y;
+
+            if (checkedIsHigherOnOriginSide != checkedIsHigherOnDestinySide) return true;
+        }
+
+        for(let i = 0; i < pathsFromDestinySide.length; i++) {
+            let checkedIsHigherOnDestinySide = destiny.y > pathsFromDestinySide[i].position.y;
+            let checkedIsHigherOnOriginSide = origin.y > pathsFromDestinySide[i].nextNode.position.y;
+
+            if (checkedIsHigherOnDestinySide != checkedIsHigherOnOriginSide) return true;
+        }
+
+        //Si hemos llegado aquí, es que no intersecta ningún camino existente.
+        return false;
+    },
+
+    getPathOriginsFromLaneToLane: function(originLaneX, destinyLaneX) {
+        let nodes = [];
+        this.graph.forEach(function(value, key) { 
+            let node = value;
+            if (node.isTheStartOfAPath) {
+                if (node.position.x == originLaneX && node.nextNode.position.x == destinyLaneX)  {
+                    nodes.push(node);
+                }
+            }    
+        }, this);
+
+        return nodes;
     },
 
     updateOriginColumn : function(originNode) {
         let previousNode = this.getPreviousNode(originNode.position);
-        previousNode.nextNode = originNode;
+        if (!previousNode.outputIsInDifferentColumn()) {
+            previousNode.nextNode = originNode;
+        }
     },
 
     updateDestinyColumn : function(destinyNode) {
@@ -132,9 +198,9 @@ Graph.prototype = {
     getColumns: function()
     {
         let columns = [];
-        for(var i = 0; i ++; i<CONVEYOR_BELT_NUMBER)
+        for(let i = 0; i < this.laneCount; i++)
         {
-            columns[i]=CONVEYOR_BELT_SPAWN_X + i * CONVEYOR_BELT_HORIZONTAL_OFFSET;
+            columns[i] = this.spawnX + i * this.horizontalOffset;
         }
         return columns;
     },
@@ -153,14 +219,24 @@ Graph.prototype = {
         return nodes;
     },
 
-
     resetGraph : function() {
         this.graph.clear();
         this.initializeGraph();
     },
 
-    moveBag : function(bag) {
-        let reachedANewNode = false;
+    calculateNewPosition : function(bag) {
+        if (this.bagHasReachedItsDestiny(bag)) {
+            let bagDestiny = bag.movementParameters.endingNodePosition;
+            let reachedNode = this.graph.get(bagDestiny.toString());
+
+            if (reachedNode.hasOutput()) {
+                // Si no es un nodo final, actualizar las variables de movimiento de la maleta
+                bag.movementParameters = this.getMovementParameters(reachedNode.position);
+            } else {
+                bag.onDestinyMet(reachedNode);
+            }
+            return reachedNode.position;
+        }
 
         let movementParameters = bag.movementParameters;
         let s0 = movementParameters.startingNodePosition;
@@ -170,37 +246,34 @@ Graph.prototype = {
         // Movimiento rectilineo uniforme
         let v = dir.multiply(t * BAG_SPEED);
         let s = addVectors(s0, v);
+        bag.movementParameters.t += game.time.physicsElapsed;
 
-        bag.moveBag(s);
-        bag.movementParameters.t += 0.5;   // TODO: Obtener de Phaser el tiempo ocurrido entre entre frames
-
-        if (this.bagHasReachedItsDestiny(bag)) {
-            reachedANewNode = true;
-            bag.position = movementParameters.endingNodePosition;
-
-            let reachedNode = this.graph.get(bag.position.toString());
-            if (reachedNode.hasOutput()) {
-                // Si no es un nodo final, actualizar las variables de movimiento de la maleta
-                this.getMovementParameters(bag);
-            } else {
-                bag.onDestinyMet();
-            }
-        }
-
-        return reachedANewNode;
+        return s;
     },
+    /*
     getIntoScanner(bag, scanner)
     {
         this.activeScanner = scanner;
         scanner.EnterBag(bag);
         new 
     },
+    */
 
     bagHasReachedItsDestiny(bag) {
         let bagPosition = bag.position;
         let bagDestiny = bag.movementParameters.endingNodePosition;
+        let distance = Math.sqrt(
+            Math.pow(bagPosition.x - bagDestiny.x, 2)
+            + Math.pow(bagPosition.y - bagDestiny.y, 2));
 
-        return bagPosition.y >= bagDestiny.y;
+        let previousDistance = bag.movementParameters.distanceToEndingNode;
+        if (previousDistance < distance) {
+            // Quiere decir que ha alcanzado el nodo y se esta alejando de el
+            return true;
+        }
+
+        bag.movementParameters.distanceToEndingNode = distance;
+        return false;
     },
 
     displayGraph : function() {
@@ -215,10 +288,15 @@ Graph.prototype = {
 
                 let nodePosition = node.position;
                 let outputNodePosition = outputNode.position;
-                let line = new Phaser.Line(nodePosition.x, nodePosition.y, outputNodePosition.x, outputNodePosition.y);
-                game.debug.geom(line);
+                this.displaySection(nodePosition, outputNodePosition, "rgb(0, 255, 0)");
             }
-        })
+        }, this)
+    },
+
+    //Recibe el color en formato color de CSS. Ej: "rgb(255, 255, 255)"
+    displaySection: function(origin, destiny, color) {
+        let line = new Phaser.Line(origin.x, origin.y, destiny.x, destiny.y);
+        game.debug.geom(line, color);
     },
 
     getNodes : function() {
