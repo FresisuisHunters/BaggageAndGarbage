@@ -26,7 +26,7 @@ levelLoadState.prototype = {
 
     create: function() {
         let levelData = game.cache.getJSON(CURRENT_LEVEL_DATA_KEY)
-        game.state.start("waveManagerDevState", true, false, levelData);
+        game.state.start("gameplayState", true, false, levelData);
     }
 }
 
