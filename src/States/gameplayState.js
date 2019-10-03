@@ -10,22 +10,24 @@ levelLoadState se encargará de empezar el estado de gaemplay cuando todo esté 
 */
 gameplayState.prototype = {
 
-    //INITIALIZACIÓN//
+    //INICIALIZACIÓN//
     //////////////////
     init: function(levelData) {
         this.levelData = levelData;
         this.bags = [];
+        this.gameHasEnded = false;
     },
 
     create: function() {
-        console.log("Entered waveManagerDevSate")
+        console.log("Entered gameplayState")
         
         //Crea managers y tal
         this.createGraph(this.levelData.lanes);
         this.createLaneEnds(this.graph, this.onBagKilled, this.levelData, this.bags);
         
         this.pathCreator = new PathCreator(this.graph, this.levelData, this.lanes);
-        this.waveManager = new WaveManager(this.levelData, this.graph, this.endGame, this.bags, this.lanes);
+        this.waveManager = new WaveManager(this.levelData, this.graph, this.onGameEnd, this.bags, this.lanes);
+        this.scoreManager = new ScoreManager();
         
         //Empieza la primera oleada
         this.waveManager.startNextWave();
@@ -58,24 +60,37 @@ gameplayState.prototype = {
         //Visualización provisional
         this.graph.displayGraph();
         
-        //Updatea todo lo que tenga que ser updateado
-        this.pathCreator.update();
-        this.waveManager.update(game.time.physicsElapsed);        
+        if (!this.gameHasEnded) {
+            //Updatea todo lo que tenga que ser updateado
+            this.pathCreator.update();
+            
+            //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
+            for (let i = this.bags.length - 1; i >= 0; i--) {
+                this.bags[i].update();
+            }
 
-        //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
-        for (let i = this.bags.length - 1; i >= 0; i--) {
-            this.bags[i].update();
+            this.waveManager.update(game.time.physicsElapsed);        
         }
     },
 
-    endGame: function() {
-        console.log("Game ended!");
-    },
+    
 
     //EVENTS//
     //////////
+    onGameEnd: function() {
+        let state = game.state.getCurrentState();
+
+        state.gameHasEnded = true;
+        console.log("The game has ended!");
+        
+        let starRating = state.scoreManager.getStarRating(state.levelData.starThresholds);
+        console.log("You got a rating of " + starRating + " starts!");
+    },
+
     onBagKilled: function(isCorrect) {
         let state = game.state.getCurrentState();
         state.waveManager.notifyOfBagDone();
+
+        if (!isCorrect) state.scoreManager.currentMistakeCount++;
     }
 }

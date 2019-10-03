@@ -5,12 +5,7 @@
         "startY": 20,
         "gap": 80,
         "height": 500,
-        "types": [
-            "S",
-            "D",
-            "S",
-            "D"
-        ]
+        "types": ["S", "D", "S", "D"]
     },
     "waves": [
         {
@@ -25,5 +20,6 @@
             "numB_Danger": 2,
             "numC": 2
         }
-    ]
+    ],
+    "starThresholds": [5, 2, 0]
 }
