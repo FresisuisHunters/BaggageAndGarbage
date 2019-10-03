@@ -1,3 +1,5 @@
+const PATH_DRAW_TOLERANCE = 50;
+
 function PathCreator(graph, levelData, lanes) {
     this.graph = graph;
     this.levelData = levelData;
@@ -69,7 +71,7 @@ PathCreator.prototype = {
         let smallestDistance = 100000;
         for(let i = 0; i < this.lanes.length; i++)
         {
-            let distance = Math.abs(this.lanes[i] - touchPoint.x);
+            let distance = Math.abs(this.lanes[i].x - touchPoint.x);
             if (distance <= PATH_DRAW_TOLERANCE && distance < smallestDistance) {
                 smallestDistance = distance;
                 laneIndex = i;
@@ -77,7 +79,7 @@ PathCreator.prototype = {
         }
 
         if (laneIndex != -1) {
-            return new Vector2D(this.lanes[laneIndex], touchPoint.y);
+            return new Vector2D(this.lanes[laneIndex].x, touchPoint.y);
         }
         else return null;
     },

@@ -6,7 +6,6 @@ function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight) {
 
 Graph.prototype = {
 
-    // Inicializa usando las constantes definidas en ConveyorBelt.cs
     initializeGraph : function(laneCount, spawnX, spawnY, horizontalOffset, laneHeight) {
 
         this.laneCount = laneCount;
@@ -23,19 +22,14 @@ Graph.prototype = {
             let destinyNode = new GraphNode(destinyNodePosition, undefined);
             let originNode = new GraphNode(originNodePosition, destinyNode);
 
+            originNode.isLaneStart = true;
+            destinyNode.isLaneEnd = true;
+            
             this.graph.set(originNodePosition.toString(), originNode);
             this.graph.set(destinyNodePosition.toString(), destinyNode);
         }
     },
 
-    // Esta funcion se debe llamar cuando se cree una maleta. El grafo la llama cada vez que una maleta alcanza un nodo no final
-    getMovementParameters : function(position) {
-        let origin = position;
-        let destiny = this.graph.get(origin.toString()).nextNode.position;  // Obtiene la posicion del nodo destino
-        return new MovementParameters(origin, destiny);
-    },
-
-    ///////////
     //CAMINOS//
     ///////////
     // Origin y destiny son Vector2D
@@ -259,50 +253,43 @@ Graph.prototype = {
         //Se mueve lo que sea menos, la distancia normal o la distancia hasta el nodo. 
         //En el segundo caso se llama requestMove otra vez, con la distancia que no se haya viajado.
         let movedDistance;
+        let passedNextNode;
         if (distanceToNextNode <= distance) {
             movedDistance = distanceToNextNode;
             movementParameters.previousNode = nextNode;
+            passedNextNode = true;
         } else {
             movedDistance = distance;
+            passedNextNode = false;
         }
         
+        let hasReachedEnd = false;
+
+        //Comprobar si hemos llegado al final
+        if (passedNextNode && movementParameters.previousNode.isLaneEnd) {
+            hasReachedEnd = true;
+        }
+
+        //Hacer el movimiento
         let finalPosition = addVectors(currentPosition, vectorToNextNode.normalize().multiply(movedDistance));
         distance -= movedDistance;
 
-        if (distance != 0) {
-            console.log("Calling with distance " + distance);
-            return this.requestMove(finalPosition, movementParameters, distance);
-        } else {
-            return finalPosition;
-        }
-    },
-
-    calculateNewPosition : function(bag) {
-        if (this.bagHasReachedItsDestiny(bag)) {
-            let bagDestiny = bag.movementParameters.endingNodePosition;
-            let reachedNode = this.graph.get(bagDestiny.toString());
-
-            if (reachedNode.hasOutput()) {
-                // Si no es un nodo final, actualizar las variables de movimiento de la maleta
-                bag.movementParameters = this.getMovementParameters(reachedNode.position);
-            } else {
-                bag.onDestinyMet(reachedNode);
+        //Preparar salida
+        if (hasReachedEnd) {
+            return {
+                hasReachedEnd: true,
+                position: movementParameters.previousNode.position
             }
-            return reachedNode.position;
+        } else if (distance == 0) {
+            return {
+                hasReachedEnd: false,
+                position: finalPosition
+            }
+        } else {
+            return this.requestMove(finalPosition, movementParameters, distance);
         }
-
-        let movementParameters = bag.movementParameters;
-        let s0 = movementParameters.startingNodePosition;
-        let dir = movementParameters.direction;
-        let t = movementParameters.t;
-
-        // Movimiento rectilineo uniforme
-        let v = dir.multiply(t * BAG_SPEED);
-        let s = addVectors(s0, v);
-        bag.movementParameters.t += game.time.physicsElapsed;
-
-        return s;
     },
+
     /*
     getIntoScanner(bag, scanner)
     {
@@ -311,23 +298,6 @@ Graph.prototype = {
         new 
     },
     */
-
-    bagHasReachedItsDestiny(bag) {
-        let bagPosition = bag.position;
-        let bagDestiny = bag.movementParameters.endingNodePosition;
-        let distance = Math.sqrt(
-            Math.pow(bagPosition.x - bagDestiny.x, 2)
-            + Math.pow(bagPosition.y - bagDestiny.y, 2));
-
-        let previousDistance = bag.movementParameters.distanceToEndingNode;
-        if (previousDistance < distance) {
-            // Quiere decir que ha alcanzado el nodo y se esta alejando de el
-            return true;
-        }
-
-        bag.movementParameters.distanceToEndingNode = distance;
-        return false;
-    },
 
     displayGraph : function() {
         this.graph.forEach(function(value, key) {

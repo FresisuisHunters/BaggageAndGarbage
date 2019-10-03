@@ -4,7 +4,13 @@
         "startX": 20,
         "startY": 20,
         "gap": 80,
-        "height": 500
+        "height": 500,
+        "types": [
+            "S",
+            "D",
+            "S",
+            "D"
+        ]
     },
     "waves": [
         {

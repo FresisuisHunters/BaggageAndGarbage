@@ -3,7 +3,6 @@ var waveManagerDevState = function (game) {
 
 }
 
-const PATH_DRAW_TOLERANCE = 20;
 /*
 El estado de gameplay no debería empezarse directamente. 
 Empieza levelLoadState con un path a un JSON de nivel. 
@@ -22,18 +21,36 @@ waveManagerDevState.prototype = {
     create: function() {
         console.log("Entered waveManagerDevSate")
         
-        //Create managers and such
+        //Crea managers y tal
         this.createGraph(this.levelData.lanes);
+        this.createLaneEnds(this.graph, this.onBagKilled, this.levelData, this.bags);
+        
         this.pathCreator = new PathCreator(this.graph, this.levelData, this.lanes);
-        this.waveManager = new WaveManager(this.levelData, this.lanes, this.graph, this.endGame, this.bags);
-
+        this.waveManager = new WaveManager(this.levelData, this.graph, this.endGame, this.bags, this.lanes);
+        
+        //Empieza la primera oleada
         this.waveManager.startNextWave();
-        //this.testBag = new Bag(0, new Vector2D(this.levelData.lanes.startX, this.levelData.lanes.startY), this.graph);
     },
 
     createGraph: function(laneInfo) {
         this.graph = new Graph(laneInfo.count, laneInfo.startX, laneInfo.startY, laneInfo.gap, laneInfo.height);
-        this.lanes = this.graph.getColumns();
+    },
+
+    createLaneEnds: function(graph, onBagKilled, levelData, bags) {
+        this.lanes = [];
+        let columns = graph.getColumns();
+        
+        for (let i = 0; i < columns.length; i++) {
+            let type;
+            if (levelData.lanes.types[i] == "S") type = LaneEndTypes.Safe;
+            else if (levelData.lanes.types[i] == "D") type = LaneEndTypes.Dangerous;
+            else console.error("Wrong lane type in levelData: " + levelData.lanes.types[i]);
+
+            this.lanes.push({
+                x: columns[i],
+                laneEnd: new LaneEnd(type, onBagKilled, bags)
+            });
+        }
     },
 
     //GAME LOOP//
@@ -42,19 +59,24 @@ waveManagerDevState.prototype = {
         //Visualización provisional
         this.graph.displayGraph();
         
+        //Updatea todo lo que tenga que ser updateado
         this.pathCreator.update();
         this.waveManager.update(game.time.physicsElapsed);        
 
-        for (let i = 0; i < this.bags.length; i++) {
+        //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
+        for (let i = this.bags.length - 1; i >= 0; i--) {
             this.bags[i].update();
         }
     },
 
-    
-
     endGame: function() {
         console.log("Game ended!");
+    },
+
+    //EVENTS//
+    //////////
+    onBagKilled: function(isCorrect) {
+        let state = game.state.getCurrentState();
+        state.waveManager.notifyOfBagDone();
     }
-
-
 }
