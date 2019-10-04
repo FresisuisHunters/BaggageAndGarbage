@@ -8,6 +8,12 @@ const LEVEL_DIMENSIONS = {
     laneTopMargin: 420,
     laneBottomMargin: 250,
 }
+
+//Layers
+var laneLayer;
+var pathLayer;
+var bagLayer;
+
 /*
 El estado de gameplay no debería empezarse directamente. 
 Empieza levelLoadState con un path a un JSON de nivel. 
@@ -25,6 +31,11 @@ gameplayState.prototype = {
 
     create: function() {
         console.log("Entered gameplayState")
+        
+        //Crea las capas
+        laneLayer = game.add.group();
+        pathLayer = game.add.group();
+        bagLayer = game.add.group();
         
         //Crea managers y tal
         this.createGraph(this.levelData.lanes);
@@ -74,7 +85,7 @@ gameplayState.prototype = {
     update: function() {
         //Visualización provisional
         this.graph.displayGraph();
-        
+        bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
         if (!this.gameHasEnded) {
             //Updatea todo lo que tenga que ser updateado
             this.pathCreator.update();
