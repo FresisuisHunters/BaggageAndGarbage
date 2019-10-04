@@ -95,6 +95,8 @@ gameplayState.prototype = {
     onGameEnd: function() {
         let state = game.state.getCurrentState();
 
+        state.pathCreator.unsubscribeFromInputEvents();
+
         state.gameHasEnded = true;
         console.log("The game has ended!");
         

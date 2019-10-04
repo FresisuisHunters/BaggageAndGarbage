@@ -16,6 +16,11 @@ PathCreator.prototype = {
         game.input.onUp.add(this.onTouchEnd, this);
     },
 
+    unsubscribeFromInputEvents: function() {
+        game.input.onDown.remove(this.onTouchStart, this);
+        game.input.onUp.remove(this.onTouchEnd, this);
+    },
+
     onTouchStart: function(pointer) {
         let point = this.getGraphPointFromTouch(new Vector2D(pointer.x, pointer.y));
     
