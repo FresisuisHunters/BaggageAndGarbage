@@ -304,7 +304,7 @@ Graph.prototype = {
     displayGraph: function () {
         this.graph.forEach(function (value, key) {
             let nodePosition = value.position;
-            let circle = new Phaser.Circle(nodePosition.x, nodePosition.y, 10);
+            let circle = new Phaser.Circle(nodePosition.x, nodePosition.y, 40);
             game.debug.geom(circle);
 
             let node = value;
@@ -319,8 +319,14 @@ Graph.prototype = {
     },
 
     //Recibe el color en formato color de CSS. Ej: "rgb(255, 255, 255)"
-    displaySection: function (origin, destiny, color) {
+    displaySection: function(origin, destiny, color) {
+        
         let line = new Phaser.Line(origin.x, origin.y, destiny.x, destiny.y);
+        //game.graphics.lineWidth(4);
+        //game.graphics.lineColor(color);
+        //game.graphics.drawShape(line);
+        
+        game.debug.lineWidth = 8;
         game.debug.geom(line, color);
     },
 

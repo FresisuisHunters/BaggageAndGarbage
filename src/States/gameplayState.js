@@ -3,6 +3,17 @@ var gameplayState = function (game) {
 
 }
 
+const LEVEL_DIMENSIONS = {
+    laneHorizontalMargin: 135,
+    laneTopMargin: 420,
+    laneBottomMargin: 250,
+}
+
+//Layers
+var laneLayer;
+var pathLayer;
+var bagLayer;
+
 /*
 El estado de gameplay no debería empezarse directamente. 
 Empieza levelLoadState con un path a un JSON de nivel. 
@@ -21,32 +32,47 @@ gameplayState.prototype = {
 
     create: function () {
         console.log("Entered gameplayState")
-
+        
+        //Crea las capas
+        laneLayer = game.add.group();
+        pathLayer = game.add.group();
+        bagLayer = game.add.group();
+        
         //Crea managers y tal
         this.createGraph(this.levelData.lanes);
-        this.createLaneEnds(this.graph, this.onBagKilled, this.levelData, this.bags);
-
-        this.pathCreator = new PathCreator(this.graph, this.levelData, this.lanes);
-        this.waveManager = new WaveManager(this.levelData, this.graph, this.onGameEnd, this.bags, this.lanes);
+        this.createLaneEnds(this.graph, this.onBagKilled, this.levelData.lanes.types, this.bags);
+        
+        this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(), 
+            LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin);
+        this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
 
         //Empieza la primera oleada
         this.waveManager.startNextWave();
     },
 
-    createGraph: function (laneInfo) {
-        this.graph = new Graph(laneInfo.count, laneInfo.startX, laneInfo.startY, laneInfo.gap, laneInfo.height);
+    createGraph: function(laneInfo) {
+        let startX = LEVEL_DIMENSIONS.laneHorizontalMargin;
+        let startY = LEVEL_DIMENSIONS.laneTopMargin;
+        
+        let distanceFromFirstToLastLane = GAME_WIDTH - (LEVEL_DIMENSIONS.laneHorizontalMargin * 2);
+        let laneCount = laneInfo.count;
+        let gapBetweenLanes = distanceFromFirstToLastLane / (laneCount - 1);
+
+        let height = GAME_HEIGHT - startY - LEVEL_DIMENSIONS.laneBottomMargin;
+
+        this.graph = new Graph(laneCount, startX, startY, gapBetweenLanes, height);
     },
 
-    createLaneEnds: function (graph, onBagKilled, levelData, bags) {
+    createLaneEnds: function(graph, onBagKilled, laneTypes, bags) {
         this.lanes = [];
         let columns = graph.getColumns();
 
         for (let i = 0; i < columns.length; i++) {
             let type;
-            if (levelData.lanes.types[i] == "S") type = LaneEndTypes.Safe;
-            else if (levelData.lanes.types[i] == "D") type = LaneEndTypes.Dangerous;
-            else console.error("Wrong lane type in levelData: " + levelData.lanes.types[i]);
+            if (laneTypes[i] == "S") type = LaneEndTypes.Safe;
+            else if (laneTypes[i] == "D") type = LaneEndTypes.Dangerous;
+            else console.error("Wrong lane type in levelData: " + laneTypes[i]);
 
             this.lanes.push({
                 x: columns[i],
@@ -60,7 +86,7 @@ gameplayState.prototype = {
     update: function () {
         //Visualización provisional
         this.graph.displayGraph();
-
+        bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
         if (!this.gameHasEnded) {
             //Updatea todo lo que tenga que ser updateado
             this.pathCreator.update();
@@ -83,12 +109,12 @@ gameplayState.prototype = {
         }
     },
 
-
-
     //EVENTS//
     //////////
     onGameEnd: function () {
         let state = game.state.getCurrentState();
+
+        state.pathCreator.unsubscribeFromInputEvents();
 
         state.gameHasEnded = true;
         console.log("The game has ended!");

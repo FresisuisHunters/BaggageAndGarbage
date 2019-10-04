@@ -1,9 +1,10 @@
-const PATH_DRAW_TOLERANCE = 50;
+const PATH_DRAW_TOLERANCE = 60;
 
-function PathCreator(graph, levelData, lanes) {
+function PathCreator(graph, columns, minAllowedY, maxAllowedY) {
     this.graph = graph;
-    this.levelData = levelData;
-    this.lanes = lanes;
+    this.columns = columns;
+    this.minAllowedY = minAllowedY;
+    this.maxAllowedY = maxAllowedY;
 
     this.subscribeToInputEvents();
 }
@@ -13,6 +14,11 @@ PathCreator.prototype = {
     subscribeToInputEvents: function() {
         game.input.onDown.add(this.onTouchStart, this);
         game.input.onUp.add(this.onTouchEnd, this);
+    },
+
+    unsubscribeFromInputEvents: function() {
+        game.input.onDown.remove(this.onTouchStart, this);
+        game.input.onUp.remove(this.onTouchEnd, this);
     },
 
     onTouchStart: function(pointer) {
@@ -61,17 +67,14 @@ PathCreator.prototype = {
     //Devuelve null si el punto no es válido para dibujar un camino, el punto tocado si no
     getGraphPointFromTouch: function(touchPoint) {
         //See if the height is fine
-        let minAllowedY = this.levelData.lanes.startY;
-        let maxAllowedY = minAllowedY + this.levelData.lanes.height;
-
-        if (touchPoint.y < minAllowedY || touchPoint.y > maxAllowedY) return null;
+        if (touchPoint.y < this.minAllowedY || touchPoint.y > this.maxAllowedY) return null;
         
         //See which, if any, lane this is.
         let laneIndex = -1;
         let smallestDistance = 100000;
-        for(let i = 0; i < this.lanes.length; i++)
+        for(let i = 0; i < this.columns.length; i++)
         {
-            let distance = Math.abs(this.lanes[i].x - touchPoint.x);
+            let distance = Math.abs(this.columns[i] - touchPoint.x);
             if (distance <= PATH_DRAW_TOLERANCE && distance < smallestDistance) {
                 smallestDistance = distance;
                 laneIndex = i;
@@ -79,7 +82,7 @@ PathCreator.prototype = {
         }
 
         if (laneIndex != -1) {
-            return new Vector2D(this.lanes[laneIndex].x, touchPoint.y);
+            return new Vector2D(this.columns[laneIndex], touchPoint.y);
         }
         else return null;
     },
