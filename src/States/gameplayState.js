@@ -31,7 +31,7 @@ gameplayState.prototype = {
         this.createLaneEnds(this.graph, this.onBagKilled, this.levelData.lanes.types, this.bags);
         
         this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(), 
-            LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneTopMargin - LEVEL_DIMENSIONS.laneBottomMargin);
+            LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin);
         this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
         
@@ -87,8 +87,6 @@ gameplayState.prototype = {
             this.waveManager.update(game.time.physicsElapsed);        
         }
     },
-
-    
 
     //EVENTS//
     //////////
