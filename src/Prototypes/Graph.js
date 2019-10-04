@@ -1,18 +1,19 @@
-function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight) {
+function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight, scanners) {
     this.graph = new Map();
-    this.initializeGraph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight);
+    this.initializeGraph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight, scanners);
     this.verboseMode = false;
 }
 
 Graph.prototype = {
 
-    initializeGraph : function(laneCount, spawnX, spawnY, horizontalOffset, laneHeight) {
+    initializeGraph: function (laneCount, spawnX, spawnY, horizontalOffset, laneHeight, scanners) {
 
         this.laneCount = laneCount;
         this.spawnX = spawnX;
         this.spawnY = spawnY;
         this.horizontalOffset = horizontalOffset;
         this.laneHeight = laneHeight;
+        this.scanners = scanners;
 
         for (let i = 0; i < laneCount; ++i) {
             let x = spawnX + i * horizontalOffset;
@@ -24,7 +25,7 @@ Graph.prototype = {
 
             originNode.isLaneStart = true;
             destinyNode.isLaneEnd = true;
-            
+
             this.graph.set(originNodePosition.toString(), originNode);
             this.graph.set(destinyNodePosition.toString(), destinyNode);
         }
@@ -33,10 +34,10 @@ Graph.prototype = {
     //CAMINOS//
     ///////////
     // Origin y destiny son Vector2D
-    addPath : function(origin, destiny) {
-        
+    addPath: function (origin, destiny) {
+
         if (!this.pathIsValid(origin, destiny)) return;
-    
+
         let destinyNode = new GraphNode(destiny, undefined);
         let originNode = new GraphNode(origin, destinyNode);
 
@@ -49,12 +50,12 @@ Graph.prototype = {
         destinyNode.isTheEndOfAPath = true;
     },
 
-    pathIsValid: function(origin, destiny) {
+    pathIsValid: function (origin, destiny) {
         if (!this.pointsBelongToAdjacentConveyors(origin, destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
             return false;
         }
-        
+
         if (this.pointIsOnScanner(origin) || this.pointIsOnScanner(destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny are placed on top of a scanner");
             return false;
@@ -73,17 +74,20 @@ Graph.prototype = {
         return true;
     },
 
-    pointsBelongToAdjacentConveyors : function(origin, destiny) {
+    pointsBelongToAdjacentConveyors: function (origin, destiny) {
         let distance = Math.abs(origin.x - destiny.x);
         return distance == this.horizontalOffset;
     },
 
-    pointIsOnScanner : function(point) {
-        // TODO
+    pointIsOnScanner: function (point) {
+        for (let i = 0; i < scanners.length; i++) {
+            if (scanners[i].IsInScanner(point))
+                return true;
+        }
         return false;
     },
 
-    pathIntersectsOtherPaths: function(origin, destiny) {
+    pathIntersectsOtherPaths: function (origin, destiny) {
         let pathsFromOriginSide = this.getPathOriginsFromLaneToLane(origin.x, destiny.x);
         let pathsFromDestinySide = this.getPathOriginsFromLaneToLane(destiny.x, origin.x);
 
@@ -94,7 +98,7 @@ Graph.prototype = {
             if (checkedIsHigherOnOriginSide != checkedIsHigherOnDestinySide) return true;
         }
 
-        for(let i = 0; i < pathsFromDestinySide.length; i++) {
+        for (let i = 0; i < pathsFromDestinySide.length; i++) {
             let checkedIsHigherOnDestinySide = destiny.y > pathsFromDestinySide[i].position.y;
             let checkedIsHigherOnOriginSide = origin.y > pathsFromDestinySide[i].nextNode.position.y;
 
@@ -105,29 +109,29 @@ Graph.prototype = {
         return false;
     },
 
-    getPathOriginsFromLaneToLane: function(originLaneX, destinyLaneX) {
+    getPathOriginsFromLaneToLane: function (originLaneX, destinyLaneX) {
         let nodes = [];
-        this.graph.forEach(function(value, key) { 
+        this.graph.forEach(function (value, key) {
             let node = value;
             if (node.isTheStartOfAPath) {
-                if (node.position.x == originLaneX && node.nextNode.position.x == destinyLaneX)  {
+                if (node.position.x == originLaneX && node.nextNode.position.x == destinyLaneX) {
                     nodes.push(node);
                 }
-            }    
+            }
         }, this);
 
         return nodes;
     },
 
-    updateOriginColumn : function(originNode) {
+    updateOriginColumn: function (originNode) {
         let previousNode = this.getPreviousNode(originNode.position);
         if (!previousNode.outputIsInDifferentColumn()) {
             previousNode.nextNode = originNode;
         }
     },
 
-    updateDestinyColumn : function(destinyNode) {
-        let previousNode  = this.getPreviousNode(destinyNode.position);
+    updateDestinyColumn: function (destinyNode) {
+        let previousNode = this.getPreviousNode(destinyNode.position);
         let nextNode = this.getNextNode(destinyNode.position);
 
         if (!previousNode.outputIsInDifferentColumn()) {
@@ -136,7 +140,7 @@ Graph.prototype = {
         destinyNode.nextNode = nextNode;
     },
 
-    getPreviousNode : function(position) {
+    getPreviousNode: function (position) {
         let nodesInColumn = this.getNodesInSameColumn(position);
 
         // Descarta los nodos que estan por debajo de la posicion argumento
@@ -149,7 +153,7 @@ Graph.prototype = {
         }
 
         // Ordena los nodos restantes de tal forma que el primero sea el previo a la posicion argumento
-        nodesInColumn.sort(function(n1, n2) {
+        nodesInColumn.sort(function (n1, n2) {
             if (n1.position.y > n2.position.y) {
                 return -1;
             } else if (n1.position.y < n2.position.y) {
@@ -162,9 +166,9 @@ Graph.prototype = {
         return nodesInColumn[0];
     },
 
-    getNextNode : function(position) {
+    getNextNode: function (position) {
         let nodesInColumn = this.getNodesInSameColumn(position);
-        
+
         // Descarta de los nodos que estan por encima de la posicion argumento
         let i = nodesInColumn.length;
         while (i--) {
@@ -175,7 +179,7 @@ Graph.prototype = {
         }
 
         // Ordena los nodos restantes de tal forma que el primero sea el siguiente a la posicion argumento
-        nodesInColumn.sort(function(n1, n2) {
+        nodesInColumn.sort(function (n1, n2) {
             if (n1.position.y < n2.position.y) {
                 return -1;
             } else if (n1.position.y > n2.position.y) {
@@ -188,11 +192,9 @@ Graph.prototype = {
         return nodesInColumn[0];
     },
 
-    getColumns: function()
-    {
+    getColumns: function () {
         let columns = [];
-        for(let i = 0; i < this.laneCount; i++)
-        {
+        for (let i = 0; i < this.laneCount; i++) {
             columns[i] = this.spawnX + i * this.horizontalOffset;
         }
         return columns;
@@ -208,25 +210,25 @@ Graph.prototype = {
                 nodes.splice(i, 1);
             }
         }
-        
+
         return nodes;
     },
 
-    resetGraph : function() {
+    resetGraph: function () {
         this.graph.clear();
         this.initializeGraph();
     },
 
-    requestMove: function(currentPosition, movementParameters, distance) {
-        
+    requestMove: function (currentPosition, movementParameters, distance) {
+
         let previousNode = movementParameters.previousNode;
         let nextNode;
 
         if (previousNode.isTheStartOfAPath) {
-            
+
             //Nuestro siguiente nodo es el final de este camino.
             nextNode = previousNode.nextNode;
-        } 
+        }
         else {
             //Busca el siguiente nodo en este carril
             let currentClosestNode = null;
@@ -236,10 +238,10 @@ Graph.prototype = {
 
                 //El nodo debe estar por debajo de nuestra posición actual, y no puede ser el final de un camino
                 if (node.position.y > currentPosition.y && !node.isTheEndOfAPath) {
-                    
+
                     //¿Es este el nodo válido más cercano que hemos encontrado?
                     if (currentClosestNode == null || node.position.y < currentClosestNode.position.y) {
-                        currentClosestNode = nodesInColumn[i];    
+                        currentClosestNode = nodesInColumn[i];
                     }
                 }
             }
@@ -249,7 +251,7 @@ Graph.prototype = {
 
         let vectorToNextNode = substractVectors(nextNode.position, currentPosition)
         let distanceToNextNode = vectorToNextNode.module();
-            
+
         //Se mueve lo que sea menos, la distancia normal o la distancia hasta el nodo. 
         //En el segundo caso se llama requestMove otra vez, con la distancia que no se haya viajado.
         let movedDistance;
@@ -262,7 +264,7 @@ Graph.prototype = {
             movedDistance = distance;
             passedNextNode = false;
         }
-        
+
         let hasReachedEnd = false;
 
         //Comprobar si hemos llegado al final
@@ -299,8 +301,8 @@ Graph.prototype = {
     },
     */
 
-    displayGraph : function() {
-        this.graph.forEach(function(value, key) {
+    displayGraph: function () {
+        this.graph.forEach(function (value, key) {
             let nodePosition = value.position;
             let circle = new Phaser.Circle(nodePosition.x, nodePosition.y, 10);
             game.debug.geom(circle);
@@ -317,17 +319,17 @@ Graph.prototype = {
     },
 
     //Recibe el color en formato color de CSS. Ej: "rgb(255, 255, 255)"
-    displaySection: function(origin, destiny, color) {
+    displaySection: function (origin, destiny, color) {
         let line = new Phaser.Line(origin.x, origin.y, destiny.x, destiny.y);
         game.debug.geom(line, color);
     },
 
-    getNodes : function() {
+    getNodes: function () {
         return this.graph.values();
     },
 
-    printGraph : function() {
-        this.graph.forEach(function(value, key) {
+    printGraph: function () {
+        this.graph.forEach(function (value, key) {
             console.log(value.toString());
         })
     }
