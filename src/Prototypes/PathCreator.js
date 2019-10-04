@@ -1,4 +1,4 @@
-const PATH_DRAW_TOLERANCE = 50;
+const PATH_DRAW_TOLERANCE = 60;
 
 function PathCreator(graph, levelData, lanes) {
     this.graph = graph;

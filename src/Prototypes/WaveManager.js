@@ -135,7 +135,6 @@ WaveManager.prototype = {
 
         let bag = new Bag(type, new Vector2D(this.lanes[beltIndex].x, this.levelData.lanes.startY), this.graph, this.lanes);
         this.bags.push(bag);
-        console.log("Creating bag of type " + type + " at conveyor belt nº" + beltIndex);
     },
 
     waveIsEmpty: function(wave) {

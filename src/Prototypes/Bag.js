@@ -49,7 +49,7 @@ Bag.prototype = {
         this.displayGizmo();
     },
 
-    move : function() {
+    move: function() {
 
         let movementResult = this.graph.requestMove(this.position, this.movementParameters, BAG_MOVEMENT_SPEED * game.time.physicsElapsed);
         this.position = movementResult.position;
