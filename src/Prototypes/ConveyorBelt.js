@@ -36,6 +36,18 @@ ConveyorBelt.prototype = {
         this.refreshSprite();
     },
 
+    setVisible: function(visible) {
+        this.tileSprite.visible = visible;
+    },
+
+    setColor: function(color) {
+        this.tileSprite.tint = color;
+    },
+
+    setAlpha: function(alpha) {
+        this.tileSprite.alpha = alpha;
+    },
+
     refreshSprite: function() {
         //Position the sprite origin
         this.tileSprite.x = this.start.x;

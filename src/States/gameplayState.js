@@ -13,6 +13,7 @@ const LEVEL_DIMENSIONS = {
 var laneLayer;
 var pathLayer;
 var bagLayer;
+var overlayLayer;
 
 /*
 El estado de gameplay no debería empezarse directamente. 
@@ -36,6 +37,7 @@ gameplayState.prototype = {
         laneLayer = game.add.group();
         pathLayer = game.add.group();
         bagLayer = game.add.group();
+        overlayLayer = game.add.group();
         
         //Crea managers y tal
         this.createGraph(this.levelData.lanes);
@@ -45,14 +47,9 @@ gameplayState.prototype = {
 
         this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(), 
             LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin);
-        this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
+        this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
         
-
-        /*
-        this.testConveyorBelt = new ConveyorBelt(pathLayer, new Vector2D(LEVEL_DIMENSIONS.laneHorizontalMargin, LEVEL_DIMENSIONS.laneTopMargin), 
-            new Vector2D(LEVEL_DIMENSIONS.laneHorizontalMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin));
-*/
         //Empieza la primera oleada
         this.waveManager.startNextWave();
     },
@@ -99,8 +96,6 @@ gameplayState.prototype = {
     //GAME LOOP//
     /////////////
     update: function() {
-        //Visualización provisional
-        this.graph.displayGraph();
         bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
         if (!this.gameHasEnded) {
             //Updatea todo lo que tenga que ser updateado
@@ -117,6 +112,14 @@ gameplayState.prototype = {
 
     //EVENTS//
     //////////
+    onNonLastWaveEnd: function() {
+        this.graph.resetGraph();
+
+        for (let i = pathLayer.length - 1; i >= 0; i--) {
+            if (pathLayer[i] != null) pathLayer[i].destroy();
+        }
+    },
+
     onGameEnd: function() {
         let state = game.state.getCurrentState();
 

@@ -1,4 +1,11 @@
 function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight) {
+    
+    this.laneCount = laneCount;
+    this.spawnX = spawnX;
+    this.spawnY = spawnY;
+    this.horizontalOffset = horizontalOffset;
+    this.laneHeight = laneHeight;
+
     this.graph = new Map();
     this.initializeGraph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight);
     this.verboseMode = false;
@@ -6,18 +13,11 @@ function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight) {
 
 Graph.prototype = {
 
-    initializeGraph : function(laneCount, spawnX, spawnY, horizontalOffset, laneHeight) {
-
-        this.laneCount = laneCount;
-        this.spawnX = spawnX;
-        this.spawnY = spawnY;
-        this.horizontalOffset = horizontalOffset;
-        this.laneHeight = laneHeight;
-
-        for (let i = 0; i < laneCount; ++i) {
-            let x = spawnX + i * horizontalOffset;
-            let originNodePosition = new Vector2D(x, spawnY);
-            let destinyNodePosition = new Vector2D(x, spawnY + laneHeight);
+    initializeGraph : function() {
+        for (let i = 0; i < this.laneCount; ++i) {
+            let x = this.spawnX + i * this.horizontalOffset;
+            let originNodePosition = new Vector2D(x, this.spawnY);
+            let destinyNodePosition = new Vector2D(x, this.spawnY + this.laneHeight);
 
             let destinyNode = new GraphNode(destinyNodePosition, undefined);
             let originNode = new GraphNode(originNodePosition, destinyNode);

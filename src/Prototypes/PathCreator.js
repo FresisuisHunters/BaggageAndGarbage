@@ -1,10 +1,17 @@
 const PATH_DRAW_TOLERANCE = 60;
+const CORRECT_PATH_COLOR = 0x00AA00;
+const WRONG_PATH_COLOR = 0xAA0000;
+const PREVIEW_ALPHA = 0.5;
 
 function PathCreator(graph, columns, minAllowedY, maxAllowedY) {
     this.graph = graph;
     this.columns = columns;
     this.minAllowedY = minAllowedY;
     this.maxAllowedY = maxAllowedY;
+
+    this.previewConveyorBelt = new ConveyorBelt(overlayLayer, new Vector2D(0, 0), new Vector2D(0, 0));
+    this.previewConveyorBelt.setVisible(false);
+    this.previewConveyorBelt.setAlpha(PREVIEW_ALPHA);
 
     this.subscribeToInputEvents();
 }
@@ -29,6 +36,8 @@ PathCreator.prototype = {
             this.pathDrawProcess = {
                 startPoint: point
             };
+
+            this.previewConveyorBelt.start = point;
         }
     },
 
@@ -46,22 +55,36 @@ PathCreator.prototype = {
 
     
     update: function() {
-        if (this.pathDrawProcess != null) this.displayCurrentDrawnPath(this.pathDrawProcess);
+        if (this.pathDrawProcess != null) {
+            this.displayCurrentDrawnPath(this.pathDrawProcess);
+            this.previewConveyorBelt.setVisible(true);
+        } else {
+            this.previewConveyorBelt.setVisible(false);
+        }
     },
 
     displayCurrentDrawnPath: function(pathDrawProcess) {
         let currentTouchedPoint = new Vector2D(game.input.x, game.input.y);
         let graphPoint = this.getGraphPointFromTouch(currentTouchedPoint);
 
+        let isValidPath = graphPoint != null && this.graph.pathIsValid(pathDrawProcess.startPoint, graphPoint);
+        /*
         let wrongPathColor = "rgb(128, 0, 0)";
         let correctPathColor = "rgb(0, 128, 0)";
-        let isValidPath = graphPoint != null && this.graph.pathIsValid(pathDrawProcess.startPoint, graphPoint);
-
-
+        
         if (isValidPath) {
             this.graph.displaySection(pathDrawProcess.startPoint, graphPoint, correctPathColor);
         } else {    
             this.graph.displaySection(pathDrawProcess.startPoint, currentTouchedPoint, wrongPathColor);
+        }
+        */
+
+        if (isValidPath) {
+            this.previewConveyorBelt.setEnd(graphPoint);
+            this.previewConveyorBelt.setColor(CORRECT_PATH_COLOR);
+        } else {
+            this.previewConveyorBelt.setEnd(currentTouchedPoint);
+            this.previewConveyorBelt.setColor(WRONG_PATH_COLOR);
         }
     },
 
