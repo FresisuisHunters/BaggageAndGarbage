@@ -32,8 +32,7 @@ bootState.prototype = {
             || document.body.clientHeight;
         availableHeight -= CANVAS_MARGIN;
 
-        console.log("Witdth: " + availableWidth);
-        console.log("Height: " + availableHeight)
+        console.log("Scaling for available dimensions: (" + availableWidth + ", " + availableHeight + ")");
 
         let scaleFactor;
         if (POWER_OF_2_SCALING_ONLY) {

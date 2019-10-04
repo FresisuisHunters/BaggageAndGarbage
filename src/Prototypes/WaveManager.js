@@ -1,7 +1,7 @@
 "use strict"
 
-const TIME_BETWEEN_BAG_SPAWNS = 0.5;
-const CONVEYOR_SPAWN_COOLDOWN = 1;
+const TIME_BETWEEN_BAG_SPAWNS = 1;
+const CONVEYOR_SPAWN_COOLDOWN = 2;
 
 const TIME_BETWEEN_WAVES = 4;
 
@@ -11,23 +11,23 @@ Para utilizar WaveManger desde un estado de gameplay, hay que hacer estas cosas:
 - Llamar update() desde el update() del estado.
 - Pasar un callback onLastWaveDone al constructor. El callback se llamará cuando se acabé la última oleada.
 */
-function WaveManager(levelData, graph, onLastWaveDone, bagList, lanes) {
+function WaveManager(waves, graph, onLastWaveDone, bagList, lanes, startY) {
     
-    this.levelData = levelData;
+    this.waves = waves;
     this.graph = graph;
     this.bags = bagList;
     this.lanes = lanes;
-    
+    this.startY = startY;
 
     //Read the waves
     this.remainingWaves = [];
-    for (let wave of levelData.waves) {
+    for (let wave of waves) {
         this.remainingWaves.push(wave);
     }
 
     //Initialize the conveyor belt spawn timers
     this.timesSinceSpawnAtConveyorBelt = [];
-    for (let i = 0; i < levelData.lanes.count; i++) {
+    for (let i = 0; i < lanes.length; i++) {
         this.timesSinceSpawnAtConveyorBelt.push(100000);
     }
 
@@ -132,8 +132,7 @@ WaveManager.prototype = {
     },
 
     spawnBag: function(type, beltIndex) {
-
-        let bag = new Bag(type, new Vector2D(this.lanes[beltIndex].x, this.levelData.lanes.startY), this.graph, this.lanes);
+        let bag = new Bag(type, new Vector2D(this.lanes[beltIndex].x, this.startY), this.graph, this.lanes);
         this.bags.push(bag);
     },
 
