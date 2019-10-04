@@ -20,6 +20,10 @@ Vector2D.prototype = {
         return Math.sqrt(xSquare + ySquare);
     },
 
+    getRotationAngle: function() {
+        return Math.atan2(this.y, this.x);
+    },
+
     toString : function() {
         return "(" + this.x + ", " + this.y + ")";
     }

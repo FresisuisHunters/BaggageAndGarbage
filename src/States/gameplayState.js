@@ -40,12 +40,19 @@ gameplayState.prototype = {
         //Crea managers y tal
         this.createGraph(this.levelData.lanes);
         this.createLaneEnds(this.graph, this.onBagKilled, this.levelData.lanes.types, this.bags);
-        
+        this.createLaneConveyorBelts(this.graph.getColumns());
+
+
         this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(), 
             LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin);
         this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
         
+
+        /*
+        this.testConveyorBelt = new ConveyorBelt(pathLayer, new Vector2D(LEVEL_DIMENSIONS.laneHorizontalMargin, LEVEL_DIMENSIONS.laneTopMargin), 
+            new Vector2D(LEVEL_DIMENSIONS.laneHorizontalMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin));
+*/
         //Empieza la primera oleada
         this.waveManager.startNextWave();
     },
@@ -61,6 +68,15 @@ gameplayState.prototype = {
         let height = GAME_HEIGHT - startY - LEVEL_DIMENSIONS.laneBottomMargin;
 
         this.graph = new Graph(laneCount, startX, startY, gapBetweenLanes, height);
+    },
+
+    createLaneConveyorBelts: function(columns) {
+        let startY = LEVEL_DIMENSIONS.laneTopMargin;
+        let endY = GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin;
+
+        for (let i = 0; i < columns.length; i++) {
+            new ConveyorBelt(laneLayer, new Vector2D(columns[i], startY), new Vector2D(columns[i], endY));
+        }
     },
 
     createLaneEnds: function(graph, onBagKilled, laneTypes, bags) {
