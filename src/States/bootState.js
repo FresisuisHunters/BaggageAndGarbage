@@ -25,10 +25,15 @@ bootState.prototype = {
         var availableWidth = window.innerWidth
             || document.documentElement.clientWidth
             || document.body.clientWidth;
+        availableWidth -= CANVAS_MARGIN;
 
         var availableHeight = window.innerHeight
             || document.documentElement.clientHeight
             || document.body.clientHeight;
+        availableHeight -= CANVAS_MARGIN;
+
+        console.log("Witdth: " + availableWidth);
+        console.log("Height: " + availableHeight)
 
         let scaleFactor;
         if (POWER_OF_2_SCALING_ONLY) {
@@ -43,23 +48,15 @@ bootState.prototype = {
             }
         } 
         else {
-            let widthDifference = Math.abs(availableWidth - GAME_WIDTH);
-            let heightDifference = Math.abs(availableHeight - GAME_HEIGHT);
-
-            let target;
-            let real;
-            if (widthDifference > heightDifference) {
-                target = availableWidth;
-                real = GAME_WIDTH
-            } else {
-                target = availableHeight;
-                real = GAME_HEIGHT;
+            //Scale for width
+            scaleFactor = availableWidth / GAME_WIDTH;
+            //See if it works for height as well
+            if (GAME_HEIGHT * scaleFactor > availableHeight) {
+                scaleFactor = availableHeight / GAME_HEIGHT;
             }
-
-            scaleFactor = target / real;
         }
         
-        game.scale.setUserScale(scaleFactor);
+        game.scale.setUserScale(scaleFactor, scaleFactor, 0, 0, false, false);
     }
 
 }

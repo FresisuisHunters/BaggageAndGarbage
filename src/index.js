@@ -1,5 +1,7 @@
 const GAME_WIDTH = 1080;
 const GAME_HEIGHT = 1920;
+
+const CANVAS_MARGIN = 0;
 const POWER_OF_2_SCALING_ONLY = false;
 const USE_ANTIALIASING = true;
 
