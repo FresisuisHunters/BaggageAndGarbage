@@ -37,6 +37,7 @@ PathCreator.prototype = {
             let endPoint = this.getGraphPointFromTouch(new Vector2D(pointer.x, pointer.y));
             if (endPoint != null) {
                 this.graph.addPath(this.pathDrawProcess.startPoint, endPoint);
+                new ConveyorBelt(pathLayer, this.pathDrawProcess.startPoint, endPoint);
             }
 
             this.pathDrawProcess = null;
