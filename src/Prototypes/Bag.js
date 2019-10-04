@@ -1,13 +1,10 @@
-const BAG_SPRITE_SHEET_KEY = "bag_sprite_key";
-const BAG_SPRITE_SHEET_PATH = "/resources/sprites/bag_placeholder.png";
-
-const BAG_MOVEMENT_SPEED = 50;
+const BAG_MOVEMENT_SPEED = 100;
 
 const BagTypes = {
-    A: 0,
-    B_Safe: 1,
-    B_Danger: 2,
-    C: 3
+    A: "A",
+    B_Safe: "B_Safe",
+    B_Danger: "B_Danger",
+    C: "C"
 };
 
 /**
@@ -24,29 +21,61 @@ function Bag(bagType, position, graph, lanes) {
     this.lanes = lanes;
     
     this.hasReachedEnd = false;
-
     this.movementParameters = new MovementParameters(this.graph.graph.get(this.position.toString()));
 
+    this.initializeSprite();
+    /*
     // Gizmo utilizado como alternativa para visualizarlo
     this.debugGizmo = new Phaser.Rectangle(position.x, position.y, 20, 20);
     this.debugGizmo.centerOn(position.x, position.y);
     game.debug.geom(this.debugGizmo, "FE0101");
-
+    
     // TODO
     this.sprite = game.load.image(
         position.x,
         position.y,
         BAG_SPRITE_SHEET_KEY
     );
-
+    */
     this.insideSprite = undefined; // TODO
+
 }
 
 Bag.prototype = {
 
+    initializeSprite: function() {
+        //Get out options depending on the bag type
+        availableSpriteNames = null; 
+        switch (this.type) {
+            case BagTypes.A:
+                availableSpriteNames = A_TYPE_BAG_SPRITE_KEYS;
+                break;
+            case BagTypes.B_Safe:
+            case BagTypes.B_Danger:
+                availableSpriteNames = B_TYPE_BAG_SPRITE_KEYS;
+                break;
+            case BagTypes.C:
+                availableSpriteNames = C_TYPE_BAG_SPRITE_KEYS;
+                break;
+        }
+
+        if (availableSpriteNames == null) console.error("Se ha creado una maleta de tipo " + bagType + ". Este valor no está permitido.");
+        else if (availableSpriteNames.length == 0) console.error("No existe ningún sprite de maleta de tipo " + bagType + ".");
+
+        //Create and congifure the sprite
+        let spriteIndex = Math.floor(Math.random() * availableSpriteNames.length);
+        this.sprite = bagLayer.create(this.position.x, this.position.y, availableSpriteNames[spriteIndex]);
+        this.sprite.anchor.set(0.5, 0.5);
+        this.sprite.scale.set(0.5, 0.5);
+
+    },
+
     update: function() {
         if (!this.hasReachedEnd) this.move();
-        this.displayGizmo();
+
+        this.sprite.x = this.position.x;
+        this.sprite.y = this.position.y;
+        //this.displayGizmo();
     },
 
     move: function() {
@@ -58,6 +87,7 @@ Bag.prototype = {
             this.hasReachedEnd = true;
             let laneEnd = this.getLaneEndFromLaneX(this.position.x);
             laneEnd.manageBag(this);
+            this.sprite.destroy();
         }
     },
 
@@ -69,11 +99,13 @@ Bag.prototype = {
         console.error("No LaneEnd was found for x:" + laneX);
     },
 
+    /*
     displayGizmo: function() {
         this.debugGizmo.centerOn(this.position.x, this.position.y);
         game.debug.geom(this.debugGizmo, "FE0101");
         this.debugGizmo.x = this.position.x;
         this.debugGizmo.y = this.position.y;
     }
+    */
 
 }
