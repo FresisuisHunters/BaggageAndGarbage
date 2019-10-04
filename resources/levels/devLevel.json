@@ -1,10 +1,6 @@
 {
     "lanes": {
-        "count":4,
-        "startX": 135,
-        "startY": 420,
-        "gap": 270,
-        "height": 1250,
+        "count": 4,
         "types": ["S", "D", "S", "D"]
     },
     "waves": [

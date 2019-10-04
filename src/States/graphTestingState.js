@@ -5,8 +5,8 @@ var graphTestingState = function (game) {
     this.CONVEYOR_BELT_NUMBER = 2;
     this.CONVEYOR_BELT_SPAWN_X = 100;
     this.CONVEYOR_BELT_SPAWN_Y = 100;
-    this.CONVEYOR_BELT_HORIZONTAL_OFFSET = 100;
-    this.CONVEYOR_BELT_VERTICAL_DISTANCE = 500;
+    this.CONVEYOR_BELT_HORIZONTAL_OFFSET = 200;
+    this.CONVEYOR_BELT_VERTICAL_DISTANCE = 100;
 }
 
 graphTestingState.prototype = {
@@ -24,17 +24,7 @@ graphTestingState.prototype = {
             this.graph.printGraph();
         }
 
-        //Crea levelData falso para poder crear un PathCreator
-        let levelData = {
-            lanes: {
-                count: this.CONVEYOR_BELT_NUMBER,
-                startX: this.CONVEYOR_BELT_SPAWN_X,
-                startY: this.CONVEYOR_BELT_SPAWN_Y,
-                gap: this.CONVEYOR_BELT_HORIZONTAL_OFFSET,
-                height: this.CONVEYOR_BELT_VERTICAL_DISTANCE
-            }
-        }
-        this.pathCreator = new PathCreator(this.graph, levelData, this.graph.getColumns());
+        this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(), this.CONVEYOR_BELT_SPAWN_Y, this.CONVEYOR_BELT_SPAWN_Y + this.CONVEYOR_BELT_VERTICAL_DISTANCE);
 
         let pathsToCreate = 20;
         for (let i = 0; i < pathsToCreate; ++i) {
@@ -46,7 +36,7 @@ graphTestingState.prototype = {
             this.graph.printGraph();
         }
 
-        this.createRandomBag();
+        //this.createRandomBag();
     },
 
     createRandomPath : function() {
@@ -68,7 +58,7 @@ graphTestingState.prototype = {
 
     update : function() {
         this.graph.displayGraph();
-        if (!this.bag.reachedTheEnd) {
+        if (this.bag && !this.bag.reachedTheEnd) {
             this.bag.moveBag();
         }
 
@@ -76,6 +66,7 @@ graphTestingState.prototype = {
     },
 
     createRandomBag : function() {
+        //Obsoleto, el constructor de maletas es muy diferente ahora. Mirar WaveManager para ver ejemplo de uso.
         let conveyorBeltOriginId = Math.floor(Math.random() * this.CONVEYOR_BELT_NUMBER);
         let x = this.CONVEYOR_BELT_SPAWN_X + conveyorBeltOriginId * this.CONVEYOR_BELT_HORIZONTAL_OFFSET;
         let y = this.CONVEYOR_BELT_SPAWN_Y;
