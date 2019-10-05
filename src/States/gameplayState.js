@@ -13,6 +13,7 @@ const LEVEL_DIMENSIONS = {
 var laneLayer;
 var pathLayer;
 var bagLayer;
+var overlayLayer;
 
 /*
 El estado de gameplay no debería empezarse directamente. 
@@ -37,14 +38,17 @@ gameplayState.prototype = {
         laneLayer = game.add.group();
         pathLayer = game.add.group();
         bagLayer = game.add.group();
+        overlayLayer = game.add.group();
         
         //Crea managers y tal
         this.createGraph(this.levelData.lanes);
         this.createLaneEnds(this.graph, this.onBagKilled, this.levelData.lanes.types, this.bags);
-        
+        this.createLaneConveyorBelts(this.graph.getColumns());
+
+
         this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(), 
             LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin);
-        this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
+        this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
 
         //Empieza la primera oleada
@@ -62,6 +66,15 @@ gameplayState.prototype = {
         let height = GAME_HEIGHT - startY - LEVEL_DIMENSIONS.laneBottomMargin;
 
         this.graph = new Graph(laneCount, startX, startY, gapBetweenLanes, height, this.scanners);
+    },
+
+    createLaneConveyorBelts: function(columns) {
+        let startY = LEVEL_DIMENSIONS.laneTopMargin;
+        let endY = GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin;
+
+        for (let i = 0; i < columns.length; i++) {
+            new ConveyorBelt(laneLayer, new Vector2D(columns[i], startY), new Vector2D(columns[i], endY));
+        }
     },
 
     createLaneEnds: function(graph, onBagKilled, laneTypes, bags) {
@@ -83,13 +96,12 @@ gameplayState.prototype = {
 
     //GAME LOOP//
     /////////////
-    update: function () {
-        //Visualización provisional
-        this.graph.displayGraph();
-        bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
+    update: function() {
+        
         if (!this.gameHasEnded) {
             //Updatea todo lo que tenga que ser updateado
             this.pathCreator.update();
+            this.waveManager.update(game.time.physicsElapsed);
 
             //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
             for (let i = this.bags.length - 1; i >= 0; i--) {
@@ -105,13 +117,22 @@ gameplayState.prototype = {
                 }
             }
 
-            this.waveManager.update(game.time.physicsElapsed);
+            //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
+            bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
         }
     },
 
     //EVENTS//
     //////////
-    onGameEnd: function () {
+    onNonLastWaveEnd: function() {
+        this.graph.resetGraph();
+
+        for (let i = pathLayer.length - 1; i >= 0; i--) {
+            if (pathLayer[i] != null) pathLayer[i].destroy();
+        }
+    },
+
+    onGameEnd: function() {
         let state = game.state.getCurrentState();
 
         state.pathCreator.unsubscribeFromInputEvents();

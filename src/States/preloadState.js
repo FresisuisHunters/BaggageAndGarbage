@@ -16,6 +16,8 @@ preloadState.prototype = {
     preload: function () {
         this.loadBagSprites();
         this.loadInteriorSprites();
+
+        game.load.image(CONVEYOR_BELT_SPRITE_KEY, "resources/sprites/img_PlaceholderBelt.png")
     },
 
     loadBagSpriteFromName: function(name) {

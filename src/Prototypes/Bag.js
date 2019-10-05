@@ -1,4 +1,4 @@
-const BAG_MOVEMENT_SPEED = 100;
+const BAG_MOVEMENT_SPEED = 200;
 
 const BagTypes = {
     A: "A",
