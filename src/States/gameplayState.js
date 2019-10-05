@@ -61,7 +61,7 @@ gameplayState.prototype = {
 
         let height = GAME_HEIGHT - startY - LEVEL_DIMENSIONS.laneBottomMargin;
 
-        this.graph = new Graph(laneCount, startX, startY, gapBetweenLanes, height);
+        this.graph = new Graph(laneCount, startX, startY, gapBetweenLanes, height, this.scanners);
     },
 
     createLaneEnds: function(graph, onBagKilled, laneTypes, bags) {
@@ -94,7 +94,7 @@ gameplayState.prototype = {
             //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
             for (let i = this.bags.length - 1; i >= 0; i--) {
                 this.bags[i].update();
-                for (let j = 0; j < scanners.lenth; j++) {
+                for (let j = 0; j < this.scanners.lenth; j++) {
                     if (scanners[j].belt == bag.position.x && scanners[j].start <= (bag.position.y+BAG_MOVEMENT_SPEED))
                     {
                         scanners[j].EnterBag(bags[i]);

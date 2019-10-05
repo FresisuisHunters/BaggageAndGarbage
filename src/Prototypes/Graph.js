@@ -80,8 +80,8 @@ Graph.prototype = {
     },
 
     pointIsOnScanner: function (point) {
-        for (let i = 0; i < scanners.length; i++) {
-            if (scanners[i].IsInScanner(point))
+        for (let i = 0; i < this.scanners.length; i++) {
+            if (this.scanners[i].IsInScanner(point))
                 return true;
         }
         return false;
