@@ -26,6 +26,9 @@ PathCreator.prototype = {
     unsubscribeFromInputEvents: function() {
         game.input.onDown.remove(this.onTouchStart, this);
         game.input.onUp.remove(this.onTouchEnd, this);
+
+        this.pathDrawProcess = null;
+        this.update();
     },
 
     onTouchStart: function(pointer) {
@@ -45,8 +48,9 @@ PathCreator.prototype = {
         if (this.pathDrawProcess != null) {
             let endPoint = this.getGraphPointFromTouch(new Vector2D(pointer.x, pointer.y));
             if (endPoint != null) {
-                this.graph.addPath(this.pathDrawProcess.startPoint, endPoint);
-                new ConveyorBelt(pathLayer, this.pathDrawProcess.startPoint, endPoint);
+                if (this.graph.tryAddPath(this.pathDrawProcess.startPoint, endPoint)) {
+                    new ConveyorBelt(pathLayer, this.pathDrawProcess.startPoint, endPoint);
+                }   
             }
 
             this.pathDrawProcess = null;

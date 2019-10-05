@@ -1,68 +1,140 @@
-const CONVEYOR_BELT_SPRITE_KEY = "img_PlaceholderBelt.png";
+const CONVEYOR_BELT_SPRITESHEET_KEY = "sheet_PlaceholderBelt";
+
 const CONVEYOR_BELT_SPRITE_SIZE = 256;
+const CONVEYOR_BELT_SHEET_MARGIN = 20;
+const CONVEYOR_BELT_SHEET_SPACING = 10;
+const CONVEYOR_BELT_SHEET_TOTAL_FRAME_COUNT = 4;
+
+const CONVEYOR_BELT_SHEET_RAILING_FRAME_COUNT = 3;
+
+const CONVEYOR_BELT_SCALE_FACTOR = 0.5;
+const CONVEYOR_RAILING_SCALE_FACTOR = 0.5;
+
 const CONVEYOR_BELT_ROTATION_OFFSET = -Math.PI / 2;
 
 function ConveyorBelt(group, start, end) {
-    this.tileSprite = this.createTileSprite();
-    group.add(this.tileSprite);
+    this.beltTileSprite = this.createBeltTileSprite();
+    this.group = group;
+    this.group.add(this.beltTileSprite);
+
+    this.railingImages = [];
 
     this.start = start;
     this.end = end;
 
-    this.refreshSprite();
+    this.refresh();
 }
 
 ConveyorBelt.prototype = {
-    createTileSprite: function() {
-        let tileSprite = new Phaser.TileSprite(game, 0, 0, CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_KEY);
-        tileSprite.scale.set(0.5, 0.5);
+    createBeltTileSprite: function() {
+        
+        let tileSprite = new Phaser.TileSprite(game, 0, 0, CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITESHEET_KEY);
+        tileSprite.frame = 3;
+
+        tileSprite.scale.set(CONVEYOR_BELT_SCALE_FACTOR, CONVEYOR_BELT_SCALE_FACTOR);
+
         tileSprite.anchor.set(0.5, 0);
         tileSprite.pivot.set(0.5, 0);
 
-
         tileSprite.autoScroll(0, BAG_MOVEMENT_SPEED / tileSprite.scale.y);
-
 
         return tileSprite;
     },
 
     setStart: function(newStart) {
         this.start = newStart;
-        this.refreshSprite();
+        this.refresh();
     },
 
     setEnd: function(newEnd) {
         this.end = newEnd;
-        this.refreshSprite();
+        this.refresh();
     },
 
     setVisible: function(visible) {
-        this.tileSprite.visible = visible;
+        this.beltTileSprite.visible = visible;
+        for (let i = 0; i < this.railingImages.length; i++) {
+            this.railingImages[i].visible = visible;
+        }
     },
 
     setColor: function(color) {
-        this.tileSprite.tint = color;
+        this.beltTileSprite.tint = color;
+        for (let i = 0; i < this.railingImages.length; i++) {
+            this.railingImages[i].tint = color;
+        }
     },
 
     setAlpha: function(alpha) {
-        this.tileSprite.alpha = alpha;
+        this.beltTileSprite.alpha = alpha;
+        for (let i = 0; i < this.railingImages.length; i++) {
+            this.railingImages[i].alpha = alpha;
+        }
     },
 
-    refreshSprite: function() {
+    refresh: function() {
+        let startToEndVector = substractVectors(this.end, this.start);
+        let startToEndLength = startToEndVector.module();
+        let rotation = startToEndVector.getRotationAngle() + CONVEYOR_BELT_ROTATION_OFFSET;
+
+        this.refreshBelt(startToEndLength, rotation);
+        this.refreshRailings(startToEndVector.normalize(), startToEndLength, rotation);
+    },
+
+    refreshBelt: function(startToEndLength, rotation) {
+        
+        let length = startToEndLength / CONVEYOR_BELT_SCALE_FACTOR;
+        
         //Position the sprite origin
-        this.tileSprite.x = this.start.x;
-        this.tileSprite.y = this.start.y;
+        this.beltTileSprite.x = this.start.x;
+        this.beltTileSprite.y = this.start.y;
 
         //Size and rotate the sprite
-        let startToEndVector = substractVectors(this.end, this.start);
-        this.tileSprite.height = startToEndVector.module() / this.tileSprite.scale.y;
-        this.tileSprite.rotation = startToEndVector.getRotationAngle() + CONVEYOR_BELT_ROTATION_OFFSET;
+        this.beltTileSprite.height = length;
+        this.beltTileSprite.rotation = rotation;
+    },
 
-        //Set the tiling so that it looks right
-        this.tileSprite.tileScale.y = 1;
+    refreshRailings: function(beltDirection, startToEndLength, rotation) {
+        
+        //Figure out the tiling
+        let numberOfPieces = Math.round(startToEndLength / (CONVEYOR_BELT_SPRITE_SIZE * CONVEYOR_RAILING_SCALE_FACTOR));
+        let scaleMultiplier = startToEndLength / (CONVEYOR_BELT_SPRITE_SIZE * CONVEYOR_RAILING_SCALE_FACTOR * numberOfPieces);
 
-        //Animate the sprite
-        this.tileSprite.tileScaleOffset.y = 1;
+        //If we have too many pieces, remove excess. If there's not enough, create them.
+        let excess = this.railingImages.length - numberOfPieces;
+        while (excess > 0) {
+            this.railingImages[this.railingImages.length - 1].destroy();
+            this.railingImages.splice(this.railingImages.length - 1, 1);
+            excess--;
+        }
+        while (excess < 0) {
+            let newImage = new Phaser.Image(game, 0, 0, CONVEYOR_BELT_SPRITESHEET_KEY);
 
+            newImage.anchor.set(0.5, 0);
+            newImage.pivot.set(0.5, 0);
+            newImage.scale.set(CONVEYOR_RAILING_SCALE_FACTOR, CONVEYOR_RAILING_SCALE_FACTOR);
+            
+            let frame = Math.floor((Math.random() * CONVEYOR_BELT_SHEET_RAILING_FRAME_COUNT));
+            newImage.frame = frame;
+
+            this.group.add(newImage);
+            this.railingImages.push(newImage);
+
+            excess++;
+        }
+
+        //Place them
+        let position = new Vector2D(this.start.x, this.start.y);
+        let deltaPosition = beltDirection.multiply(CONVEYOR_RAILING_SCALE_FACTOR * scaleMultiplier * CONVEYOR_BELT_SPRITE_SIZE);
+        for (let i = 0; i < numberOfPieces; i++) {
+            let image = this.railingImages[i];
+            image.x = position.x;
+            image.y = position.y;
+            image.scale.y = CONVEYOR_RAILING_SCALE_FACTOR * scaleMultiplier;
+            image.rotation = rotation;
+
+            position = addVectors(position, deltaPosition);
+        }
     }
+
 }

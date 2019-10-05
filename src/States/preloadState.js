@@ -17,7 +17,8 @@ preloadState.prototype = {
         this.loadBagSprites();
         this.loadInteriorSprites();
 
-        game.load.image(CONVEYOR_BELT_SPRITE_KEY, "resources/sprites/img_PlaceholderBelt.png")
+        game.load.spritesheet(CONVEYOR_BELT_SPRITESHEET_KEY, "resources/sprites/testSpritesheet.png", CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_SIZE, 
+            CONVEYOR_BELT_SHEET_TOTAL_FRAME_COUNT, CONVEYOR_BELT_SHEET_MARGIN, CONVEYOR_BELT_SHEET_SPACING);
     },
 
     loadBagSpriteFromName: function(name) {

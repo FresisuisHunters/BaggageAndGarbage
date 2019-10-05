@@ -34,9 +34,9 @@ Graph.prototype = {
     //CAMINOS//
     ///////////
     // Origin y destiny son Vector2D
-    addPath: function (origin, destiny) {
+    tryAddPath: function (origin, destiny) {
 
-        if (!this.pathIsValid(origin, destiny)) return;
+        if (!this.pathIsValid(origin, destiny)) return false;
 
         let destinyNode = new GraphNode(destiny, undefined);
         let originNode = new GraphNode(origin, destinyNode);
@@ -48,6 +48,8 @@ Graph.prototype = {
 
         originNode.isTheStartOfAPath = true;
         destinyNode.isTheEndOfAPath = true;
+
+        return true;
     },
 
     pathIsValid: function (origin, destiny) {
