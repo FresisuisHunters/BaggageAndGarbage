@@ -1,5 +1,5 @@
 # Baggage & Garbage
-
+![alt text](https://github.com/FresisuisHunters/BaggageAndGarbage/blob/master/Concept%20Art/Logos/logo%20juego.png?raw=true) 
 ## Concepto general
 Vienen oleadas de maletas al aeropuerto. Algunas seguras, otras no tanto. Tu trabajo es llevar las maletas a la cinta mecánica correcta en función de su seguridad. Para ello, creas pequeñas cintas llamadas *caminos* que conectan los *carriles* principales.
 
