@@ -35,8 +35,8 @@ gameplayState.prototype = {
         console.log("Entered gameplayState")
         
         //El orden en el que se crean es el orden en el que dibujan. Es decir, el último se dibuja por encima del resto.
-        pathLayer = game.add.group();
         laneLayer = game.add.group();
+        pathLayer = game.add.group();
         
         bagLayer = game.add.group();
         overlayLayer = game.add.group();
@@ -46,11 +46,12 @@ gameplayState.prototype = {
         this.createLaneEnds(this.graph, this.onBagKilled, this.levelData.lanes.types, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
 
-
         this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(), 
             LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin);
         this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
+
+        pathLayer.mask = this.getPathMask(this.graph);
 
         //Empieza la primera oleada
         this.waveManager.startNextWave();
@@ -93,6 +94,29 @@ gameplayState.prototype = {
                 laneEnd: new LaneEnd(type, onBagKilled, bags, new Vector2D(columns[i], GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin))
             });
         }
+    },
+
+    getPathMask: function(graph) {
+        let columns = graph.getColumns();
+        let bottomY = GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin;
+
+        let mask = new Phaser.Graphics(game);
+        mask.beginFill(0xffffff);
+
+        for (let i = 0; i < columns.length - 1; i++) {
+            let topLeft = new Vector2D(columns[i], LEVEL_DIMENSIONS.laneTopMargin);
+            let topRight = new Vector2D(columns[i + 1], LEVEL_DIMENSIONS.laneTopMargin);
+
+            topLeft.x += CONVEYOR_BELT_WIDTH / 2;
+            topRight.x -= CONVEYOR_BELT_WIDTH / 2;
+
+            let bottomLeft = new Vector2D(topLeft.x, bottomY);
+            let bottomRight = new Vector2D(topRight.x, bottomY);
+
+            mask.drawPolygon(new Phaser.Polygon([topLeft, topRight, bottomRight, bottomLeft]));
+        }
+        
+        return mask;
     },
 
     //GAME LOOP//

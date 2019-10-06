@@ -5,6 +5,8 @@ const CONVEYOR_BELT_SHEET_MARGIN = 20;
 const CONVEYOR_BELT_SHEET_SPACING = 10;
 const CONVEYOR_BELT_SHEET_TOTAL_FRAME_COUNT = 4;
 
+const CONVEYOR_BELT_WIDTH = 100;
+
 const CONVEYOR_BELT_SHEET_RAILING_FRAME_COUNT = 3;
 
 
@@ -15,7 +17,7 @@ const CONVEYOR_BELT_Y_SCALE_FACTOR = 0.8;
 
 const CONVEYOR_BELT_ROTATION_OFFSET = -Math.PI / 2;
 
-function ConveyorBelt(group, start, end, scaleFactor) {
+function ConveyorBelt(group, start, end, scaleFactor, mask) {
     this.scaleFactor = scaleFactor;
     
     this.beltTileSprite = this.createBeltTileSprite();
@@ -28,6 +30,11 @@ function ConveyorBelt(group, start, end, scaleFactor) {
     this.end = end;
 
     this.refresh();
+
+
+    //Testing the mask idea
+    this.mask = mask;
+    this.beltTileSprite.mask = mask;
 }
 
 ConveyorBelt.prototype = {
@@ -126,6 +133,8 @@ ConveyorBelt.prototype = {
             this.railingImages.push(newImage);
 
             excess++;
+
+            newImage.mask = this.mask;
         }
 
         //Place them
@@ -141,5 +150,4 @@ ConveyorBelt.prototype = {
             position = addVectors(position, deltaPosition);
         }
     }
-
 }

@@ -26,6 +26,10 @@ Vector2D.prototype = {
 
     toString : function() {
         return "(" + this.x + ", " + this.y + ")";
+    },
+
+    toPhaserPoint: function() {
+        return new Phaser.Point(this.x, this.y);
     }
 
 }
