@@ -3,7 +3,7 @@
 ## Concepto general
 Vienen oleadas de maletas al aeropuerto. Algunas seguras, otras no tanto. Tu trabajo es llevar las maletas a la cinta mecánica correcta en función de su seguridad. Para ello, creas pequeñas cintas llamadas *caminos* que conectan los *carriles* principales.
 
-(Falta subir el mockup de Carmen para mostrarlo aquí)
+![alt text](https://github.com/FresisuisHunters/BaggageAndGarbage/blob/master/Concept%20Art/UI/mockup_gameplay.png?raw=true)
 
 # Maletas
 ## Tipos 
