@@ -3,11 +3,12 @@ const CORRECT_PATH_COLOR = 0x00AA00;
 const WRONG_PATH_COLOR = 0xAA0000;
 const PREVIEW_ALPHA = 0.5;
 
-function PathCreator(graph, columns, minAllowedY, maxAllowedY) {
+function PathCreator(graph, columns, minAllowedY, maxAllowedY, mask) {
     this.graph = graph;
     this.columns = columns;
     this.minAllowedY = minAllowedY;
     this.maxAllowedY = maxAllowedY;
+    this.mask = mask;
 
     this.previewConveyorBelt = new ConveyorBelt(overlayLayer, new Vector2D(0, 0), new Vector2D(0, 0), CONVEYOR_PATH_SCALE_FACTOR);
     this.previewConveyorBelt.setVisible(false);
@@ -75,9 +76,11 @@ PathCreator.prototype = {
         if (isValidPath) {
             this.previewConveyorBelt.setEnd(graphPoint);
             this.previewConveyorBelt.setColor(CORRECT_PATH_COLOR);
+            this.previewConveyorBelt.setMask(this.mask);
         } else {
             this.previewConveyorBelt.setEnd(currentTouchedPoint);
             this.previewConveyorBelt.setColor(WRONG_PATH_COLOR);
+            this.previewConveyorBelt.setMask(null);
         }
     },
 
