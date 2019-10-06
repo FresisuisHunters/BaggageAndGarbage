@@ -1,4 +1,4 @@
-const BAG_MOVEMENT_SPEED = 200;
+const BAG_MOVEMENT_SPEED = 100;
 const BAG_SCALE_FACTOR = 0.3;
 
 const BagTypes = {

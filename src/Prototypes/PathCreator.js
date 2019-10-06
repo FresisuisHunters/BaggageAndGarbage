@@ -9,7 +9,7 @@ function PathCreator(graph, columns, minAllowedY, maxAllowedY) {
     this.minAllowedY = minAllowedY;
     this.maxAllowedY = maxAllowedY;
 
-    this.previewConveyorBelt = new ConveyorBelt(overlayLayer, new Vector2D(0, 0), new Vector2D(0, 0));
+    this.previewConveyorBelt = new ConveyorBelt(overlayLayer, new Vector2D(0, 0), new Vector2D(0, 0), CONVEYOR_PATH_SCALE_FACTOR);
     this.previewConveyorBelt.setVisible(false);
     this.previewConveyorBelt.setAlpha(PREVIEW_ALPHA);
 
@@ -49,7 +49,7 @@ PathCreator.prototype = {
             let endPoint = this.getGraphPointFromTouch(new Vector2D(pointer.x, pointer.y));
             if (endPoint != null) {
                 if (this.graph.tryAddPath(this.pathDrawProcess.startPoint, endPoint)) {
-                    new ConveyorBelt(pathLayer, this.pathDrawProcess.startPoint, endPoint);
+                    new ConveyorBelt(pathLayer, this.pathDrawProcess.startPoint, endPoint, CONVEYOR_PATH_SCALE_FACTOR);
                 }   
             }
 
@@ -57,7 +57,6 @@ PathCreator.prototype = {
         }
     },
 
-    
     update: function() {
         if (this.pathDrawProcess != null) {
             this.displayCurrentDrawnPath(this.pathDrawProcess);
@@ -72,16 +71,6 @@ PathCreator.prototype = {
         let graphPoint = this.getGraphPointFromTouch(currentTouchedPoint);
 
         let isValidPath = graphPoint != null && this.graph.pathIsValid(pathDrawProcess.startPoint, graphPoint);
-        /*
-        let wrongPathColor = "rgb(128, 0, 0)";
-        let correctPathColor = "rgb(0, 128, 0)";
-        
-        if (isValidPath) {
-            this.graph.displaySection(pathDrawProcess.startPoint, graphPoint, correctPathColor);
-        } else {    
-            this.graph.displaySection(pathDrawProcess.startPoint, currentTouchedPoint, wrongPathColor);
-        }
-        */
 
         if (isValidPath) {
             this.previewConveyorBelt.setEnd(graphPoint);

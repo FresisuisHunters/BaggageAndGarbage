@@ -7,12 +7,17 @@ const CONVEYOR_BELT_SHEET_TOTAL_FRAME_COUNT = 4;
 
 const CONVEYOR_BELT_SHEET_RAILING_FRAME_COUNT = 3;
 
-const CONVEYOR_BELT_SCALE_FACTOR = 0.5;
-const CONVEYOR_RAILING_SCALE_FACTOR = 0.5;
+
+const CONVEYOR_LANE_SCALE_FACTOR = 0.65;
+const CONVEYOR_PATH_SCALE_FACTOR = 0.5;
+const CONVEYOR_BELT_Y_SCALE_FACTOR = 0.8;
+
 
 const CONVEYOR_BELT_ROTATION_OFFSET = -Math.PI / 2;
 
-function ConveyorBelt(group, start, end) {
+function ConveyorBelt(group, start, end, scaleFactor) {
+    this.scaleFactor = scaleFactor;
+    
     this.beltTileSprite = this.createBeltTileSprite();
     this.group = group;
     this.group.add(this.beltTileSprite);
@@ -31,7 +36,7 @@ ConveyorBelt.prototype = {
         let tileSprite = new Phaser.TileSprite(game, 0, 0, CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITESHEET_KEY);
         tileSprite.frame = 3;
 
-        tileSprite.scale.set(CONVEYOR_BELT_SCALE_FACTOR, CONVEYOR_BELT_SCALE_FACTOR);
+        tileSprite.scale.set(this.scaleFactor, CONVEYOR_BELT_Y_SCALE_FACTOR);
 
         tileSprite.anchor.set(0.5, 0);
         tileSprite.pivot.set(0.5, 0);
@@ -83,7 +88,7 @@ ConveyorBelt.prototype = {
 
     refreshBelt: function(startToEndLength, rotation) {
         
-        let length = startToEndLength / CONVEYOR_BELT_SCALE_FACTOR;
+        let length = startToEndLength / CONVEYOR_BELT_Y_SCALE_FACTOR;
         
         //Position the sprite origin
         this.beltTileSprite.x = this.start.x;
@@ -97,8 +102,8 @@ ConveyorBelt.prototype = {
     refreshRailings: function(beltDirection, startToEndLength, rotation) {
         
         //Figure out the tiling
-        let numberOfPieces = Math.round(startToEndLength / (CONVEYOR_BELT_SPRITE_SIZE * CONVEYOR_RAILING_SCALE_FACTOR));
-        let scaleMultiplier = startToEndLength / (CONVEYOR_BELT_SPRITE_SIZE * CONVEYOR_RAILING_SCALE_FACTOR * numberOfPieces);
+        let numberOfPieces = Math.round(startToEndLength / (CONVEYOR_BELT_SPRITE_SIZE * this.scaleFactor));
+        let scaleMultiplier = startToEndLength / (CONVEYOR_BELT_SPRITE_SIZE * this.scaleFactor * numberOfPieces);
 
         //If we have too many pieces, remove excess. If there's not enough, create them.
         let excess = this.railingImages.length - numberOfPieces;
@@ -112,7 +117,7 @@ ConveyorBelt.prototype = {
 
             newImage.anchor.set(0.5, 0);
             newImage.pivot.set(0.5, 0);
-            newImage.scale.set(CONVEYOR_RAILING_SCALE_FACTOR, CONVEYOR_RAILING_SCALE_FACTOR);
+            newImage.scale.set(this.scaleFactor, this.scaleFactor);
             
             let frame = Math.floor((Math.random() * CONVEYOR_BELT_SHEET_RAILING_FRAME_COUNT));
             newImage.frame = frame;
@@ -125,12 +130,12 @@ ConveyorBelt.prototype = {
 
         //Place them
         let position = new Vector2D(this.start.x, this.start.y);
-        let deltaPosition = beltDirection.multiply(CONVEYOR_RAILING_SCALE_FACTOR * scaleMultiplier * CONVEYOR_BELT_SPRITE_SIZE);
+        let deltaPosition = beltDirection.multiply(this.scaleFactor * scaleMultiplier * CONVEYOR_BELT_SPRITE_SIZE);
         for (let i = 0; i < numberOfPieces; i++) {
             let image = this.railingImages[i];
             image.x = position.x;
             image.y = position.y;
-            image.scale.y = CONVEYOR_RAILING_SCALE_FACTOR * scaleMultiplier;
+            image.scale.y = this.scaleFactor * scaleMultiplier;
             image.rotation = rotation;
 
             position = addVectors(position, deltaPosition);

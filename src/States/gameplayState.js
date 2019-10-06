@@ -34,9 +34,10 @@ gameplayState.prototype = {
     create: function () {
         console.log("Entered gameplayState")
         
-        //Crea las capas
-        laneLayer = game.add.group();
+        //El orden en el que se crean es el orden en el que dibujan. Es decir, el último se dibuja por encima del resto.
         pathLayer = game.add.group();
+        laneLayer = game.add.group();
+        
         bagLayer = game.add.group();
         overlayLayer = game.add.group();
         
@@ -73,7 +74,7 @@ gameplayState.prototype = {
         let endY = GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin;
 
         for (let i = 0; i < columns.length; i++) {
-            new ConveyorBelt(laneLayer, new Vector2D(columns[i], startY), new Vector2D(columns[i], endY));
+            new ConveyorBelt(laneLayer, new Vector2D(columns[i], startY), new Vector2D(columns[i], endY), CONVEYOR_LANE_SCALE_FACTOR);
         }
     },
 
