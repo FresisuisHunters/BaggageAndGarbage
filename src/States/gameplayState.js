@@ -89,7 +89,7 @@ gameplayState.prototype = {
 
             this.lanes.push({
                 x: columns[i],
-                laneEnd: new LaneEnd(type, onBagKilled, bags)
+                laneEnd: new LaneEnd(type, onBagKilled, bags, new Vector2D(columns[i], GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin))
             });
         }
     },
@@ -141,7 +141,7 @@ gameplayState.prototype = {
         console.log("The game has ended!");
 
         let starRating = state.scoreManager.getStarRating(state.levelData.starThresholds);
-        console.log("You got a rating of " + starRating + " starts!");
+        console.log("You got a rating of " + starRating + " stars!");
     },
 
     onBagKilled: function (isCorrect) {

@@ -18,6 +18,8 @@ preloadState.prototype = {
         this.loadInteriorSprites();
 
         game.load.image(CONVEYOR_BELT_SPRITE_KEY, "resources/sprites/img_PlaceholderBelt.png")
+        game.load.image(LANE_ICON_SPRITE_KEY_SAFE, "resources/sprites/img_LaneIcon_Safe.png");
+        game.load.image(LANE_ICON_SPRITE_KEY_DANGER, "resources/sprites/img_LaneIcon_Danger.png");
     },
 
     loadBagSpriteFromName: function(name) {

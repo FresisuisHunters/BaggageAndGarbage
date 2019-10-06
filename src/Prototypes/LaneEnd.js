@@ -4,10 +4,29 @@ const LaneEndTypes = {
     Dangerous: 1
 };
 
-function LaneEnd(type, onBagKilled, bagList) {
+const LANE_ICON_SPRITE_KEY_SAFE = "img_LaneIcon_Safe"
+const LANE_ICON_SPRITE_KEY_DANGER = "img_LaneIcon_Danger"
+
+const LANE_ICON_SCALE_FACTOR = 1;
+
+function LaneEnd(type, onBagKilled, bagList, position) {
     this.type = type;
     this.onBagKilled = onBagKilled,
     this.bags = bagList;
+
+    let iconSpriteKey;
+    switch (type) {
+        case LaneEndTypes.Safe:
+            iconSpriteKey = LANE_ICON_SPRITE_KEY_SAFE;
+            break;
+        case LaneEndTypes.Dangerous:
+            iconSpriteKey = LANE_ICON_SPRITE_KEY_DANGER;
+            break;
+    }
+    let icon = new Phaser.Sprite(game, position.x, position.y, iconSpriteKey, 0);
+    laneLayer.add(icon);
+    icon.anchor.set(0.5, 0);
+    icon.scale.set(LANE_ICON_SCALE_FACTOR, LANE_ICON_SCALE_FACTOR);
 }
 
 LaneEnd.prototype = {
