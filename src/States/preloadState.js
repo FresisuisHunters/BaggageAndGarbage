@@ -17,8 +17,10 @@ preloadState.prototype = {
         this.loadBagSprites();
         this.loadInteriorSprites();
 
-        game.load.spritesheet(CONVEYOR_BELT_SPRITESHEET_KEY, "resources/sprites/testSpritesheet.png", CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_SIZE, 
+        game.load.spritesheet(CONVEYOR_BELT_SPRITESHEET_KEY, "resources/sprites/sheet_ConveyorBelt.png", CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_SIZE, 
             CONVEYOR_BELT_SHEET_TOTAL_FRAME_COUNT, CONVEYOR_BELT_SHEET_MARGIN, CONVEYOR_BELT_SHEET_SPACING);
+        game.load.image(LANE_ICON_SPRITE_KEY_SAFE, "resources/sprites/img_LaneIcon_Safe.png");
+        game.load.image(LANE_ICON_SPRITE_KEY_DANGER, "resources/sprites/img_LaneIcon_Danger.png");
     },
 
     loadBagSpriteFromName: function(name) {
@@ -43,9 +45,11 @@ preloadState.prototype = {
     },
 
     loadBagSprites: function() {
-        this.loadBagSpriteFromName("img_Maleta_A_ID00_01");
-        this.loadBagSpriteFromName("img_Maleta_B_ID00_01");
-        this.loadBagSpriteFromName("img_Maleta_C_ID00_01");
+        this.loadBagSpriteFromName("img_Maleta_A_ID01_01");
+        this.loadBagSpriteFromName("img_Maleta_A_ID02_01");
+        this.loadBagSpriteFromName("img_Maleta_B_ID03_01");
+        this.loadBagSpriteFromName("img_Maleta_B_ID04_01");
+        this.loadBagSpriteFromName("img_Maleta_C_ID05_01");
     },
 
     loadInteriorSprites: function() {
