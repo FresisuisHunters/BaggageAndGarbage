@@ -28,6 +28,7 @@ gameplayState.prototype = {
         this.levelData = levelData;
         this.bags = [];
         this.scanners = [];
+        this.timer = game.time.create(true);
         this.gameHasEnded = false;
     },
 
@@ -41,8 +42,8 @@ gameplayState.prototype = {
         overlayLayer = game.add.group();
         
         //Crea managers y tal
-        this.createGraph(this.levelData.lanes);
-        this.createLaneEnds(this.graph, this.onBagKilled, this.levelData.lanes.types, this.bags);
+        this.createGraph();
+        this.createLaneEnds(this.graph, this.onBagKilled, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
 
 
@@ -55,17 +56,19 @@ gameplayState.prototype = {
         this.waveManager.startNextWave();
     },
 
-    createGraph: function(laneInfo) {
+    createGraph: function() {
         let startX = LEVEL_DIMENSIONS.laneHorizontalMargin;
         let startY = LEVEL_DIMENSIONS.laneTopMargin;
         
         let distanceFromFirstToLastLane = GAME_WIDTH - (LEVEL_DIMENSIONS.laneHorizontalMargin * 2);
-        let laneCount = laneInfo.count;
+        let laneCount = this.levelData.lanes.count;
         let gapBetweenLanes = distanceFromFirstToLastLane / (laneCount - 1);
 
         let height = GAME_HEIGHT - startY - LEVEL_DIMENSIONS.laneBottomMargin;
 
         this.graph = new Graph(laneCount, startX, startY, gapBetweenLanes, height, this.scanners);
+
+        this.createScanners(startX, gapBetweenLanes);
     },
 
     createLaneConveyorBelts: function(columns) {
@@ -77,9 +80,10 @@ gameplayState.prototype = {
         }
     },
 
-    createLaneEnds: function(graph, onBagKilled, laneTypes, bags) {
+    createLaneEnds: function(graph, onBagKilled, bags) {
         this.lanes = [];
         let columns = graph.getColumns();
+        let laneTypes = this.levelData.lanes.types;
 
         for (let i = 0; i < columns.length; i++) {
             let type;
@@ -94,6 +98,14 @@ gameplayState.prototype = {
         }
     },
 
+    createScanners: function(startx, gapBetweenLanes)
+    {
+
+        let scannersData = this.levelData.scannerPositions;
+        for(let i = 0; i<scannersData.length;i++)
+        this.scanners.push(new Scanner(new Vector2D(scannersData[i].belt*gapBetweenLanes+startx,scannersData[i].y),scannersData[i].belt));
+    },
+
     //GAME LOOP//
     /////////////
     update: function() {
@@ -106,13 +118,15 @@ gameplayState.prototype = {
             //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
             for (let i = this.bags.length - 1; i >= 0; i--) {
                 this.bags[i].update();
-                for (let j = 0; j < this.scanners.lenth; j++) {
-                    if (scanners[j].belt == bag.position.x && scanners[j].start <= (bag.position.y+BAG_MOVEMENT_SPEED))
+                for (let j = 0; j < this.scanners.length; j++) {
+                    if (this.scanners[j].x == this.bags[i].position.x && 
+                        this.scanners[j].start <= (this.bags[i].position.y+this.bags[i].sprite.height/2)&&
+                        this.bags[i].position.y<this.scanners[j].end)
                     {
-                        scanners[j].EnterBag(bags[i]);
-                        bags.splice(i,1);
-                        timer = game.time.create(true)
-                        timer.add(SCAN_TIME,this.onBagScanned,this,scanners[j]);
+                        this.scanners[j].EnterBag(this.bags[i]);
+                        this.scanners[j].UpdateScanner();
+                        //this.bags.splice(i,1);
+                        //this.timer.add(SCAN_TIME,this.onBagScanned,this,this.scanners[j]);
                     }
                 }
             }
@@ -149,9 +163,5 @@ gameplayState.prototype = {
         state.waveManager.notifyOfBagDone();
 
         if (!isCorrect) state.scoreManager.currentMistakeCount++;
-    },
-
-    onBagScanned: function (scanner) {
-        bags.push(scanner.ExitBag());
     }
 }
