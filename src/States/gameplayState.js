@@ -41,17 +41,20 @@ gameplayState.prototype = {
         bagLayer = game.add.group();
         overlayLayer = game.add.group();
         
-        //Crea managers y tal
+        //Crea todo lo relacionado con los carriles
         this.createGraph(this.levelData.lanes);
         this.createLaneEnds(this.graph, this.onBagKilled, this.levelData.lanes.types, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
+        
+        this.mask = this.getPathMask(this.graph);
+        pathLayer.mask = this.mask;
 
         this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(), 
-            LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin);
+            LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin, this.mask);
         this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
 
-        pathLayer.mask = this.getPathMask(this.graph);
+        
 
         //Empieza la primera oleada
         this.waveManager.startNextWave();

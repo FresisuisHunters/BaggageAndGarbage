@@ -31,7 +31,6 @@ function ConveyorBelt(group, start, end, scaleFactor, mask) {
 
     this.refresh();
 
-
     //Testing the mask idea
     this.mask = mask;
     this.beltTileSprite.mask = mask;
@@ -82,6 +81,14 @@ ConveyorBelt.prototype = {
         for (let i = 0; i < this.railingImages.length; i++) {
             this.railingImages[i].alpha = alpha;
         }
+    },
+
+    setMask: function(mask) {
+        this.beltTileSprite.mask = mask;
+        for (let i = 0; i < this.railingImages.length; i++) {
+            this.railingImages[i].mask = mask;
+        }
+        this.mask = mask;
     },
 
     refresh: function() {
