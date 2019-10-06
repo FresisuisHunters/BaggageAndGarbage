@@ -1,4 +1,5 @@
 const BAG_MOVEMENT_SPEED = 200;
+const BAG_SCALE_FACTOR = 0.3;
 
 const BagTypes = {
     A: "A",
@@ -66,7 +67,8 @@ Bag.prototype = {
         let spriteIndex = Math.floor(Math.random() * availableSpriteNames.length);
         this.sprite = bagLayer.create(this.position.x, this.position.y, availableSpriteNames[spriteIndex]);
         this.sprite.anchor.set(0.5, 0.5);
-        this.sprite.scale.set(0.5, 0.5);
+        this.sprite.scale.set(BAG_SCALE_FACTOR, BAG_SCALE_FACTOR);
+        
 
     },
 
