@@ -33,6 +33,7 @@ Scanner.prototype = {
         this.sprite.events.onInputDown.add(this.SetActive, this);
 
         this.end = this.start + this.sprite.height * this.sprite.scale.y;
+        console.log("start"+ this.start);
         console.log("end " + this.end);
     },
     EnterBag: function (Bag) {
@@ -64,11 +65,10 @@ Scanner.prototype = {
 
         let exitBag = this.currentBags[0];
         this.currentBags.shift();
-        this.scanSprites.getAt(0).destroy();
+        this.scanSprites.remove(this.scanSprites.getAt(0),true,false);
+        console.log(this.scanSprites.children);
         //this.scanSprites.splice(0,1);
         //exitBag.sprite.visible = true;
-
-        return exitBag;
     },
     UpdateScanner: function () {
         if (this.currentBags.length > 0) {

@@ -124,11 +124,14 @@ gameplayState.prototype = {
                         this.bags[i].position.y<this.scanners[j].end)
                     {
                         this.scanners[j].EnterBag(this.bags[i]);
-                        this.scanners[j].UpdateScanner();
+                        
                         //this.bags.splice(i,1);
                         //this.timer.add(SCAN_TIME,this.onBagScanned,this,this.scanners[j]);
                     }
                 }
+            }
+            for (let j = 0; j < this.scanners.length; j++) {
+                this.scanners[j].UpdateScanner();
             }
 
             //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
