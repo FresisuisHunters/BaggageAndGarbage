@@ -163,5 +163,12 @@ gameplayState.prototype = {
         state.waveManager.notifyOfBagDone();
 
         if (!isCorrect) state.scoreManager.currentMistakeCount++;
+    },
+
+    onScannerSelected: function(scanner)
+    {
+        for(var i = 0; i<this.scanners;i++)
+            this.scanners[i].
+        scanner.SetActive();
     }
 }

@@ -12,7 +12,7 @@ function Scanner(position, lane) {
 
     //temp
 
-    this.scanSprites = []
+    this.scanSprites = game.add.group();
 }
 
 
@@ -40,21 +40,21 @@ Scanner.prototype = {
             this.currentBags.push(Bag);
             switch (Bag.type) {
                 case BagTypes.A:
-                    this.scanSprites.push(game.add.image(0, 0, LANE_ICON_SPRITE_KEY_SAFE));
+                    this.scanSprites.create(0, 0, LANE_ICON_SPRITE_KEY_SAFE);
                     break;
                 case BagTypes.B_Safe:
-                    this.scanSprites.push(game.add.image(0, 0, LANE_ICON_SPRITE_KEY_SAFE));
+                    this.scanSprites.create(0, 0, LANE_ICON_SPRITE_KEY_SAFE);
                     break;
                 case BagTypes.B_Danger:
-                    this.scanSprites.push(game.add.image(0, 0, LANE_ICON_SPRITE_KEY_DANGER));
+                    this.scanSprites.create(0, 0, LANE_ICON_SPRITE_KEY_DANGER);
                     break;
                 case BagTypes.C:
-                    this.scanSprites.push(game.add.image(0, 0, LANE_ICON_SPRITE_KEY_DANGER));
+                    this.scanSprites.create(0, 0, LANE_ICON_SPRITE_KEY_DANGER);
                     break;
             }
 
-            console.log(this.currentBags);
-            console.log(this.scanSprites);
+            //console.log(this.currentBags);
+            //console.log(this.scanSprites);
         }
 
         //this.currentBag.sprite.visible = false;
@@ -64,8 +64,7 @@ Scanner.prototype = {
 
         let exitBag = this.currentBags[0];
         this.currentBags.shift();
-        this.scanSprites[0].destroy();
-        this.scanSprites.shift();
+        this.scanSprites.getAt(0).destroy();
         //this.scanSprites.splice(0,1);
         //exitBag.sprite.visible = true;
 
@@ -74,7 +73,7 @@ Scanner.prototype = {
     UpdateScanner: function () {
         if (this.currentBags.length > 0) {
             for (let i = 0; i < this.currentBags.length; i++) {
-                this.scanSprites[i].x += 25;
+                this.scanSprites.getAt(i).x += 25;
             }
 
             if (this.currentBags[0].position.y > this.end)
@@ -89,7 +88,11 @@ Scanner.prototype = {
             return false;
     },
     SetActive: function () {
-        game.activeScanner = this;
+        this.scanSprites.visible=true;
+    },
+    SetInactive: function()
+    {
+        this.scanSprites.visible=false;
     }
 
 }
