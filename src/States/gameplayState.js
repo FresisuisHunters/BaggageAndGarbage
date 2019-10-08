@@ -39,10 +39,8 @@ gameplayState.prototype = {
         
         //El orden en el que se crean es el orden en el que dibujan. Es decir, el último se dibuja por encima del resto.
         backgroundLayer = game.add.group();
-
         laneLayer = game.add.group();
         pathLayer = game.add.group();
-        
         bagLayer = game.add.group();
         overlayLayer = game.add.group();
         
@@ -53,11 +51,15 @@ gameplayState.prototype = {
         this.createLaneEnds(this.graph, this.onBagKilled, this.levelData.lanes.types, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
         
-        this.mask = this.getPathMask(this.graph);
-        pathLayer.mask = this.mask;
+        //Crea las máscaras
+        this.pathMask = this.getPathMask(this.graph);
+        pathLayer.mask = this.pathMask;
+        
+        let bagMask = this.getBagMask();
+        bagLayer.mask = bagMask;
 
         this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(), 
-            LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin, this.mask);
+            LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin, this.pathMask);
         this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
 
@@ -129,6 +131,20 @@ gameplayState.prototype = {
             mask.drawPolygon(new Phaser.Polygon([topLeft, topRight, bottomRight, bottomLeft]));
         }
         
+        return mask;
+    },
+
+    getBagMask: function() {
+        let mask = new Phaser.Graphics(game);
+        mask.beginFill(0xffffff);
+
+        mask.drawPolygon(new Phaser.Polygon([
+            {x: 0, y: LEVEL_DIMENSIONS.laneTopMargin},
+            {x: GAME_WIDTH, y: LEVEL_DIMENSIONS.laneTopMargin},
+            {x: GAME_WIDTH, y: GAME_HEIGHT},
+            {x: 0, y: GAME_HEIGHT}
+        ]));
+
         return mask;
     },
 
