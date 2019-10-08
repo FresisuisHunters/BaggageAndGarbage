@@ -31,29 +31,29 @@ gameplayState.prototype = {
         this.levelData = levelData;
         this.bags = [];
         this.scanners = [];
-        this.timer = game.time.create(true);
         this.gameHasEnded = false;
     },
 
     create: function () {
         console.log("Entered gameplayState")
-        
+
         //El orden en el que se crean es el orden en el que dibujan. Es decir, el último se dibuja por encima del resto.
         backgroundLayer = game.add.group();
         laneLayer = game.add.group();
         pathLayer = game.add.group();
         bagLayer = game.add.group();
         overlayLayer = game.add.group();
+        this.createBackground();
 
         //Crea managers y tal
         this.createGraph();
         this.createLaneEnds(this.graph, this.onBagKilled, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
-        
+
         //Crea las máscaras
         this.pathMask = this.getPathMask(this.graph);
         pathLayer.mask = this.pathMask;
-        
+
         let bagMask = this.getBagMask();
         bagLayer.mask = bagMask;
 
@@ -66,12 +66,12 @@ gameplayState.prototype = {
         this.waveManager.startNextWave();
     },
 
-    createBackground: function() {
+    createBackground: function () {
         this.background = backgroundLayer.create(0, 0, GAMEPLAY_BACKGROUND_IMAGE_KEY);
         this.background.anchor.set(0, 0);
     },
 
-    createGraph: function(laneInfo) {
+    createGraph: function (laneInfo) {
         let startX = LEVEL_DIMENSIONS.laneHorizontalMargin;
         let startY = LEVEL_DIMENSIONS.laneTopMargin;
 
@@ -92,6 +92,7 @@ gameplayState.prototype = {
 
         for (let i = 0; i < columns.length; i++) {
             new ConveyorBelt(laneLayer, new Vector2D(columns[i], startY), new Vector2D(columns[i], endY), CONVEYOR_LANE_SCALE_FACTOR, null, CONVEYOR_BELT_SHEET_LANE);
+            console.log("columna "+i+" " +columns[i]);
         }
     },
 
@@ -119,10 +120,10 @@ gameplayState.prototype = {
         for (let i = 0; i < scannersData.length; i++) {
             this.scanners.push(new Scanner(new Vector2D(scannersData[i].belt * gapBetweenLanes + startx, scannersData[i].y), scannersData[i].belt));
             this.scanners[i].sprite.inputEnabled = true;
-            this.scanners[i].sprite.events.onInputDown.add(this.onScannerSelected, { 'scanner': this.scanners[i], 'scanners' : this.scanners}, this);
+            this.scanners[i].sprite.events.onInputDown.add(this.onScannerSelected, { 'scanner': this.scanners[i], 'scanners': this.scanners }, this);
         }
     },
-    getPathMask: function(graph) {
+    getPathMask: function (graph) {
         let columns = graph.getColumns();
         let bottomY = GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin;
 
@@ -141,19 +142,19 @@ gameplayState.prototype = {
 
             mask.drawPolygon(new Phaser.Polygon([topLeft, topRight, bottomRight, bottomLeft]));
         }
-        
+
         return mask;
     },
 
-    getBagMask: function() {
+    getBagMask: function () {
         let mask = new Phaser.Graphics(game);
         mask.beginFill(0xffffff);
 
         mask.drawPolygon(new Phaser.Polygon([
-            {x: 0, y: LEVEL_DIMENSIONS.laneTopMargin},
-            {x: GAME_WIDTH, y: LEVEL_DIMENSIONS.laneTopMargin},
-            {x: GAME_WIDTH, y: GAME_HEIGHT},
-            {x: 0, y: GAME_HEIGHT}
+            { x: 0, y: LEVEL_DIMENSIONS.laneTopMargin },
+            { x: GAME_WIDTH, y: LEVEL_DIMENSIONS.laneTopMargin },
+            { x: GAME_WIDTH, y: GAME_HEIGHT },
+            { x: 0, y: GAME_HEIGHT }
         ]));
 
         return mask;
@@ -168,30 +169,27 @@ gameplayState.prototype = {
             this.waveManager.update(game.time.physicsElapsed);
         }
 
-            //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
-            for (let i = this.bags.length - 1; i >= 0; i--) {
-                this.bags[i].update();
-                for (let j = 0; j < this.scanners.length; j++) {
-                    if (this.scanners[j].x == this.bags[i].position.x &&
-                        this.scanners[j].start <= (this.bags[i].position.y + this.bags[i].sprite.height / 2) &&
-                        this.bags[i].position.y < this.scanners[j].end) {
-                        this.scanners[j].EnterBag(this.bags[i]);
+        //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
+        for (let i = this.bags.length - 1; i >= 0; i--) {
+            this.bags[i].update();
+            for (let j = 0; j < this.scanners.length; j++) {
+                if (this.scanners[j].x == this.bags[i].position.x &&
+                    this.scanners[j].start <= (this.bags[i].position.y + this.bags[i].sprite.height / 2) &&
+                    this.bags[i].position.y < this.scanners[j].end) {
+                    this.scanners[j].EnterBag(this.bags[i]);
 
-                        //this.bags.splice(i,1);
-                        //this.timer.add(SCAN_TIME,this.onBagScanned,this,this.scanners[j]);
-                    }
+                    //this.bags.splice(i,1);
+                    //this.timer.add(SCAN_TIME,this.onBagScanned,this,this.scanners[j]);
                 }
             }
-            for (let j = 0; j < this.scanners.length; j++) {
-                this.scanners[j].UpdateScanner();
-            }
-
-            //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
-            bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
+        }
+        for (let j = 0; j < this.scanners.length; j++) {
+            this.scanners[j].UpdateScanner();
         }
 
         //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
         bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
+
     },
 
     //EVENTS//
@@ -225,7 +223,9 @@ gameplayState.prototype = {
     onScannerSelected: function () {
         console.log("aa" + this.scanner.start);
         for (var i = 0; i < this.scanners.length; i++)
+        {
             this.scanners[i].SetInactive();
+        }
         this.scanner.SetActive();
     }
 }

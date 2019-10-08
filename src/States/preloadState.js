@@ -27,7 +27,9 @@ preloadState.prototype = {
 
         game.load.image(LANE_ICON_SPRITE_KEY_SAFE, "resources/sprites/img_LaneIcon_Safe.png");
         game.load.image(LANE_ICON_SPRITE_KEY_DANGER, "resources/sprites/img_LaneIcon_Danger.png");
-        game.load.image(SCANNER_SPRITE_KEY,"resources/sprites/scanner_placeholder.png");
+        game.load.spritesheet(SCANNER_SHEET_KEY,"resources/sprites/sheet_Scanner.png", 256, 256,3,20,20);
+
+        game.load.image(GAMEPLAY_BACKGROUND_IMAGE_KEY, "resources/sprites/img_GameplayBackground.png");
     },
 
     loadBagSpriteFromName: function(name) {

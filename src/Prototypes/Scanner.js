@@ -1,6 +1,6 @@
 const SCAN_TIME = 100;
 
-const SCANNER_SPRITE_KEY = "scanner_placeholder.png";
+const SCANNER_SHEET_KEY = "scanner_spritesheet.";
 
 function Scanner(position, lane) {
     this.belt = lane;
@@ -10,8 +10,9 @@ function Scanner(position, lane) {
     this.currentBags = [];
     this.initSprite(position);
 
-    this.windowStart = 200;
-    this.windowEnd = 500;
+    this.windowStart = 0;
+    this.windowEnd = 300;
+    this.windowPosition = 888;
 
     //temp
 
@@ -25,10 +26,10 @@ Scanner.prototype = {
         this.sprite = game.add.image(
             position.x,
             position.y,
-            SCANNER_SPRITE_KEY
+            SCANNER_SHEET_KEY
         );
-
-        this.sprite.scale.set(0.15, 0.15);
+        this.sprite.frame = 2;
+        this.sprite.scale.set(0.8, 0.8);
 
         this.sprite.anchor = new Phaser.Point(0.5, 0);
 
@@ -36,8 +37,11 @@ Scanner.prototype = {
         this.sprite.events.onInputDown.add(this.SetActive, this);*/
 
         this.end = this.start + this.sprite.height * this.sprite.scale.y;
-        console.log("start"+ this.start);
+        console.log("start" + this.start);
         console.log("end " + this.end);
+
+        this.active = false;
+        //this.scanSprites.visible=false;
     },
     EnterBag: function (Bag) {
         if (!Bag.inScan) {
@@ -45,16 +49,20 @@ Scanner.prototype = {
             this.currentBags.push(Bag);
             switch (Bag.type) {
                 case BagTypes.A:
-                    this.scanSprites.create(this.windowStart, 0, LANE_ICON_SPRITE_KEY_SAFE);
+                    this.scanSprites.create(this.windowPosition, this.windowStart, LANE_ICON_SPRITE_KEY_SAFE);
                     break;
                 case BagTypes.B_Safe:
-                    this.scanSprites.create(this.windowStart, 0, LANE_ICON_SPRITE_KEY_SAFE);
+                    this.scanSprites.create(this.windowPosition, this.windowStart, LANE_ICON_SPRITE_KEY_SAFE);
                     break;
                 case BagTypes.B_Danger:
-                    this.scanSprites.create(this.windowStart, 0, LANE_ICON_SPRITE_KEY_DANGER);
+                    this.scanSprites.create(this.windowPosition, this.windowStart, LANE_ICON_SPRITE_KEY_DANGER);
+                    if(this.active)
+                        this.sprite.frame = 1;
                     break;
                 case BagTypes.C:
-                    this.scanSprites.create(this.windowStart, 0, LANE_ICON_SPRITE_KEY_DANGER);
+                    this.scanSprites.create(this.windowPosition, this.windowStart, LANE_ICON_SPRITE_KEY_DANGER);
+                    if(this.active)
+                        this.sprite.frame = 1;
                     break;
             }
 
@@ -69,7 +77,7 @@ Scanner.prototype = {
 
         this.currentBags.inScan = false;
         this.currentBags.shift();
-        this.scanSprites.remove(this.scanSprites.getAt(0),true,false);
+        this.scanSprites.remove(this.scanSprites.getAt(0), true, false);
         console.log(this.scanSprites.children);
         //this.scanSprites.splice(0,1);
         //exitBag.sprite.visible = true;
@@ -77,15 +85,24 @@ Scanner.prototype = {
     UpdateScanner: function () {
         if (this.currentBags.length > 0) {
             for (let i = 0; i < this.currentBags.length; i++) {
-                this.scanSprites.getAt(i).x = game.math.linear(this.windowStart,this.windowEnd,
-                    this.currentBags[i].position.y-(this.start-this.currentBags[i].sprite.height/2)/
-                    ((this.end+this.currentBags[i].sprite.height)-this.currentBags[i].sprite.height/2));
-                    console.log(((this.currentBags[i].position.y+this.currentBags[i].sprite.height/2)-this.start)/
-                    ((this.end+this.currentBags[i].sprite.height)-this.start));
+                this.scanSprites.getAt(i).y = game.math.linear(this.windowStart, this.windowEnd,
+                    this.currentBags[i].sprite.y);
+                console.log(((this.currentBags[i].position.y + this.currentBags[i].sprite.height / 2) - this.start) /
+                    ((this.end + this.currentBags[i].sprite.height) - this.start));
+
+                console.log("sprite y " + this.scanSprites.getAt(i).y);
+
             }
 
-            if (this.currentBags[0].position.y-this.currentBags[0].sprite.height > this.end)
+            if (this.currentBags[0].position.y - this.currentBags[0].sprite.height > this.end)
                 this.ExitBag();
+            if (this.active) {
+                this.sprite.frame = 0;
+                for (var i = 0; i < this.currentBags.length; i++) {
+                    if (this.currentBags[i].type == BagTypes.C || this.currentBags[i].type == BagTypes.B_Danger)
+                        this.sprite.frame = 1;
+                }
+            }
         }
     },
     IsInScanner: function (point) {
@@ -96,11 +113,14 @@ Scanner.prototype = {
             return false;
     },
     SetActive: function () {
-        this.scanSprites.visible=true;
+        this.active = true;
+        this.scanSprites.visible = true;
+        this.sprite.frame = 0;
     },
-    SetInactive: function()
-    {
-        this.scanSprites.visible=false;
+    SetInactive: function () {
+        this.sprite.frame = 2;
+        this.active = false;
+        this.scanSprites.visible = false;
     }
 
 }
