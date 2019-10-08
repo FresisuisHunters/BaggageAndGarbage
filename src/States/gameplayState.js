@@ -3,6 +3,8 @@ var gameplayState = function (game) {
 
 }
 
+const GAMEPLAY_BACKGROUND_IMAGE_KEY = "img_GameplayBackground";
+
 const LEVEL_DIMENSIONS = {
     laneHorizontalMargin: 135,
     laneTopMargin: 420,
@@ -10,6 +12,7 @@ const LEVEL_DIMENSIONS = {
 }
 
 //Layers
+var backgroundLayer;
 var laneLayer;
 var pathLayer;
 var bagLayer;
@@ -35,12 +38,16 @@ gameplayState.prototype = {
         console.log("Entered gameplayState")
         
         //El orden en el que se crean es el orden en el que dibujan. Es decir, el último se dibuja por encima del resto.
+        backgroundLayer = game.add.group();
+
         laneLayer = game.add.group();
         pathLayer = game.add.group();
         
         bagLayer = game.add.group();
         overlayLayer = game.add.group();
         
+        this.createBackground();
+
         //Crea todo lo relacionado con los carriles
         this.createGraph(this.levelData.lanes);
         this.createLaneEnds(this.graph, this.onBagKilled, this.levelData.lanes.types, this.bags);
@@ -58,6 +65,11 @@ gameplayState.prototype = {
 
         //Empieza la primera oleada
         this.waveManager.startNextWave();
+    },
+
+    createBackground: function() {
+        this.background = backgroundLayer.create(0, 0, GAMEPLAY_BACKGROUND_IMAGE_KEY);
+        this.background.anchor.set(0, 0);
     },
 
     createGraph: function(laneInfo) {
@@ -155,9 +167,8 @@ gameplayState.prototype = {
     onNonLastWaveEnd: function() {
         this.graph.resetGraph();
 
-        for (let i = pathLayer.length - 1; i >= 0; i--) {
-            if (pathLayer[i] != null) pathLayer[i].destroy();
-        }
+        pathLayer.destroy(true, true);
+
     },
 
     onGameEnd: function() {

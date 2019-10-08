@@ -1,5 +1,7 @@
+const NODE_DISTANCE_OFFSET = CONVEYOR_BELT_WIDTH + 100;
+
 function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight, scanners) {
-    
+
     this.laneCount = laneCount;
     this.spawnX = spawnX;
     this.spawnY = spawnY;
@@ -9,12 +11,12 @@ function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight, scanners
 
     this.graph = new Map();
     this.initializeGraph();
-    this.verboseMode = false;
+    this.verboseMode = true;
 }
 
 Graph.prototype = {
 
-    initializeGraph : function() {
+    initializeGraph: function () {
         for (let i = 0; i < this.laneCount; ++i) {
             let x = this.spawnX + i * this.horizontalOffset;
             let originNodePosition = new Vector2D(x, this.spawnY);
@@ -70,7 +72,13 @@ Graph.prototype = {
 
         if (this.graph.has(origin) || this.graph.has(destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny already exist in the graph");
-            return;
+            return false;
+        }
+
+        if (this.positionIsTooCloseToExistingNodes(origin) ||
+            this.positionIsTooCloseToExistingNodes(destiny)) {
+            if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny are too close to existing objects");
+            return false;
         }
 
         return true;
@@ -125,6 +133,32 @@ Graph.prototype = {
         return nodes;
     },
 
+    positionIsTooCloseToExistingNodes: function (position) {
+        let previousNode = this.getPreviousNode(position);
+        if (previousNode.position.y == this.spawnY) {
+            // Ignore distances if it's an input node
+            return false;
+        }
+
+        let distanceToPreviousNode = Math.abs(position.y - previousNode.position.y);
+        if (distanceToPreviousNode <= NODE_DISTANCE_OFFSET) {
+            return true;
+        }
+
+        let nextNode = this.getNextNode(position);
+        if (!nextNode.hasOutput()) {
+            // Ignore distances if it's an output node
+            return false;
+        }
+
+        let distanceToNextNode = Math.abs(position.y - nextNode.position.y);
+        if (distanceToNextNode <= NODE_DISTANCE_OFFSET) {
+            return true;
+        }
+
+        return false;
+    },
+
     updateOriginColumn: function (originNode) {
         let previousNode = this.getPreviousNode(originNode.position);
         if (!previousNode.outputIsInDifferentColumn()) {
@@ -149,7 +183,7 @@ Graph.prototype = {
         let i = nodesInColumn.length;
         while (i--) {
             let node = nodesInColumn[i];
-            if (node.position.y >= position.y) {
+            if (node.position.y > position.y) {
                 nodesInColumn.splice(i, 1);
             }
         }
@@ -175,7 +209,7 @@ Graph.prototype = {
         let i = nodesInColumn.length;
         while (i--) {
             let node = nodesInColumn[i];
-            if (node.position.y <= position.y) {
+            if (node.position.y < position.y) {
                 nodesInColumn.splice(i, 1);
             }
         }
@@ -202,7 +236,7 @@ Graph.prototype = {
         return columns;
     },
 
-    getNodesInSameColumn(position) {
+    getNodesInSameColumn: function (position) {
         let nodes = Array.from(this.graph.values());
         let i = nodes.length;
 
@@ -321,13 +355,13 @@ Graph.prototype = {
     },
 
     //Recibe el color en formato color de CSS. Ej: "rgb(255, 255, 255)"
-    displaySection: function(origin, destiny, color) {
-        
+    displaySection: function (origin, destiny, color) {
+
         let line = new Phaser.Line(origin.x, origin.y, destiny.x, destiny.y);
         //game.graphics.lineWidth(4);
         //game.graphics.lineColor(color);
         //game.graphics.drawShape(line);
-        
+
         game.debug.lineWidth = 8;
         game.debug.geom(line, color);
     },
