@@ -61,8 +61,6 @@ gameplayState.prototype = {
         this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
 
-        
-
         //Empieza la primera oleada
         this.waveManager.startNextWave();
     },
@@ -139,27 +137,26 @@ gameplayState.prototype = {
     update: function() {
         
         if (!this.gameHasEnded) {
-            //Updatea todo lo que tenga que ser updateado
             this.pathCreator.update();
             this.waveManager.update(game.time.physicsElapsed);
+        }
 
-            //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
-            for (let i = this.bags.length - 1; i >= 0; i--) {
-                this.bags[i].update();
-                for (let j = 0; j < this.scanners.lenth; j++) {
-                    if (scanners[j].belt == bag.position.x && scanners[j].start <= (bag.position.y+BAG_MOVEMENT_SPEED))
-                    {
-                        scanners[j].EnterBag(bags[i]);
-                        bags.splice(i,1);
-                        timer = game.time.create(true)
-                        timer.add(SCAN_TIME,this.onBagScanned,this,scanners[j]);
-                    }
+        //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
+        for (let i = this.bags.length - 1; i >= 0; i--) {
+            this.bags[i].update();
+            for (let j = 0; j < this.scanners.lenth; j++) {
+                if (scanners[j].belt == bag.position.x && scanners[j].start <= (bag.position.y + BAG_MOVEMENT_SPEED))
+                {
+                    scanners[j].EnterBag(bags[i]);
+                    bags.splice(i, 1);
+                    timer = game.time.create(true)
+                    timer.add(SCAN_TIME, this.onBagScanned, this,scanners[j]);
                 }
             }
-
-            //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
-            bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
         }
+
+        //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
+        bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
     },
 
     //EVENTS//

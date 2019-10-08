@@ -13,7 +13,8 @@ const LANE_ICON_Y_OFFSET = -30;
 const LANE_END_LENGTH = 300;
 
 function LaneEnd(type, onBagKilled, bagList, position) {
-    
+
+    this.killThreshold = position.y + LANE_END_LENGTH;
     this.type = type;
     this.onBagKilled = onBagKilled,
     this.bags = bagList;
@@ -56,13 +57,28 @@ LaneEnd.prototype = {
                 console.error("A bag has type " + bag.type + ". That value doesn't make sense.");
         }
 
+        this.onBagKilled(isCorrect);
+    },
+
+    requestMove: function(bag) {
+        let newPosition = new Vector2D(bag.position.x, bag.position.y + BAG_MOVEMENT_SPEED * game.time.physicsElapsed);
+        
+        if (newPosition.y > this.killThreshold) {
+            this.destroyBag(bag);
+        }
+
+        return newPosition;
+    },
+
+    destroyBag: function(bag) {
         let bagIndex = null;
         for (let i = 0; i < this.bags.length; i++) {
             if (this.bags[i] == bag) bagIndex = i;
         }
         if (bagIndex == null) console.error("A LaneEnd tried to kill a bag that isn't in the bags list.");
+
         this.bags.splice(bagIndex, 1);
-        
-        this.onBagKilled(isCorrect);
-    },
+
+        bag.sprite.destroy();
+    }
 }
