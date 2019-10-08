@@ -49,11 +49,16 @@ preloadState.prototype = {
 
     loadBagSprites: function() {
         this.loadBagSpriteFromName("img_Maleta_A_ID01_01");
-        this.loadBagSpriteFromName("img_Maleta_A_ID02_01");
+        this.loadBagSpriteFromName("img_Maleta_A_ID02_01_00");
+        this.loadBagSpriteFromName("img_Maleta_A_ID02_01_01");
+        this.loadBagSpriteFromName("img_Maleta_A_ID02_01_02");
+        this.loadBagSpriteFromName("img_Maleta_A_ID07_02_00");
+        this.loadBagSpriteFromName("img_Maleta_A_ID07_02_01");
         this.loadBagSpriteFromName("img_Maleta_B_ID03_01");
         this.loadBagSpriteFromName("img_Maleta_B_ID04_01");
         this.loadBagSpriteFromName("img_Maleta_C_ID05_01");
         this.loadBagSpriteFromName("img_Maleta_C_ID06_01");
+
     },
 
     loadInteriorSprites: function() {
