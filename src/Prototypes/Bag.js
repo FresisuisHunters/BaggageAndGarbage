@@ -73,14 +73,25 @@ Bag.prototype = {
         this.sprite.enableBody = true;
         this.sprite.body.immovable = true;
         this.sprite.isBlocked = false;      // These two are properties of the sprite so they can be accessed from the collision handler
-        this.sprite.wasBlockedByABagInLane = false;
+        this.sprite.bagThatBlockedThis = null;  // Reference to the sprite that blocked this bag
+        this.bagsCollidedThisFrame = new Array();
     },
 
     update: function () {
         // Update collisions
+        this.bagsCollidedThisFrame.splice(0, this.bagsCollidedThisFrame.length);    // Clear list
         if (!game.physics.arcade.collide(this.sprite, bagLayer, this.collisionHandler, null, this)) {
             this.sprite.isBlocked = false;
+            this.sprite.bagThatBlockedThis = null;
         }
+
+        // Al llamar a collide no se si se garantiza la comprobacion de todas las colisiones. Por eso pongo esto aparte
+        if (!this.bagsCollidedThisFrame.includes(this.sprite.bagThatBlockedThis)) {
+            this.sprite.isBlocked = false;
+            this.sprite.bagThatBlockedThis = null;
+        }
+
+        // Movement
         this.move();
 
         if (this.hasReachedEnd) {
@@ -111,15 +122,41 @@ Bag.prototype = {
     },
 
     collisionHandler: function (thisBagSprite, collidedBagSprite) {
+        this.bagsCollidedThisFrame.push(collidedBagSprite);
+
+        if (thisBagSprite.isBlocked) {
+            // No es necesario comprobar en detalle las colisiones si ya esta parada la maleta
+            return;
+        }
+
         let thisBagIsInLane = this.bagIsInLane(thisBagSprite.x);
         let otherBagIsInLane = this.bagIsInLane(collidedBagSprite.x);
 
-        if (thisBagIsInLane && otherBagIsInLane) {
-            this.bagsAreInSameLaneCollisionHandler(thisBagSprite, collidedBagSprite);
-        } else if (!thisBagIsInLane && !otherBagIsInLane) {
-            this.bagsAreInSamePathCollisionHandler(thisBagSprite, collidedBagSprite);
+        (thisBagIsInLane == otherBagIsInLane) ? this.bagsAreInSameWay(thisBagSprite, collidedBagSprite)
+                                                : this.bagsAreInDifferentWays(thisBagSprite, collidedBagSprite);
+    },
+
+    // TODO: Pensar un nombre mejor
+    bagsAreInSameWay : function(thisBagSprite, collidedBagSprite) {
+        let bagAlreadyBlocked = thisBagSprite.isBlocked ? thisBagSprite : collidedBagSprite;
+        let bagBlocked = !thisBagSprite.isBlocked ? thisBagSprite : collidedBagSprite;
+
+        bagBlocked.isBlocked = true;
+        bagBlocked.bagThatBlockedThis = bagAlreadyBlocked;
+    },
+
+    // TODO: Pensar un nombre mejor
+    bagsAreInDifferentWays : function(thisBagSprite, collidedBagSprite) {
+        let thisBagIsInLane = this.bagIsInLane(thisBagSprite.x);
+        let bagInLane = thisBagIsInLane ? thisBagSprite : collidedBagSprite;
+        let bagInPath = !thisBagIsInLane ? thisBagSprite : collidedBagSprite;
+
+        if (bagInPath.isBlocked && bagInPath.bagThatBlockedThis != bagInLane) {
+            bagInLane.isBlocked = true;
+            bagInLane.bagThatBlockedThis = bagInPath;
         } else {
-            this.bagsAreInDifferentConveyorsCollisionHandler(thisBagSprite, collidedBagSprite);
+            bagInPath.isBlocked = true;
+            bagInPath.bagThatBlockedThis = bagInLane;
         }
     },
 
@@ -130,22 +167,6 @@ Bag.prototype = {
             }
         }
         return false;
-    },
-
-    bagsAreInSameLaneCollisionHandler: function (thisBagSprite, collidedBagSprite) {
-
-    },
-
-    bagsAreInSamePathCollisionHandler: function (thisBagSprite, collidedBagSprite) {
-
-    },
-
-    bagsAreInDifferentConveyorsCollisionHandler: function (thisBagSprite, collidedBagSprite) {
-        let thisBagIsInLane = this.bagIsInLane(thisBagSprite.x);
-        let otherBagIsInLane = this.bagIsInLane(collidedBagSprite.x);
-
-        thisBagSprite.isBlocked = !thisBagIsInLane;
-        collidedBagSprite.isBlocked = !otherBagIsInLane;
     },
 
     getLaneEndFromLaneX: function (laneX) {
