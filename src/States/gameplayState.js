@@ -7,8 +7,8 @@ const GAMEPLAY_BACKGROUND_IMAGE_KEY = "img_GameplayBackground";
 
 const LEVEL_DIMENSIONS = {
     laneHorizontalMargin: 135,
-    laneTopMargin: 420,
-    laneBottomMargin: 250,
+    laneTopMargin: 313,
+    laneBottomMargin: 259
 }
 
 //Layers
@@ -90,7 +90,7 @@ gameplayState.prototype = {
         let endY = GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin;
 
         for (let i = 0; i < columns.length; i++) {
-            new ConveyorBelt(laneLayer, new Vector2D(columns[i], startY), new Vector2D(columns[i], endY), CONVEYOR_LANE_SCALE_FACTOR);
+            new ConveyorBelt(laneLayer, new Vector2D(columns[i], startY), new Vector2D(columns[i], endY), CONVEYOR_LANE_SCALE_FACTOR, null, CONVEYOR_BELT_SHEET_LANE);
         }
     },
 
