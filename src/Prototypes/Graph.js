@@ -1,4 +1,4 @@
-const NODE_DISTANCE_OFFSET = CONVEYOR_BELT_WIDTH + 100;
+const NODE_DISTANCE_OFFSET = 120;
 
 function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight, scanners) {
 
@@ -11,7 +11,7 @@ function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight, scanners
 
     this.graph = new Map();
     this.initializeGraph();
-    this.verboseMode = true;
+    this.verboseMode = false;
 }
 
 Graph.prototype = {

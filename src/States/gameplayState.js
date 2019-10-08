@@ -110,8 +110,8 @@ gameplayState.prototype = {
             let topLeft = new Vector2D(columns[i], LEVEL_DIMENSIONS.laneTopMargin);
             let topRight = new Vector2D(columns[i + 1], LEVEL_DIMENSIONS.laneTopMargin);
 
-            topLeft.x += CONVEYOR_BELT_WIDTH / 2;
-            topRight.x -= CONVEYOR_BELT_WIDTH / 2;
+            topLeft.x += CONVEYOR_BELT_WIDTH_LANE / 2;
+            topRight.x -= CONVEYOR_BELT_WIDTH_LANE / 2;
 
             let bottomLeft = new Vector2D(topLeft.x, bottomY);
             let bottomRight = new Vector2D(topRight.x, bottomY);

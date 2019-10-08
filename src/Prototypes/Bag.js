@@ -1,4 +1,4 @@
-const BAG_MOVEMENT_SPEED = 100;
+const BAG_MOVEMENT_SPEED = 75;
 const BAG_SCALE_FACTOR = 0.3;
 
 const BagTypes = {
@@ -25,19 +25,7 @@ function Bag(bagType, position, graph, lanes) {
     this.movementParameters = new MovementParameters(this.graph.graph.get(this.position.toString()));
 
     this.initializeSprite();
-    /*
-    // Gizmo utilizado como alternativa para visualizarlo
-    this.debugGizmo = new Phaser.Rectangle(position.x, position.y, 20, 20);
-    this.debugGizmo.centerOn(position.x, position.y);
-    game.debug.geom(this.debugGizmo, "FE0101");
-    
-    // TODO
-    this.sprite = game.load.image(
-        position.x,
-        position.y,
-        BAG_SPRITE_SHEET_KEY
-    );
-    */
+
     this.insideSprite = undefined; // TODO
 
 }
@@ -67,8 +55,12 @@ Bag.prototype = {
         let spriteIndex = Math.floor(Math.random() * availableSpriteNames.length);
         this.sprite = bagLayer.create(this.position.x, this.position.y, availableSpriteNames[spriteIndex]);
         this.sprite.anchor.set(0.5, 0.5);
+        this.sprite.pivot.set(0.5, 0.5);
         this.sprite.scale.set(BAG_SCALE_FACTOR, BAG_SCALE_FACTOR);
         
+        //Rotate randomly
+        let rotation = Math.random() * 2 * Math.PI;
+        this.sprite.rotation = rotation;
 
     },
 
