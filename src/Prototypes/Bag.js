@@ -15,12 +15,12 @@ const BagTypes = {
  * @param {Vector2D} position
  */
 function Bag(bagType, position, graph, lanes) {
-    
+
     this.type = bagType;
     this.position = position;
     this.graph = graph;
     this.lanes = lanes;
-    
+
     this.hasReachedEnd = false;
     this.movementParameters = new MovementParameters(this.graph.graph.get(this.position.toString()));
 
@@ -39,14 +39,13 @@ function Bag(bagType, position, graph, lanes) {
     );
     */
     this.insideSprite = undefined; // TODO
-
 }
 
 Bag.prototype = {
 
-    initializeSprite: function() {
+    initializeSprite: function () {
         //Get out options depending on the bag type
-        availableSpriteNames = null; 
+        availableSpriteNames = null;
         switch (this.type) {
             case BagTypes.A:
                 availableSpriteNames = A_TYPE_BAG_SPRITE_KEYS;
@@ -68,21 +67,39 @@ Bag.prototype = {
         this.sprite = bagLayer.create(this.position.x, this.position.y, availableSpriteNames[spriteIndex]);
         this.sprite.anchor.set(0.5, 0.5);
         this.sprite.scale.set(BAG_SCALE_FACTOR, BAG_SCALE_FACTOR);
-        
 
+        // Collision purposes
+        game.physics.arcade.enable(this.sprite);
+        this.sprite.enableBody = true;
+        this.sprite.body.immovable = true;
+        this.sprite.isBlocked = false;      // These two are properties of the sprite so they can be accessed from the collision handler
+        this.sprite.wasBlockedByABagInLane = false;
     },
 
-    update: function() {
-        if (!this.hasReachedEnd) this.move();
+    update: function () {
+        // Update collisions
+        if (!game.physics.arcade.collide(this.sprite, bagLayer, this.collisionHandler, null, this)) {
+            this.sprite.isBlocked = false;
+        }
+        this.move();
 
+        if (this.hasReachedEnd) {
+            return;
+        }
+
+        this.sprite.body.immovable = !this.sprite.isBlocked;
         this.sprite.x = this.position.x;
         this.sprite.y = this.position.y;
         //this.displayGizmo();
     },
 
-    move: function() {
-
+    move: function () {
         let movementResult = this.graph.requestMove(this.position, this.movementParameters, BAG_MOVEMENT_SPEED * game.time.physicsElapsed);
+
+        if (this.sprite.isBlocked) {
+            return;
+        }
+
         this.position = movementResult.position;
 
         if (movementResult.hasReachedEnd) {
@@ -93,7 +110,45 @@ Bag.prototype = {
         }
     },
 
-    getLaneEndFromLaneX: function(laneX) {
+    collisionHandler: function (thisBagSprite, collidedBagSprite) {
+        let thisBagIsInLane = this.bagIsInLane(thisBagSprite.x);
+        let otherBagIsInLane = this.bagIsInLane(collidedBagSprite.x);
+
+        if (thisBagIsInLane && otherBagIsInLane) {
+            this.bagsAreInSameLaneCollisionHandler(thisBagSprite, collidedBagSprite);
+        } else if (!thisBagIsInLane && !otherBagIsInLane) {
+            this.bagsAreInSamePathCollisionHandler(thisBagSprite, collidedBagSprite);
+        } else {
+            this.bagsAreInDifferentConveyorsCollisionHandler(thisBagSprite, collidedBagSprite);
+        }
+    },
+
+    bagIsInLane: function (bagXPosition) {
+        for (let i = 0; i < this.lanes.length; ++i) {
+            if (this.lanes[i].x == bagXPosition) {
+                return true;
+            }
+        }
+        return false;
+    },
+
+    bagsAreInSameLaneCollisionHandler: function (thisBagSprite, collidedBagSprite) {
+
+    },
+
+    bagsAreInSamePathCollisionHandler: function (thisBagSprite, collidedBagSprite) {
+
+    },
+
+    bagsAreInDifferentConveyorsCollisionHandler: function (thisBagSprite, collidedBagSprite) {
+        let thisBagIsInLane = this.bagIsInLane(thisBagSprite.x);
+        let otherBagIsInLane = this.bagIsInLane(collidedBagSprite.x);
+
+        thisBagSprite.isBlocked = !thisBagIsInLane;
+        collidedBagSprite.isBlocked = !otherBagIsInLane;
+    },
+
+    getLaneEndFromLaneX: function (laneX) {
         for (let i = 0; i < this.lanes.length; i++) {
             if (this.lanes[i].x == laneX) return this.lanes[i].laneEnd;
         }

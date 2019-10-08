@@ -54,8 +54,6 @@ gameplayState.prototype = {
         this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
 
-        
-
         //Empieza la primera oleada
         this.waveManager.startNextWave();
     },
