@@ -11,7 +11,7 @@ function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight, scanners
 
     this.graph = new Map();
     this.initializeGraph();
-    this.verboseMode = true;
+    this.verboseMode = false;
 }
 
 Graph.prototype = {
