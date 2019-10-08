@@ -31,7 +31,6 @@ function ConveyorBelt(group, start, end, scaleFactor, mask) {
 
     this.refresh();
 
-    //Testing the mask idea
     this.mask = mask;
     this.beltTileSprite.mask = mask;
 }
@@ -46,6 +45,8 @@ ConveyorBelt.prototype = {
 
         tileSprite.anchor.set(0.5, 0);
         tileSprite.pivot.set(0.5, 0);
+
+        tileSprite.tilePosition.set(0, Math.random() * 256);
 
         tileSprite.autoScroll(0, BAG_MOVEMENT_SPEED / tileSprite.scale.y);
 
