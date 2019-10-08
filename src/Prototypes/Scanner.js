@@ -10,6 +10,9 @@ function Scanner(position, lane) {
     this.currentBags = [];
     this.initSprite(position);
 
+    this.windowStart = 200;
+    this.windowEnd = 500;
+
     //temp
 
     this.scanSprites = game.add.group();
@@ -29,28 +32,29 @@ Scanner.prototype = {
 
         this.sprite.anchor = new Phaser.Point(0.5, 0);
 
-        this.sprite.inputEnabled = true;
-        this.sprite.events.onInputDown.add(this.SetActive, this);
+        /*this.sprite.inputEnabled = true;
+        this.sprite.events.onInputDown.add(this.SetActive, this);*/
 
         this.end = this.start + this.sprite.height * this.sprite.scale.y;
         console.log("start"+ this.start);
         console.log("end " + this.end);
     },
     EnterBag: function (Bag) {
-        if (this.currentBags[0] != Bag) {
+        if (!Bag.inScan) {
+            Bag.inScan = true;
             this.currentBags.push(Bag);
             switch (Bag.type) {
                 case BagTypes.A:
-                    this.scanSprites.create(0, 0, LANE_ICON_SPRITE_KEY_SAFE);
+                    this.scanSprites.create(this.windowStart, 0, LANE_ICON_SPRITE_KEY_SAFE);
                     break;
                 case BagTypes.B_Safe:
-                    this.scanSprites.create(0, 0, LANE_ICON_SPRITE_KEY_SAFE);
+                    this.scanSprites.create(this.windowStart, 0, LANE_ICON_SPRITE_KEY_SAFE);
                     break;
                 case BagTypes.B_Danger:
-                    this.scanSprites.create(0, 0, LANE_ICON_SPRITE_KEY_DANGER);
+                    this.scanSprites.create(this.windowStart, 0, LANE_ICON_SPRITE_KEY_DANGER);
                     break;
                 case BagTypes.C:
-                    this.scanSprites.create(0, 0, LANE_ICON_SPRITE_KEY_DANGER);
+                    this.scanSprites.create(this.windowStart, 0, LANE_ICON_SPRITE_KEY_DANGER);
                     break;
             }
 
@@ -63,7 +67,7 @@ Scanner.prototype = {
     },
     ExitBag: function () {
 
-        let exitBag = this.currentBags[0];
+        this.currentBags.inScan = false;
         this.currentBags.shift();
         this.scanSprites.remove(this.scanSprites.getAt(0),true,false);
         console.log(this.scanSprites.children);
@@ -73,10 +77,14 @@ Scanner.prototype = {
     UpdateScanner: function () {
         if (this.currentBags.length > 0) {
             for (let i = 0; i < this.currentBags.length; i++) {
-                this.scanSprites.getAt(i).x += 25;
+                this.scanSprites.getAt(i).x = game.math.linear(this.windowStart,this.windowEnd,
+                    this.currentBags[i].position.y-(this.start-this.currentBags[i].sprite.height/2)/
+                    ((this.end+this.currentBags[i].sprite.height)-this.currentBags[i].sprite.height/2));
+                    console.log(((this.currentBags[i].position.y+this.currentBags[i].sprite.height/2)-this.start)/
+                    ((this.end+this.currentBags[i].sprite.height)-this.start));
             }
 
-            if (this.currentBags[0].position.y > this.end)
+            if (this.currentBags[0].position.y-this.currentBags[0].sprite.height > this.end)
                 this.ExitBag();
         }
     },

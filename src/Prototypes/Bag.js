@@ -24,6 +24,8 @@ function Bag(bagType, position, graph, lanes) {
     this.hasReachedEnd = false;
     this.movementParameters = new MovementParameters(this.graph.graph.get(this.position.toString()));
 
+    this.inScan = false;
+
     this.initializeSprite();
     /*
     // Gizmo utilizado como alternativa para visualizarlo

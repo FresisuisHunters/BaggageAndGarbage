@@ -34,20 +34,20 @@ gameplayState.prototype = {
 
     create: function () {
         console.log("Entered gameplayState")
-        
+
         //Crea las capas
         laneLayer = game.add.group();
         pathLayer = game.add.group();
         bagLayer = game.add.group();
         overlayLayer = game.add.group();
-        
+
         //Crea managers y tal
         this.createGraph();
         this.createLaneEnds(this.graph, this.onBagKilled, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
 
 
-        this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(), 
+        this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(),
             LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin);
         this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
@@ -56,10 +56,10 @@ gameplayState.prototype = {
         this.waveManager.startNextWave();
     },
 
-    createGraph: function() {
+    createGraph: function () {
         let startX = LEVEL_DIMENSIONS.laneHorizontalMargin;
         let startY = LEVEL_DIMENSIONS.laneTopMargin;
-        
+
         let distanceFromFirstToLastLane = GAME_WIDTH - (LEVEL_DIMENSIONS.laneHorizontalMargin * 2);
         let laneCount = this.levelData.lanes.count;
         let gapBetweenLanes = distanceFromFirstToLastLane / (laneCount - 1);
@@ -71,7 +71,7 @@ gameplayState.prototype = {
         this.createScanners(startX, gapBetweenLanes);
     },
 
-    createLaneConveyorBelts: function(columns) {
+    createLaneConveyorBelts: function (columns) {
         let startY = LEVEL_DIMENSIONS.laneTopMargin;
         let endY = GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin;
 
@@ -80,7 +80,7 @@ gameplayState.prototype = {
         }
     },
 
-    createLaneEnds: function(graph, onBagKilled, bags) {
+    createLaneEnds: function (graph, onBagKilled, bags) {
         this.lanes = [];
         let columns = graph.getColumns();
         let laneTypes = this.levelData.lanes.types;
@@ -98,18 +98,20 @@ gameplayState.prototype = {
         }
     },
 
-    createScanners: function(startx, gapBetweenLanes)
-    {
+    createScanners: function (startx, gapBetweenLanes) {
 
         let scannersData = this.levelData.scannerPositions;
-        for(let i = 0; i<scannersData.length;i++)
-        this.scanners.push(new Scanner(new Vector2D(scannersData[i].belt*gapBetweenLanes+startx,scannersData[i].y),scannersData[i].belt));
+        for (let i = 0; i < scannersData.length; i++) {
+            this.scanners.push(new Scanner(new Vector2D(scannersData[i].belt * gapBetweenLanes + startx, scannersData[i].y), scannersData[i].belt));
+            this.scanners[i].sprite.inputEnabled = true;
+            this.scanners[i].sprite.events.onInputDown.add(this.onScannerSelected, { 'scanner': this.scanners[i], 'scanners' : this.scanners}, this);
+        }
     },
 
     //GAME LOOP//
     /////////////
-    update: function() {
-        
+    update: function () {
+
         if (!this.gameHasEnded) {
             //Updatea todo lo que tenga que ser updateado
             this.pathCreator.update();
@@ -119,12 +121,11 @@ gameplayState.prototype = {
             for (let i = this.bags.length - 1; i >= 0; i--) {
                 this.bags[i].update();
                 for (let j = 0; j < this.scanners.length; j++) {
-                    if (this.scanners[j].x == this.bags[i].position.x && 
-                        this.scanners[j].start <= (this.bags[i].position.y+this.bags[i].sprite.height/2)&&
-                        this.bags[i].position.y<this.scanners[j].end)
-                    {
+                    if (this.scanners[j].x == this.bags[i].position.x &&
+                        this.scanners[j].start <= (this.bags[i].position.y + this.bags[i].sprite.height / 2) &&
+                        this.bags[i].position.y < this.scanners[j].end) {
                         this.scanners[j].EnterBag(this.bags[i]);
-                        
+
                         //this.bags.splice(i,1);
                         //this.timer.add(SCAN_TIME,this.onBagScanned,this,this.scanners[j]);
                     }
@@ -141,7 +142,7 @@ gameplayState.prototype = {
 
     //EVENTS//
     //////////
-    onNonLastWaveEnd: function() {
+    onNonLastWaveEnd: function () {
         this.graph.resetGraph();
 
         for (let i = pathLayer.length - 1; i >= 0; i--) {
@@ -149,7 +150,7 @@ gameplayState.prototype = {
         }
     },
 
-    onGameEnd: function() {
+    onGameEnd: function () {
         let state = game.state.getCurrentState();
 
         state.pathCreator.unsubscribeFromInputEvents();
@@ -168,10 +169,10 @@ gameplayState.prototype = {
         if (!isCorrect) state.scoreManager.currentMistakeCount++;
     },
 
-    onScannerSelected: function(scanner)
-    {
-        for(var i = 0; i<this.scanners;i++)
-            this.scanners[i].
-        scanner.SetActive();
+    onScannerSelected: function () {
+        console.log("aa" + this.scanner.start);
+        for (var i = 0; i < this.scanners.length; i++)
+            this.scanners[i].SetInactive();
+        this.scanner.SetActive();
     }
 }
