@@ -39,10 +39,8 @@ gameplayState.prototype = {
         
         //El orden en el que se crean es el orden en el que dibujan. Es decir, el último se dibuja por encima del resto.
         backgroundLayer = game.add.group();
-
         laneLayer = game.add.group();
         pathLayer = game.add.group();
-        
         bagLayer = game.add.group();
         overlayLayer = game.add.group();
         
@@ -53,15 +51,17 @@ gameplayState.prototype = {
         this.createLaneEnds(this.graph, this.onBagKilled, this.levelData.lanes.types, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
         
-        this.mask = this.getPathMask(this.graph);
-        pathLayer.mask = this.mask;
+        //Crea las máscaras
+        this.pathMask = this.getPathMask(this.graph);
+        pathLayer.mask = this.pathMask;
+        
+        let bagMask = this.getBagMask();
+        bagLayer.mask = bagMask;
 
         this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(), 
-            LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin, this.mask);
+            LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin, this.pathMask);
         this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
-
-        
 
         //Empieza la primera oleada
         this.waveManager.startNextWave();
@@ -134,32 +134,45 @@ gameplayState.prototype = {
         return mask;
     },
 
+    getBagMask: function() {
+        let mask = new Phaser.Graphics(game);
+        mask.beginFill(0xffffff);
+
+        mask.drawPolygon(new Phaser.Polygon([
+            {x: 0, y: LEVEL_DIMENSIONS.laneTopMargin},
+            {x: GAME_WIDTH, y: LEVEL_DIMENSIONS.laneTopMargin},
+            {x: GAME_WIDTH, y: GAME_HEIGHT},
+            {x: 0, y: GAME_HEIGHT}
+        ]));
+
+        return mask;
+    },
+
     //GAME LOOP//
     /////////////
     update: function() {
         
         if (!this.gameHasEnded) {
-            //Updatea todo lo que tenga que ser updateado
             this.pathCreator.update();
             this.waveManager.update(game.time.physicsElapsed);
+        }
 
-            //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
-            for (let i = this.bags.length - 1; i >= 0; i--) {
-                this.bags[i].update();
-                for (let j = 0; j < this.scanners.lenth; j++) {
-                    if (scanners[j].belt == bag.position.x && scanners[j].start <= (bag.position.y+BAG_MOVEMENT_SPEED))
-                    {
-                        scanners[j].EnterBag(bags[i]);
-                        bags.splice(i,1);
-                        timer = game.time.create(true)
-                        timer.add(SCAN_TIME,this.onBagScanned,this,scanners[j]);
-                    }
+        //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
+        for (let i = this.bags.length - 1; i >= 0; i--) {
+            this.bags[i].update();
+            for (let j = 0; j < this.scanners.lenth; j++) {
+                if (scanners[j].belt == bag.position.x && scanners[j].start <= (bag.position.y + BAG_MOVEMENT_SPEED))
+                {
+                    scanners[j].EnterBag(bags[i]);
+                    bags.splice(i, 1);
+                    timer = game.time.create(true)
+                    timer.add(SCAN_TIME, this.onBagScanned, this,scanners[j]);
                 }
             }
-
-            //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
-            bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
         }
+
+        //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
+        bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
     },
 
     //EVENTS//
