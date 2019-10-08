@@ -8,7 +8,6 @@ bootState.prototype = {
     init: function() {
         game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE;
         game.scale.setResizeCallback(this.onResize, this);
-
     },
 
     preload: function() {

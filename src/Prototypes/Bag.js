@@ -1,4 +1,4 @@
-const BAG_MOVEMENT_SPEED = 200;
+const BAG_MOVEMENT_SPEED = 100;
 const BAG_SCALE_FACTOR = 0.3;
 
 const BagTypes = {
@@ -27,19 +27,7 @@ function Bag(bagType, position, graph, lanes) {
     this.inScan = false;
 
     this.initializeSprite();
-    /*
-    // Gizmo utilizado como alternativa para visualizarlo
-    this.debugGizmo = new Phaser.Rectangle(position.x, position.y, 20, 20);
-    this.debugGizmo.centerOn(position.x, position.y);
-    game.debug.geom(this.debugGizmo, "FE0101");
     
-    // TODO
-    this.sprite = game.load.image(
-        position.x,
-        position.y,
-        BAG_SPRITE_SHEET_KEY
-    );
-    */
     this.insideSprite = undefined; // TODO
 
 }
@@ -70,29 +58,30 @@ Bag.prototype = {
         this.sprite = bagLayer.create(this.position.x, this.position.y, availableSpriteNames[spriteIndex]);
         this.sprite.anchor.set(0.5, 0.5);
         this.sprite.scale.set(BAG_SCALE_FACTOR, BAG_SCALE_FACTOR);
-        
-
     },
 
     update: function() {
-        if (!this.hasReachedEnd) this.move();
+        if (!this.hasReachedEnd) this.moveInGraph();
+        else this.moveAfterEnd();
 
         this.sprite.x = this.position.x;
         this.sprite.y = this.position.y;
-        //this.displayGizmo();
     },
 
-    move: function() {
+    moveInGraph: function() {
 
         let movementResult = this.graph.requestMove(this.position, this.movementParameters, BAG_MOVEMENT_SPEED * game.time.physicsElapsed);
         this.position = movementResult.position;
 
         if (movementResult.hasReachedEnd) {
             this.hasReachedEnd = true;
-            let laneEnd = this.getLaneEndFromLaneX(this.position.x);
-            laneEnd.manageBag(this);
-            this.sprite.destroy();
+            this.laneEnd = this.getLaneEndFromLaneX(this.position.x);
+            this.laneEnd.manageBag(this);
         }
+    },
+
+    moveAfterEnd: function() {
+        this.position = this.laneEnd.requestMove(this);
     },
 
     getLaneEndFromLaneX: function(laneX) {

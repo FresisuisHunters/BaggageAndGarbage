@@ -17,7 +17,14 @@ preloadState.prototype = {
         this.loadBagSprites();
         this.loadInteriorSprites();
 
-        game.load.image(CONVEYOR_BELT_SPRITE_KEY, "resources/sprites/img_PlaceholderBelt.png")
+        //Cintas
+        game.load.spritesheet(CONVEYOR_BELT_SHEET_LANE.KEY, "resources/sprites/sheet_ConveyorBelt.png", CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_SIZE, 
+            CONVEYOR_BELT_SHEET_LANE.FRAME_COUNT, CONVEYOR_BELT_SHEET_MARGIN, CONVEYOR_BELT_SHEET_SPACING);
+        game.load.spritesheet(CONVEYOR_BELT_SHEET_SAFE.KEY, "resources/sprites/sheet_ConveyorAccept.png", CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_SIZE, 
+            CONVEYOR_BELT_SHEET_SAFE.FRAME_COUNT, CONVEYOR_BELT_SHEET_MARGIN, CONVEYOR_BELT_SHEET_SPACING);
+        game.load.spritesheet(CONVEYOR_BELT_SHEET_DANGER.KEY, "resources/sprites/sheet_ConveyorReject.png", CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_SIZE, 
+            CONVEYOR_BELT_SHEET_DANGER.FRAME_COUNT, CONVEYOR_BELT_SHEET_MARGIN, CONVEYOR_BELT_SHEET_SPACING);
+
         game.load.image(LANE_ICON_SPRITE_KEY_SAFE, "resources/sprites/img_LaneIcon_Safe.png");
         game.load.image(LANE_ICON_SPRITE_KEY_DANGER, "resources/sprites/img_LaneIcon_Danger.png");
         game.load.image(SCANNER_SPRITE_KEY,"resources/sprites/scanner_placeholder.png");
@@ -46,10 +53,32 @@ preloadState.prototype = {
 
     loadBagSprites: function() {
         this.loadBagSpriteFromName("img_Maleta_A_ID01_01");
-        this.loadBagSpriteFromName("img_Maleta_A_ID02_01");
+        this.loadBagSpriteFromName("img_Maleta_A_ID01_02");
+        this.loadBagSpriteFromName("img_Maleta_A_ID01_03");
+
+        this.loadBagSpriteFromName("img_Maleta_A_ID02_01_00");
+        this.loadBagSpriteFromName("img_Maleta_A_ID02_01_01");
+        this.loadBagSpriteFromName("img_Maleta_A_ID02_01_02");
+
         this.loadBagSpriteFromName("img_Maleta_B_ID03_01");
-        this.loadBagSpriteFromName("img_Maleta_B_ID04_01");
+
+        this.loadBagSpriteFromName("img_Maleta_B_ID04_01_00");
+        this.loadBagSpriteFromName("img_Maleta_B_ID04_01_01");
+
         this.loadBagSpriteFromName("img_Maleta_C_ID05_01");
+        
+        this.loadBagSpriteFromName("img_Maleta_C_ID06_01");
+
+        this.loadBagSpriteFromName("img_Maleta_A_ID07_02_00");
+        this.loadBagSpriteFromName("img_Maleta_A_ID07_02_01");
+
+
+        this.loadBagSpriteFromName("img_Maleta_A_ID08_01");
+        this.loadBagSpriteFromName("img_Maleta_A_ID08_02");
+        this.loadBagSpriteFromName("img_Maleta_A_ID08_03");
+    
+
+
     },
 
     loadInteriorSprites: function() {
