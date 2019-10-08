@@ -167,9 +167,8 @@ gameplayState.prototype = {
     onNonLastWaveEnd: function() {
         this.graph.resetGraph();
 
-        for (let i = pathLayer.length - 1; i >= 0; i--) {
-            if (pathLayer[i] != null) pathLayer[i].destroy();
-        }
+        pathLayer.destroy(true, true);
+
     },
 
     onGameEnd: function() {
