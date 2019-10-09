@@ -86,30 +86,28 @@ Bag.prototype = {
             this.sprite.bagThatBlockedThis = null;
         }
 
-        // Al llamar a collide no se si se garantiza la comprobacion de todas las colisiones. Por eso pongo esto aparte
+        // If this bag is no longer colliding with the one that blocked it, then it's free to move
         if (!this.bagsCollidedThisFrame.includes(this.sprite.bagThatBlockedThis)) {
             this.sprite.isBlocked = false;
             this.sprite.bagThatBlockedThis = null;
         }
 
         // Movement
-        this.move();
+        if (!this.sprite.isBlocked) {
+            this.move();
+        }
 
         if (this.hasReachedEnd) {
+            // Since the sprite is destroyed in move() when the bag reaches an end, function returns to avoid errors
             return;
         }
 
-        this.sprite.body.immovable = !this.sprite.isBlocked;
         this.sprite.x = this.position.x;
         this.sprite.y = this.position.y;
         //this.displayGizmo();
     },
 
     move: function () {
-        if (this.sprite.isBlocked) {
-            return;
-        }
-
         let movementResult = this.graph.requestMove(this.position, this.movementParameters, BAG_MOVEMENT_SPEED * game.time.physicsElapsed);
         this.sprite.positionBeforeBeingBlocked = this.position;
         this.position = movementResult.position;
@@ -126,7 +124,7 @@ Bag.prototype = {
         this.bagsCollidedThisFrame.push(collidedBagSprite);
 
         if (thisBagSprite.isBlocked) {
-            // No es necesario comprobar en detalle las colisiones si ya esta parada la maleta
+            // No need to check collisions in detail if a bag is already blocked
             return;
         }
 
@@ -140,16 +138,14 @@ Bag.prototype = {
         }
     },
 
-    // TODO: Pensar un nombre mejor
     bagsAreInSameWayCollision : function(thisBagSprite, collidedBagSprite) {
         let bagAlreadyBlocked = thisBagSprite.isBlocked ? thisBagSprite : collidedBagSprite;
         let bagBlocked = !thisBagSprite.isBlocked ? thisBagSprite : collidedBagSprite;
 
         bagBlocked.isBlocked = true;
-        bagBlocked.bagThatBlockedThis = (bagBlocked.bagThatBlockedThis == null) ? bagAlreadyBlocked : bagBlocked.bagThatBlockedThis;
+        bagBlocked.bagThatBlockedThis = bagAlreadyBlocked;
     },
 
-    // TODO: Pensar un nombre mejor
     bagsAreInDifferentWaysCollision : function(thisBagSprite, collidedBagSprite) {
         let thisBagIsInLane = this.bagIsInLane(thisBagSprite.x);
         let bagInLane = thisBagIsInLane ? thisBagSprite : collidedBagSprite;
@@ -158,11 +154,10 @@ Bag.prototype = {
         if (this.bagIsHeadingToOthersBagLane(bagInPath, bagInLane)) {
             bagInPath.isBlocked = true;
             bagInPath.bagThatBlockedThis = bagInLane;
-        } else {
-            if (bagInPath.isBlocked) {
-                bagInLane.isBlocked = true;
-                bagInLane.bagThatBlockedThis = bagInPath;
-            }
+        } else if (bagInPath.isBlocked) {
+            // bagInLane is heading towards bagInPath
+            bagInLane.isBlocked = true;
+            bagInLane.bagThatBlockedThis = bagInPath;
         }
     },
 
