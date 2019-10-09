@@ -179,5 +179,11 @@ gameplayState.prototype = {
 
     onBagScanned: function (scanner) {
         bags.push(scanner.ExitBag());
+    },
+
+    render: function() {
+        for (let i = 0; i < this.bags.length; i++) {
+            game.debug.body(this.bags[i].sprite);
+        }
     }
 }
