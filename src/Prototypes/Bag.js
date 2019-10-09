@@ -72,8 +72,9 @@ Bag.prototype = {
         game.physics.arcade.enable(this.sprite);
         this.sprite.enableBody = true;
         this.sprite.body.immovable = true;
-        this.sprite.isBlocked = false;      // These two are properties of the sprite so they can be accessed from the collision handler
+        this.sprite.isBlocked = false;      // These three are properties of the sprite so they can be accessed from the collision handler
         this.sprite.bagThatBlockedThis = null;  // Reference to the sprite that blocked this bag
+        this.sprite.positionBeforeBeingBlocked = this.position;
         this.bagsCollidedThisFrame = new Array();
     },
 
@@ -105,12 +106,12 @@ Bag.prototype = {
     },
 
     move: function () {
-        let movementResult = this.graph.requestMove(this.position, this.movementParameters, BAG_MOVEMENT_SPEED * game.time.physicsElapsed);
-
         if (this.sprite.isBlocked) {
             return;
         }
 
+        let movementResult = this.graph.requestMove(this.position, this.movementParameters, BAG_MOVEMENT_SPEED * game.time.physicsElapsed);
+        this.sprite.positionBeforeBeingBlocked = this.position;
         this.position = movementResult.position;
 
         if (movementResult.hasReachedEnd) {
@@ -132,31 +133,46 @@ Bag.prototype = {
         let thisBagIsInLane = this.bagIsInLane(thisBagSprite.x);
         let otherBagIsInLane = this.bagIsInLane(collidedBagSprite.x);
 
-        (thisBagIsInLane == otherBagIsInLane) ? this.bagsAreInSameWay(thisBagSprite, collidedBagSprite)
-                                                : this.bagsAreInDifferentWays(thisBagSprite, collidedBagSprite);
+        if (thisBagIsInLane == otherBagIsInLane) {
+            this.bagsAreInSameWayCollision(thisBagSprite, collidedBagSprite);
+        } else {
+            this.bagsAreInDifferentWaysCollision(thisBagSprite, collidedBagSprite);
+        }
     },
 
     // TODO: Pensar un nombre mejor
-    bagsAreInSameWay : function(thisBagSprite, collidedBagSprite) {
+    bagsAreInSameWayCollision : function(thisBagSprite, collidedBagSprite) {
         let bagAlreadyBlocked = thisBagSprite.isBlocked ? thisBagSprite : collidedBagSprite;
         let bagBlocked = !thisBagSprite.isBlocked ? thisBagSprite : collidedBagSprite;
 
         bagBlocked.isBlocked = true;
-        bagBlocked.bagThatBlockedThis = bagAlreadyBlocked;
+        bagBlocked.bagThatBlockedThis = (bagBlocked.bagThatBlockedThis == null) ? bagAlreadyBlocked : bagBlocked.bagThatBlockedThis;
     },
 
     // TODO: Pensar un nombre mejor
-    bagsAreInDifferentWays : function(thisBagSprite, collidedBagSprite) {
+    bagsAreInDifferentWaysCollision : function(thisBagSprite, collidedBagSprite) {
         let thisBagIsInLane = this.bagIsInLane(thisBagSprite.x);
         let bagInLane = thisBagIsInLane ? thisBagSprite : collidedBagSprite;
         let bagInPath = !thisBagIsInLane ? thisBagSprite : collidedBagSprite;
-
-        if (bagInPath.isBlocked && bagInPath.bagThatBlockedThis != bagInLane) {
-            bagInLane.isBlocked = true;
-            bagInLane.bagThatBlockedThis = bagInPath;
-        } else {
+        
+        if (this.bagIsHeadingToOthersBagLane(bagInPath, bagInLane)) {
             bagInPath.isBlocked = true;
             bagInPath.bagThatBlockedThis = bagInLane;
+        } else {
+            if (bagInPath.isBlocked) {
+                bagInLane.isBlocked = true;
+                bagInLane.bagThatBlockedThis = bagInPath;
+            }
+        }
+    },
+
+    bagIsHeadingToOthersBagLane : function(bagSprite, bagInLaneSprite) {
+        let bagMovementDirection = substractVectors(bagSprite.position, bagSprite.positionBeforeBeingBlocked);
+
+        if (bagMovementDirection.x > 0) {
+            return bagInLaneSprite.x > bagSprite.position.x;
+        } else {
+            return bagInLaneSprite.x < bagSprite.position.x;
         }
     },
 
