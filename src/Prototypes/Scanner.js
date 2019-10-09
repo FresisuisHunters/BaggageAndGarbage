@@ -10,13 +10,14 @@ function Scanner(position, lane) {
     this.currentBags = [];
     this.initSprite(position);
 
-    this.windowStart = 0;
+    this.windowStart = -300;
     this.windowEnd = 300;
-    this.windowPosition = 888;
+    this.windowPosition = 650;
 
     //temp
 
     this.scanSprites = game.add.group();
+    game.world.sendToBack(this.scanSprites);
 }
 
 
@@ -86,9 +87,12 @@ Scanner.prototype = {
         if (this.currentBags.length > 0) {
             for (let i = 0; i < this.currentBags.length; i++) {
                 this.scanSprites.getAt(i).y = game.math.linear(this.windowStart, this.windowEnd,
-                    this.currentBags[i].sprite.y);
-                console.log(((this.currentBags[i].position.y + this.currentBags[i].sprite.height / 2) - this.start) /
-                    ((this.end + this.currentBags[i].sprite.height) - this.start));
+                    game.math.min(1,(this.currentBags[i].sprite.y-(this.start-this.currentBags[i].sprite.height))/
+                    (this.end-(this.start-this.currentBags[i].sprite.height*2))));
+                    
+                console.log(game.math.linear(this.windowStart, this.windowEnd,
+                    game.math.min(1,(this.currentBags[i].sprite.y-(this.start-this.currentBags[i].sprite.height))/
+                    (this.end-(this.start-this.currentBags[i].sprite.height)))));
 
                 console.log("sprite y " + this.scanSprites.getAt(i).y);
 

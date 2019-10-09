@@ -8,6 +8,13 @@ const BagTypes = {
     C: "C"
 };
 
+const ScanSprites = {
+    A: LANE_ICON_SPRITE_KEY_SAFE,
+    B_Safe: LANE_ICON_SPRITE_KEY_SAFE,
+    B_Danger: LANE_ICON_SPRITE_KEY_DANGER,
+    C: LANE_ICON_SPRITE_KEY_DANGER
+}
+
 /**
  * 
  * @param {Number} destiny 
