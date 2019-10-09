@@ -1,4 +1,4 @@
-const NODE_DISTANCE_OFFSET = 120;
+const MIN_DISTANCE_BETWEEN_NODES = 115;
 
 function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight, scanners) {
 
@@ -135,25 +135,21 @@ Graph.prototype = {
 
     positionIsTooCloseToExistingNodes: function (position) {
         let previousNode = this.getPreviousNode(position);
-        if (previousNode.position.y == this.spawnY) {
-            // Ignore distances if it's an input node
-            return false;
-        }
-
-        let distanceToPreviousNode = Math.abs(position.y - previousNode.position.y);
-        if (distanceToPreviousNode <= NODE_DISTANCE_OFFSET) {
-            return true;
+        // Ignore distances if it's an input node
+        if (previousNode.position.y != this.spawnY) {
+            let distanceToPreviousNode = Math.abs(position.y - previousNode.position.y);
+            if (distanceToPreviousNode <= MIN_DISTANCE_BETWEEN_NODES) {
+                return true;
+            }
         }
 
         let nextNode = this.getNextNode(position);
-        if (!nextNode.hasOutput()) {
-            // Ignore distances if it's an output node
-            return false;
-        }
-
-        let distanceToNextNode = Math.abs(position.y - nextNode.position.y);
-        if (distanceToNextNode <= NODE_DISTANCE_OFFSET) {
-            return true;
+        // Ignore distances if it's an output node
+        if (nextNode.hasOutput()) {    
+            let distanceToNextNode = Math.abs(position.y - nextNode.position.y);
+            if (distanceToNextNode <= MIN_DISTANCE_BETWEEN_NODES) {
+                return true;
+            }
         }
 
         return false;

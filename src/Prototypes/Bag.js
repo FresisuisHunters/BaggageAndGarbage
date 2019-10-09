@@ -25,7 +25,6 @@ function Bag(bagType, position, graph, lanes) {
     this.movementParameters = new MovementParameters(this.graph.graph.get(this.position.toString()));
 
     this.initializeSprite();
-
     this.insideSprite = undefined; // TODO
 
 }
@@ -65,24 +64,27 @@ Bag.prototype = {
     },
 
     update: function() {
-        if (!this.hasReachedEnd) this.move();
+        if (!this.hasReachedEnd) this.moveInGraph();
+        else this.moveAfterEnd();
 
         this.sprite.x = this.position.x;
         this.sprite.y = this.position.y;
-        //this.displayGizmo();
     },
 
-    move: function() {
+    moveInGraph: function() {
 
         let movementResult = this.graph.requestMove(this.position, this.movementParameters, BAG_MOVEMENT_SPEED * game.time.physicsElapsed);
         this.position = movementResult.position;
 
         if (movementResult.hasReachedEnd) {
             this.hasReachedEnd = true;
-            let laneEnd = this.getLaneEndFromLaneX(this.position.x);
-            laneEnd.manageBag(this);
-            this.sprite.destroy();
+            this.laneEnd = this.getLaneEndFromLaneX(this.position.x);
+            this.laneEnd.manageBag(this);
         }
+    },
+
+    moveAfterEnd: function() {
+        this.position = this.laneEnd.requestMove(this);
     },
 
     getLaneEndFromLaneX: function(laneX) {

@@ -1,12 +1,21 @@
-const CONVEYOR_BELT_SPRITESHEET_KEY = "sheet_PlaceholderBelt";
-
-//Spritesheet dimension data
 const CONVEYOR_BELT_SPRITE_SIZE = 256;
 const CONVEYOR_BELT_SHEET_MARGIN = 20;
 const CONVEYOR_BELT_SHEET_SPACING = 10;
-const CONVEYOR_BELT_SHEET_TOTAL_FRAME_COUNT = 4;
 
-const CONVEYOR_BELT_SHEET_RAILING_FRAME_COUNT = 3;
+const CONVEYOR_BELT_SHEET_LANE = {
+    KEY: "sheet_ConveyorBelt",
+    FRAME_COUNT: 4
+}
+const CONVEYOR_BELT_SHEET_SAFE = {
+    KEY: "sheet_SafeExit",
+    FRAME_COUNT: 2
+}
+const CONVEYOR_BELT_SHEET_DANGER = {
+    KEY: "sheet_DangerExit",
+    FRAME_COUNT: 2
+}
+
+const CONVEYOR_BELT_WIDTH = 100;
 
 const CONVEYOR_LANE_SCALE_FACTOR = 0.65;
 const CONVEYOR_PATH_SCALE_FACTOR = 0.5;
@@ -17,7 +26,9 @@ const CONVEYOR_BELT_WIDTH_PATH = 151 * CONVEYOR_PATH_SCALE_FACTOR;
 
 const CONVEYOR_BELT_ROTATION_OFFSET = -Math.PI / 2;
 
-function ConveyorBelt(group, start, end, scaleFactor, mask) {
+function ConveyorBelt(group, start, end, scaleFactor, mask, spriteSheet) {
+    this.spriteSheet = spriteSheet;
+    
     this.scaleFactor = scaleFactor;
     
     this.beltTileSprite = this.createBeltTileSprite();
@@ -38,8 +49,8 @@ function ConveyorBelt(group, start, end, scaleFactor, mask) {
 ConveyorBelt.prototype = {
     createBeltTileSprite: function() {
         
-        let tileSprite = new Phaser.TileSprite(game, 0, 0, CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITESHEET_KEY);
-        tileSprite.frame = 3;
+        let tileSprite = new Phaser.TileSprite(game, 0, 0, CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_SIZE, this.spriteSheet.KEY);
+        tileSprite.frame = this.spriteSheet.FRAME_COUNT - 1;
 
         tileSprite.scale.set(this.scaleFactor, CONVEYOR_BELT_Y_SCALE_FACTOR);
 
@@ -128,13 +139,13 @@ ConveyorBelt.prototype = {
             excess--;
         }
         while (excess < 0) {
-            let newImage = new Phaser.Image(game, 0, 0, CONVEYOR_BELT_SPRITESHEET_KEY);
+            let newImage = new Phaser.Image(game, 0, 0, this.spriteSheet.KEY);
 
             newImage.anchor.set(0.5, 0);
             newImage.pivot.set(0.5, 0);
             newImage.scale.set(this.scaleFactor, this.scaleFactor);
             
-            let frame = Math.floor((Math.random() * CONVEYOR_BELT_SHEET_RAILING_FRAME_COUNT));
+            let frame = Math.floor((Math.random() * this.spriteSheet.FRAME_COUNT - 2));
             newImage.frame = frame;
 
             this.group.add(newImage);
