@@ -92,7 +92,6 @@ gameplayState.prototype = {
 
         for (let i = 0; i < columns.length; i++) {
             new ConveyorBelt(laneLayer, new Vector2D(columns[i], startY), new Vector2D(columns[i], endY), CONVEYOR_LANE_SCALE_FACTOR, null, CONVEYOR_BELT_SHEET_LANE);
-            console.log("columna "+i+" " +columns[i]);
         }
     },
 
@@ -177,9 +176,6 @@ gameplayState.prototype = {
                     this.scanners[j].start <= (this.bags[i].position.y + this.bags[i].sprite.height / 2) &&
                     this.bags[i].position.y < this.scanners[j].end) {
                     this.scanners[j].EnterBag(this.bags[i]);
-
-                    //this.bags.splice(i,1);
-                    //this.timer.add(SCAN_TIME,this.onBagScanned,this,this.scanners[j]);
                 }
             }
         }
@@ -221,9 +217,7 @@ gameplayState.prototype = {
     },
 
     onScannerSelected: function () {
-        console.log("aa" + this.scanner.start);
-        for (var i = 0; i < this.scanners.length; i++)
-        {
+        for (var i = 0; i < this.scanners.length; i++) {
             this.scanners[i].SetInactive();
         }
         this.scanner.SetActive();

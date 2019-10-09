@@ -7,13 +7,12 @@ const BagTypes = {
     B_Danger: "B_Danger",
     C: "C"
 };
-
-const ScanSprites = {
+var ScanSprites = {
     A: LANE_ICON_SPRITE_KEY_SAFE,
     B_Safe: LANE_ICON_SPRITE_KEY_SAFE,
     B_Danger: LANE_ICON_SPRITE_KEY_DANGER,
     C: LANE_ICON_SPRITE_KEY_DANGER
-}
+};
 
 /**
  * 
@@ -22,28 +21,31 @@ const ScanSprites = {
  * @param {Vector2D} position
  */
 function Bag(bagType, position, graph, lanes) {
-    
+
     this.type = bagType;
     this.position = position;
     this.graph = graph;
     this.lanes = lanes;
-    
+
     this.hasReachedEnd = false;
     this.movementParameters = new MovementParameters(this.graph.graph.get(this.position.toString()));
 
     this.inScan = false;
 
     this.initializeSprite();
-    
+
     this.insideSprite = undefined; // TODO
 
 }
 
 Bag.prototype = {
 
-    initializeSprite: function() {
+    initializeSprite: function () {
+
+        this.scanSprite = ScanSprites[this.type];
+
         //Get out options depending on the bag type
-        availableSpriteNames = null; 
+        availableSpriteNames = null;
         switch (this.type) {
             case BagTypes.A:
                 availableSpriteNames = A_TYPE_BAG_SPRITE_KEYS;
@@ -67,7 +69,7 @@ Bag.prototype = {
         this.sprite.scale.set(BAG_SCALE_FACTOR, BAG_SCALE_FACTOR);
     },
 
-    update: function() {
+    update: function () {
         if (!this.hasReachedEnd) this.moveInGraph();
         else this.moveAfterEnd();
 
@@ -75,7 +77,7 @@ Bag.prototype = {
         this.sprite.y = this.position.y;
     },
 
-    moveInGraph: function() {
+    moveInGraph: function () {
 
         let movementResult = this.graph.requestMove(this.position, this.movementParameters, BAG_MOVEMENT_SPEED * game.time.physicsElapsed);
         this.position = movementResult.position;
@@ -87,11 +89,11 @@ Bag.prototype = {
         }
     },
 
-    moveAfterEnd: function() {
+    moveAfterEnd: function () {
         this.position = this.laneEnd.requestMove(this);
     },
 
-    getLaneEndFromLaneX: function(laneX) {
+    getLaneEndFromLaneX: function (laneX) {
         for (let i = 0; i < this.lanes.length; i++) {
             if (this.lanes[i].x == laneX) return this.lanes[i].laneEnd;
         }
