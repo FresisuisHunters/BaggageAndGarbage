@@ -182,8 +182,10 @@ gameplayState.prototype = {
     },
 
     render: function() {
-        for (let i = 0; i < this.bags.length; i++) {
-            game.debug.body(this.bags[i].sprite);
+        if (DEBUG_SHOW_COLLIDERS) {
+            for (let i = 0; i < this.bags.length; i++) {
+                game.debug.body(this.bags[i].sprite);
+            }
         }
     }
 }
