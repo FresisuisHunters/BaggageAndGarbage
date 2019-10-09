@@ -69,6 +69,7 @@ gameplayState.prototype = {
     createBackground: function () {
         this.background = backgroundLayer.create(0, 0, GAMEPLAY_BACKGROUND_IMAGE_KEY);
         this.background.anchor.set(0, 0);
+        game.stage.backgroundColor = "#78E38E";
     },
 
     createGraph: function (laneInfo) {
