@@ -21,6 +21,9 @@ const CONVEYOR_LANE_SCALE_FACTOR = 0.65;
 const CONVEYOR_PATH_SCALE_FACTOR = 0.5;
 const CONVEYOR_BELT_Y_SCALE_FACTOR = 0.8;
 
+const CONVEYOR_BELT_WIDTH_LANE = 151 * CONVEYOR_LANE_SCALE_FACTOR;
+const CONVEYOR_BELT_WIDTH_PATH = 151 * CONVEYOR_PATH_SCALE_FACTOR;
+
 const CONVEYOR_BELT_ROTATION_OFFSET = -Math.PI / 2;
 
 function ConveyorBelt(group, start, end, scaleFactor, mask, spriteSheet) {
@@ -39,7 +42,6 @@ function ConveyorBelt(group, start, end, scaleFactor, mask, spriteSheet) {
 
     this.refresh();
 
-    //Testing the mask idea
     this.mask = mask;
     this.beltTileSprite.mask = mask;
 }
@@ -54,6 +56,8 @@ ConveyorBelt.prototype = {
 
         tileSprite.anchor.set(0.5, 0);
         tileSprite.pivot.set(0.5, 0);
+
+        tileSprite.tilePosition.set(0, Math.random() * 256);
 
         tileSprite.autoScroll(0, BAG_MOVEMENT_SPEED / tileSprite.scale.y);
 
