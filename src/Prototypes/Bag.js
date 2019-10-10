@@ -1,8 +1,9 @@
 const BAG_MOVEMENT_SPEED = 100;
+const BAG_SPRITE_SIZE = 512;
 const BAG_SCALE_FACTOR = 0.3;
 
 const DEBUG_SHOW_COLLIDERS = true;
-const MIN_DISTANCE_BETWEEN_BAGS = 256;
+const MIN_DISTANCE_BETWEEN_BAGS = 300;
 const MAX_DISTANCE_TO_LANE_FOR_PRIORITY = 100;
 
 const BagTypes = {
@@ -64,7 +65,11 @@ Bag.prototype = {
         game.physics.arcade.enable(this.sprite);
         this.sprite.enableBody = true;
         this.sprite.body.immovable = true; 
-        this.sprite.body.setCircle(MIN_DISTANCE_BETWEEN_BAGS);
+
+        let offset = -MIN_DISTANCE_BETWEEN_BAGS + (0.5 * BAG_SPRITE_SIZE);
+        this.sprite.body.setCircle(MIN_DISTANCE_BETWEEN_BAGS, offset, offset);
+
+        
         this.sprite.lastPosition = this.position;
     },
 
