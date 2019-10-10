@@ -1,9 +1,9 @@
-const BAG_MOVEMENT_SPEED = 100;
-const BAG_SPRITE_SIZE = 512;
-const BAG_SCALE_FACTOR = 0.3;
+const BAG_MOVEMENT_SPEED = 75;
+const BAG_SPRITE_SIZE = 256;
+const BAG_SCALE_FACTOR = 0.6;
 
 const DEBUG_SHOW_COLLIDERS = true;
-const MIN_DISTANCE_BETWEEN_BAGS = 300;
+const MIN_DISTANCE_BETWEEN_BAGS = 100;
 const MAX_DISTANCE_TO_LANE_FOR_PRIORITY = 100;
 
 const BagTypes = {
@@ -11,6 +11,12 @@ const BagTypes = {
     B_Safe: "B_Safe",
     B_Danger: "B_Danger",
     C: "C"
+};
+var ScanSprites = {
+    A: LANE_ICON_SPRITE_KEY_SAFE,
+    B_Safe: LANE_ICON_SPRITE_KEY_SAFE,
+    B_Danger: LANE_ICON_SPRITE_KEY_DANGER,
+    C: LANE_ICON_SPRITE_KEY_DANGER
 };
 
 /**
@@ -29,6 +35,8 @@ function Bag(bagType, position, graph, lanes) {
     this.hasReachedEnd = false;
     this.movementParameters = new MovementParameters(this.graph.graph.get(this.position.toString()));
 
+    this.inScan = false;
+
     this.initializeSprite();
 
     this.insideSprite = undefined; // TODO
@@ -37,6 +45,9 @@ function Bag(bagType, position, graph, lanes) {
 Bag.prototype = {
 
     initializeSprite: function () {
+
+        this.scanSprite = ScanSprites[this.type];
+
         //Get out options depending on the bag type
         availableSpriteNames = null;
         switch (this.type) {
@@ -59,15 +70,21 @@ Bag.prototype = {
         let spriteIndex = Math.floor(Math.random() * availableSpriteNames.length);
         this.sprite = bagLayer.create(this.position.x, this.position.y, availableSpriteNames[spriteIndex]);
         this.sprite.anchor.set(0.5, 0.5);
+        this.sprite.pivot.set(0.5, 0.5);
         this.sprite.scale.set(BAG_SCALE_FACTOR, BAG_SCALE_FACTOR);
+        
+        //Rotate randomly
+        let rotation = Math.random() * 2 * Math.PI;
+        this.sprite.rotation = rotation;
 
         // Collision purposes
         game.physics.arcade.enable(this.sprite);
         this.sprite.enableBody = true;
         this.sprite.body.immovable = true; 
-
-        let offset = -MIN_DISTANCE_BETWEEN_BAGS + (0.5 * BAG_SPRITE_SIZE);
-        this.sprite.body.setCircle(MIN_DISTANCE_BETWEEN_BAGS, offset, offset);
+        
+        let radius = MIN_DISTANCE_BETWEEN_BAGS / BAG_SCALE_FACTOR;
+        let offset = -radius + (0.5 * BAG_SPRITE_SIZE);
+        this.sprite.body.setCircle(radius, offset, offset);
 
         
         this.sprite.lastPosition = this.position;
@@ -79,20 +96,20 @@ Bag.prototype = {
         game.physics.arcade.collide(this.sprite, bagLayer, this.collisionHandler, null, this);
 
         // Movement
-        if (this.sprite.blockCountThisFrame == 0) {
-            this.move();
+        if (!this.hasReachedEnd) {
+            if (this.sprite.blockCountThisFrame == 0) {
+                this.moveInGraph();
+            }
+        } else {
+            this.moveAfterEnd();
         }
-
-        if (this.hasReachedEnd) {
-            // Since the sprite is destroyed in move() when the bag reaches an end, function returns to avoid errors
-            return;
-        }
-
+        
         this.sprite.x = this.position.x;
         this.sprite.y = this.position.y;
     },
 
-    move: function () {
+    moveInGraph: function () {
+
         let movementResult = this.graph.requestMove(this.position, this.movementParameters, BAG_MOVEMENT_SPEED * game.time.physicsElapsed);
         this.sprite.positionBeforeBeingBlocked = this.position;
         this.sprite.lastPosition = this.position;
@@ -100,10 +117,13 @@ Bag.prototype = {
 
         if (movementResult.hasReachedEnd) {
             this.hasReachedEnd = true;
-            let laneEnd = this.getLaneEndFromLaneX(this.position.x);
-            laneEnd.manageBag(this);
-            this.sprite.destroy();
+            this.laneEnd = this.getLaneEndFromLaneX(this.position.x);
+            this.laneEnd.manageBag(this);
         }
+    },
+
+    moveAfterEnd: function () {
+        this.position = this.laneEnd.requestMove(this);
     },
 
     collisionHandler: function (thisBagSprite, collidedBagSprite) {

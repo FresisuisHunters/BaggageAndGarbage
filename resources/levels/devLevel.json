@@ -17,5 +17,15 @@
             "numC": 2
         }
     ],
+    "scannerPositions": [
+        {
+            "belt":1,
+            "y":800
+        },
+        {
+            "belt":2,
+            "y":1000
+        }
+    ],
     "starThresholds": [5, 2, 0]
 }
