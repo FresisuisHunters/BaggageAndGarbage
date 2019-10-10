@@ -1,7 +1,9 @@
-const DEBUG_SHOW_COLLIDERS = true;
-
 const BAG_MOVEMENT_SPEED = 100;
 const BAG_SCALE_FACTOR = 0.3;
+
+const DEBUG_SHOW_COLLIDERS = true;
+const MIN_DISTANCE_BETWEEN_BAGS = 256;
+const MAX_DISTANCE_TO_LANE_FOR_PRIORITY = 100;
 
 const BagTypes = {
     A: "A",
@@ -27,19 +29,7 @@ function Bag(bagType, position, graph, lanes) {
     this.movementParameters = new MovementParameters(this.graph.graph.get(this.position.toString()));
 
     this.initializeSprite();
-    /*
-    // Gizmo utilizado como alternativa para visualizarlo
-    this.debugGizmo = new Phaser.Rectangle(position.x, position.y, 20, 20);
-    this.debugGizmo.centerOn(position.x, position.y);
-    game.debug.geom(this.debugGizmo, "FE0101");
-    
-    // TODO
-    this.sprite = game.load.image(
-        position.x,
-        position.y,
-        BAG_SPRITE_SHEET_KEY
-    );
-    */
+
     this.insideSprite = undefined; // TODO
 }
 
@@ -74,28 +64,17 @@ Bag.prototype = {
         game.physics.arcade.enable(this.sprite);
         this.sprite.enableBody = true;
         this.sprite.body.immovable = true; 
-        this.sprite.isBlocked = false;      // These three are properties of the sprite so they can be accessed from the collision handler
-        this.sprite.bagThatBlockedThis = null;  // Reference to the sprite that blocked this bag
-        this.sprite.positionBeforeBeingBlocked = this.position;
-        this.bagsCollidedThisFrame = new Array();
+        this.sprite.body.setCircle(MIN_DISTANCE_BETWEEN_BAGS);
+        this.sprite.lastPosition = this.position;
     },
 
     update: function () {
         // Update collisions
-        this.bagsCollidedThisFrame.splice(0, this.bagsCollidedThisFrame.length);    // Clear list
-        if (!game.physics.arcade.collide(this.sprite, bagLayer, this.collisionHandler, null, this)) {
-            this.sprite.isBlocked = false;
-            this.sprite.bagThatBlockedThis = null;
-        }
-
-        // If this bag is no longer colliding with the one that blocked it, then it's free to move
-        if (!this.bagsCollidedThisFrame.includes(this.sprite.bagThatBlockedThis)) {
-            this.sprite.isBlocked = false;
-            this.sprite.bagThatBlockedThis = null;
-        }
+        this.sprite.blockCountThisFrame = 0;
+        game.physics.arcade.collide(this.sprite, bagLayer, this.collisionHandler, null, this);
 
         // Movement
-        if (!this.sprite.isBlocked) {
+        if (this.sprite.blockCountThisFrame == 0) {
             this.move();
         }
 
@@ -106,12 +85,12 @@ Bag.prototype = {
 
         this.sprite.x = this.position.x;
         this.sprite.y = this.position.y;
-        //this.displayGizmo();
     },
 
     move: function () {
         let movementResult = this.graph.requestMove(this.position, this.movementParameters, BAG_MOVEMENT_SPEED * game.time.physicsElapsed);
         this.sprite.positionBeforeBeingBlocked = this.position;
+        this.sprite.lastPosition = this.position;
         this.position = movementResult.position;
 
         if (movementResult.hasReachedEnd) {
@@ -123,28 +102,35 @@ Bag.prototype = {
     },
 
     collisionHandler: function (thisBagSprite, collidedBagSprite) {
-        this.bagsCollidedThisFrame.push(collidedBagSprite);
-
-        if (thisBagSprite.isBlocked) {
-            // No need to check collisions in detail if a bag is already blocked
-            return;
-        }
         let thisBagIsInLane = this.bagIsInLane(thisBagSprite.x);
         let otherBagIsInLane = this.bagIsInLane(collidedBagSprite.x);
 
-        if (thisBagIsInLane == otherBagIsInLane) {
-            this.bagsAreInSameWayCollision(thisBagSprite, collidedBagSprite);
-        } else {
+        if (thisBagIsInLane && otherBagIsInLane) {
+            //We are both in a lane. Are they the same lane?
+            if (thisBagSprite.x == collidedBagSprite.x) {
+                if (thisBagSprite.y < collidedBagSprite.y) {
+                    //If I'm higher, let them pass
+                    thisBagSprite.blockCountThisFrame++;
+                }
+                //If we aren't on the same lane, we don't care.
+            }
+        } else if ((thisBagIsInLane && !otherBagIsInLane) || (!thisBagIsInLane && otherBagIsInLane)) {
+            //One is a lane and one is in a path. Priority is slightly complicated.
             this.bagsAreInDifferentWaysCollision(thisBagSprite, collidedBagSprite);
+        } else if (!thisBagIsInLane && !otherBagIsInLane) {
+            //None of us is in a lane. Whoever's further gets priority.
+            //Ignore this collision if we aren't moving in the same direction
+            let thisIsMovingToTheRight = thisBagSprite.x - thisBagSprite.lastPosition.x > 0;
+            let otherIsMovingToTheRight = collidedBagSprite.x - collidedBagSprite.lastPosition.x > 0;  
+            
+            if (thisIsMovingToTheRight == otherIsMovingToTheRight) {
+                if (thisIsMovingToTheRight) {
+                    if (thisBagSprite.x < collidedBagSprite.x) thisBagSprite.blockCountThisFrame++;
+                } else {
+                    if (thisBagSprite.x > collidedBagSprite.x) thisBagSprite.blockCountThisFrame++;
+                }
+            }
         }
-    },
-
-    bagsAreInSameWayCollision : function(thisBagSprite, collidedBagSprite) {
-        let bagAlreadyBlocked = thisBagSprite.isBlocked ? thisBagSprite : collidedBagSprite;
-        let bagBlocked = !thisBagSprite.isBlocked ? thisBagSprite : collidedBagSprite;
-
-        bagBlocked.isBlocked = true;
-        bagBlocked.bagThatBlockedThis = bagAlreadyBlocked;
     },
 
     bagsAreInDifferentWaysCollision : function(thisBagSprite, collidedBagSprite) {
@@ -152,13 +138,18 @@ Bag.prototype = {
         let bagInLane = thisBagIsInLane ? thisBagSprite : collidedBagSprite;
         let bagInPath = !thisBagIsInLane ? thisBagSprite : collidedBagSprite;
         
-        if (this.bagIsHeadingToOthersBagLane(bagInPath, bagInLane)) {
-            bagInPath.isBlocked = true;
-            bagInPath.bagThatBlockedThis = bagInLane;
-        } else if (bagInPath.isBlocked) {
-            // bagInLane is heading towards bagInPath
-            bagInLane.isBlocked = true;
-            bagInLane.bagThatBlockedThis = bagInPath;
+        if (!this.bagIsHeadingToOthersBagLane(bagInPath, bagInLane)) return;
+
+        if (bagInLane.y > bagInPath.y) {
+            //If I'm lower than them, I've got priority.
+            bagInPath.blockCountThisFrame++;
+        } else {
+            //If I'm higher than them, I've got priority unless they're sufficiently close to the lane.
+            if (Math.abs(bagInLane.x - bagInPath.x) < MAX_DISTANCE_TO_LANE_FOR_PRIORITY) {
+                bagInLane.blockCountThisFrame++;
+            } else {
+                bagInPath.blockCountThisFrame++;
+            }
         }
     },
 
@@ -187,15 +178,5 @@ Bag.prototype = {
         }
 
         console.error("No LaneEnd was found for x:" + laneX);
-    },
-
-    /*
-    displayGizmo: function() {
-        this.debugGizmo.centerOn(this.position.x, this.position.y);
-        game.debug.geom(this.debugGizmo, "FE0101");
-        this.debugGizmo.x = this.position.x;
-        this.debugGizmo.y = this.position.y;
     }
-    */
-
 }
