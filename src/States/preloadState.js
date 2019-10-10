@@ -63,6 +63,8 @@ preloadState.prototype = {
         this.loadBagSpriteFromName("img_Maleta_A_ID02_01_02");
 
         this.loadBagSpriteFromName("img_Maleta_B_ID03_01");
+        this.loadBagSpriteFromName("img_Maleta_B_ID03_02");
+        this.loadBagSpriteFromName("img_Maleta_B_ID03_03");
 
         this.loadBagSpriteFromName("img_Maleta_B_ID04_01_00");
         this.loadBagSpriteFromName("img_Maleta_B_ID04_01_01");
