@@ -1,6 +1,6 @@
 {
     "lanes": {
-        "count": 3,
+        "count": 4,
         "types": ["S", "D", "S", "D"]
     },
     "waves": [
