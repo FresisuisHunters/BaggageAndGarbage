@@ -69,10 +69,13 @@ Bag.prototype = {
         this.sprite.scale.set(BAG_SCALE_FACTOR, BAG_SCALE_FACTOR);
 
         // Collision purposes
+        // https://phaser.io/docs/2.6.2/Phaser.Physics.Arcade.Body.html
         game.physics.arcade.enable(this.sprite);
         this.sprite.enableBody = true;
         this.sprite.body.immovable = true;
-        this.sprite.isBlocked = false;      // These three are properties of the sprite so they can be accessed from the collision handler
+        this.sprite.body.syncBounds = false;
+        this.sprite.body.updateBounds();
+        this.sprite.isBlocked = false;          // These three are properties of the sprite so they can be accessed from the collision handler
         this.sprite.bagThatBlockedThis = null;  // Reference to the sprite that blocked this bag
         this.sprite.positionBeforeBeingBlocked = this.position;
         this.bagsCollidedThisFrame = new Array();
