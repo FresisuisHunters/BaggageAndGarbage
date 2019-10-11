@@ -3,6 +3,15 @@ var gameplayState = function (game) {
 
 }
 
+// Game speed
+const DEFAULT_GAME_SPEED = 1;
+const SPED_UP_GAME_SPEED = 1.5;
+const SPEED_UP_BUTTON_DOWN_SPRITE = LANE_ICON_SPRITE_KEY_SAFE;
+const SPEED_UP_BUTTON_UP_SPRITE = LANE_ICON_SPRITE_KEY_DANGER;
+
+var gameSpeed = DEFAULT_GAME_SPEED;
+
+// Level layout
 const LEVEL_DIMENSIONS = {
     laneHorizontalMargin: 135,
     laneTopMargin: 420,
@@ -45,6 +54,7 @@ gameplayState.prototype = {
         this.createGraph(this.levelData.lanes);
         this.createLaneEnds(this.graph, this.onBagKilled, this.levelData.lanes.types, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
+        this.createSpeedUpButton();
         
         this.mask = this.getPathMask(this.graph);
         pathLayer.mask = this.mask;
@@ -95,6 +105,24 @@ gameplayState.prototype = {
                 laneEnd: new LaneEnd(type, onBagKilled, bags, new Vector2D(columns[i], GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin))
             });
         }
+    },
+
+    createSpeedUpButton : function() {
+        let x = 20;
+        let y = 20;
+
+        this.speedUpButton = game.add.button(x, y, SPEED_UP_BUTTON_UP_SPRITE, this.speedUpButtonCallback, this);
+        this.speedUpButton.anchor.setTo(0, 0);
+        this.speedUpButton.down = false;
+
+        overlayLayer.add(this.speedUpButton);
+    },
+
+    speedUpButtonCallback : function() {
+        this.speedUpButton.down = !this.speedUpButton.down;
+        // this.speedUpButton.key = (this.speedUpButton.down) ? SPEED_UP_BUTTON_DOWN_SPRITE : SPEED_UP_BUTTON_UP_SPRITE;
+        // TODO: Cambiar sprite del boton cuando esta pulsado
+        gameSpeed = (this.speedUpButton.down) ? SPED_UP_GAME_SPEED : DEFAULT_GAME_SPEED;
     },
 
     getPathMask: function(graph) {
@@ -179,5 +207,13 @@ gameplayState.prototype = {
 
     onBagScanned: function (scanner) {
         bags.push(scanner.ExitBag());
+    },
+
+    render: function() {
+        if (DEBUG_SHOW_COLLIDERS) {
+            for (let i = 0; i < this.bags.length; i++) {
+                game.debug.body(this.bags[i].sprite);
+            }
+        }
     }
 }
