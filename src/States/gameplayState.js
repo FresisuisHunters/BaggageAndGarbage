@@ -4,6 +4,8 @@ var gameplayState = function (game) {
 }
 
 const GAMEPLAY_BACKGROUND_IMAGE_KEY = "img_GameplayBackground";
+const GAMEPLAY_MUSIC_KEY = "music_Gameplay";
+const GAMEPLAY_MUSIC_VOLUME = 0.5;
 
 const LEVEL_DIMENSIONS = {
     laneHorizontalMargin: 135,
@@ -45,7 +47,7 @@ gameplayState.prototype = {
         overlayLayer = game.add.group();
         this.createBackground();
 
-        //Crea managers y tal
+        //Crea los cariiles
         this.createGraph();
         this.createLaneEnds(this.graph, this.onBagKilled, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
@@ -57,10 +59,15 @@ gameplayState.prototype = {
         let bagMask = this.getBagMask();
         bagLayer.mask = bagMask;
 
+        //Crea los managers
         this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(),
             LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin);
         this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
+
+        this.music = game.add.audio(GAMEPLAY_MUSIC_KEY);
+        this.music.volume = GAMEPLAY_MUSIC_VOLUME;
+        this.music.play();
 
         //Empieza la primera oleada
         this.waveManager.startNextWave();
@@ -123,6 +130,7 @@ gameplayState.prototype = {
             this.scanners[i].sprite.events.onInputDown.add(this.onScannerSelected, { 'scanner': this.scanners[i], 'scanners': this.scanners }, this);
         }
     },
+
     getPathMask: function (graph) {
         let columns = graph.getColumns();
         let bottomY = GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin;

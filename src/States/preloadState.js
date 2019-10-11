@@ -25,9 +25,14 @@ preloadState.prototype = {
         game.load.spritesheet(CONVEYOR_BELT_SHEET_DANGER.KEY, "resources/sprites/sheet_ConveyorReject.png", CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_SIZE, 
             CONVEYOR_BELT_SHEET_DANGER.FRAME_COUNT, CONVEYOR_BELT_SHEET_MARGIN, CONVEYOR_BELT_SHEET_SPACING);
 
+        //Objetos del escenario
         game.load.image(LANE_ICON_SPRITE_KEY_SAFE, "resources/sprites/img_LaneIcon_Safe.png");
         game.load.image(LANE_ICON_SPRITE_KEY_DANGER, "resources/sprites/img_LaneIcon_Danger.png");
         game.load.spritesheet(SCANNER_SHEET_KEY,"resources/sprites/sheet_Scanner.png", 256, 256,3,20,20);
+
+        //Audio
+        game.load.audio(GAMEPLAY_MUSIC_KEY, "resources/audio/music_Gameplay.mp3");
+
 
         game.load.image(GAMEPLAY_BACKGROUND_IMAGE_KEY, "resources/sprites/img_GameplayBackground.png");
     },

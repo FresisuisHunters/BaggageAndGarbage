@@ -9,6 +9,7 @@ bootState.prototype = {
         game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE;
         game.scale.setResizeCallback(this.onResize, this);
         game.physics.startSystem(Phaser.Physics.ARCADE);
+        game.sound.mute = MUTE_AUDIO;
     },
 
     preload: function() {
