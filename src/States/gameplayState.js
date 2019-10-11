@@ -5,7 +5,7 @@ var gameplayState = function (game) {
 
 // Game speed
 const DEFAULT_GAME_SPEED = 1;
-const SPED_UP_GAME_SPEED = 1.5;
+const SPED_UP_GAME_SPEED = 2;
 const SPEED_UP_BUTTON_DOWN_SPRITE = LANE_ICON_SPRITE_KEY_SAFE;
 const SPEED_UP_BUTTON_UP_SPRITE = LANE_ICON_SPRITE_KEY_DANGER;
 
@@ -120,8 +120,8 @@ gameplayState.prototype = {
 
     speedUpButtonCallback : function() {
         this.speedUpButton.down = !this.speedUpButton.down;
-        // this.speedUpButton.key = (this.speedUpButton.down) ? SPEED_UP_BUTTON_DOWN_SPRITE : SPEED_UP_BUTTON_UP_SPRITE;
-        // TODO: Cambiar sprite del boton cuando esta pulsado
+        let newButtonSprite = (this.speedUpButton.down) ? SPEED_UP_BUTTON_DOWN_SPRITE : SPEED_UP_BUTTON_UP_SPRITE;
+        this.speedUpButton.loadTexture(newButtonSprite, 0);
         gameSpeed = (this.speedUpButton.down) ? SPED_UP_GAME_SPEED : DEFAULT_GAME_SPEED;
     },
 
@@ -155,7 +155,7 @@ gameplayState.prototype = {
         if (!this.gameHasEnded) {
             //Updatea todo lo que tenga que ser updateado
             this.pathCreator.update();
-            this.waveManager.update(game.time.physicsElapsed);
+            this.waveManager.update(game.time.physicsElapsed * gameSpeed);
 
             //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
             for (let i = this.bags.length - 1; i >= 0; i--) {
