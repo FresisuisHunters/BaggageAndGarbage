@@ -4,11 +4,13 @@ var gameplayState = function (game) {
 }
 
 const GAMEPLAY_BACKGROUND_IMAGE_KEY = "img_GameplayBackground";
+const GAMEPLAY_MUSIC_KEY = "music_Gameplay";
+const GAMEPLAY_MUSIC_VOLUME = 0.5;
 
 const LEVEL_DIMENSIONS = {
     laneHorizontalMargin: 135,
-    laneTopMargin: 420,
-    laneBottomMargin: 250,
+    laneTopMargin: 313,
+    laneBottomMargin: 259
 }
 
 //Layers
@@ -36,67 +38,75 @@ gameplayState.prototype = {
 
     create: function () {
         console.log("Entered gameplayState")
-        
+
         //El orden en el que se crean es el orden en el que dibujan. Es decir, el último se dibuja por encima del resto.
         backgroundLayer = game.add.group();
-
         laneLayer = game.add.group();
         pathLayer = game.add.group();
-        
         bagLayer = game.add.group();
         overlayLayer = game.add.group();
-        
         this.createBackground();
 
-        //Crea todo lo relacionado con los carriles
-        this.createGraph(this.levelData.lanes);
-        this.createLaneEnds(this.graph, this.onBagKilled, this.levelData.lanes.types, this.bags);
+        //Crea los cariiles
+        this.createGraph();
+        this.createLaneEnds(this.graph, this.onBagKilled, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
-        
-        this.mask = this.getPathMask(this.graph);
-        pathLayer.mask = this.mask;
 
-        this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(), 
-            LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin, this.mask);
+        //Crea las máscaras
+        this.pathMask = this.getPathMask(this.graph);
+        pathLayer.mask = this.pathMask;
+
+        let bagMask = this.getBagMask();
+        bagLayer.mask = bagMask;
+
+        //Crea los managers
+        this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(),
+            LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin);
         this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
 
-        
+        this.music = game.add.audio(GAMEPLAY_MUSIC_KEY);
+        this.music.volume = GAMEPLAY_MUSIC_VOLUME;
+        this.music.play();
 
         //Empieza la primera oleada
         this.waveManager.startNextWave();
     },
 
-    createBackground: function() {
+    createBackground: function () {
         this.background = backgroundLayer.create(0, 0, GAMEPLAY_BACKGROUND_IMAGE_KEY);
         this.background.anchor.set(0, 0);
+        game.stage.backgroundColor = "#78E38E";
     },
 
-    createGraph: function(laneInfo) {
+    createGraph: function (laneInfo) {
         let startX = LEVEL_DIMENSIONS.laneHorizontalMargin;
         let startY = LEVEL_DIMENSIONS.laneTopMargin;
-        
+
         let distanceFromFirstToLastLane = GAME_WIDTH - (LEVEL_DIMENSIONS.laneHorizontalMargin * 2);
-        let laneCount = laneInfo.count;
+        let laneCount = this.levelData.lanes.count;
         let gapBetweenLanes = distanceFromFirstToLastLane / (laneCount - 1);
 
         let height = GAME_HEIGHT - startY - LEVEL_DIMENSIONS.laneBottomMargin;
 
         this.graph = new Graph(laneCount, startX, startY, gapBetweenLanes, height, this.scanners);
+
+        this.createScanners(startX, gapBetweenLanes);
     },
 
-    createLaneConveyorBelts: function(columns) {
+    createLaneConveyorBelts: function (columns) {
         let startY = LEVEL_DIMENSIONS.laneTopMargin;
         let endY = GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin;
 
         for (let i = 0; i < columns.length; i++) {
-            new ConveyorBelt(laneLayer, new Vector2D(columns[i], startY), new Vector2D(columns[i], endY), CONVEYOR_LANE_SCALE_FACTOR);
+            new ConveyorBelt(laneLayer, new Vector2D(columns[i], startY), new Vector2D(columns[i], endY), CONVEYOR_LANE_SCALE_FACTOR, null, CONVEYOR_BELT_SHEET_LANE);
         }
     },
 
-    createLaneEnds: function(graph, onBagKilled, laneTypes, bags) {
+    createLaneEnds: function (graph, onBagKilled, bags) {
         this.lanes = [];
         let columns = graph.getColumns();
+        let laneTypes = this.levelData.lanes.types;
 
         for (let i = 0; i < columns.length; i++) {
             let type;
@@ -111,7 +121,17 @@ gameplayState.prototype = {
         }
     },
 
-    getPathMask: function(graph) {
+    createScanners: function (startx, gapBetweenLanes) {
+
+        let scannersData = this.levelData.scannerPositions;
+        for (let i = 0; i < scannersData.length; i++) {
+            this.scanners.push(new Scanner(new Vector2D(scannersData[i].belt * gapBetweenLanes + startx, scannersData[i].y), scannersData[i].belt));
+            this.scanners[i].sprite.inputEnabled = true;
+            this.scanners[i].sprite.events.onInputDown.add(this.onScannerSelected, { 'scanner': this.scanners[i], 'scanners': this.scanners }, this);
+        }
+    },
+
+    getPathMask: function (graph) {
         let columns = graph.getColumns();
         let bottomY = GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin;
 
@@ -122,56 +142,71 @@ gameplayState.prototype = {
             let topLeft = new Vector2D(columns[i], LEVEL_DIMENSIONS.laneTopMargin);
             let topRight = new Vector2D(columns[i + 1], LEVEL_DIMENSIONS.laneTopMargin);
 
-            topLeft.x += CONVEYOR_BELT_WIDTH / 2;
-            topRight.x -= CONVEYOR_BELT_WIDTH / 2;
+            topLeft.x += CONVEYOR_BELT_WIDTH_LANE / 2;
+            topRight.x -= CONVEYOR_BELT_WIDTH_LANE / 2;
 
             let bottomLeft = new Vector2D(topLeft.x, bottomY);
             let bottomRight = new Vector2D(topRight.x, bottomY);
 
             mask.drawPolygon(new Phaser.Polygon([topLeft, topRight, bottomRight, bottomLeft]));
         }
-        
+
+        return mask;
+    },
+
+    getBagMask: function () {
+        let mask = new Phaser.Graphics(game);
+        mask.beginFill(0xffffff);
+
+        mask.drawPolygon(new Phaser.Polygon([
+            { x: 0, y: LEVEL_DIMENSIONS.laneTopMargin },
+            { x: GAME_WIDTH, y: LEVEL_DIMENSIONS.laneTopMargin },
+            { x: GAME_WIDTH, y: GAME_HEIGHT },
+            { x: 0, y: GAME_HEIGHT }
+        ]));
+
         return mask;
     },
 
     //GAME LOOP//
     /////////////
-    update: function() {
-        
+    update: function () {
+
         if (!this.gameHasEnded) {
-            //Updatea todo lo que tenga que ser updateado
             this.pathCreator.update();
             this.waveManager.update(game.time.physicsElapsed);
+        }
 
-            //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
-            for (let i = this.bags.length - 1; i >= 0; i--) {
-                this.bags[i].update();
-                for (let j = 0; j < this.scanners.lenth; j++) {
-                    if (scanners[j].belt == bag.position.x && scanners[j].start <= (bag.position.y+BAG_MOVEMENT_SPEED))
-                    {
-                        scanners[j].EnterBag(bags[i]);
-                        bags.splice(i,1);
-                        timer = game.time.create(true)
-                        timer.add(SCAN_TIME,this.onBagScanned,this,scanners[j]);
-                    }
+        //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
+        for (let i = this.bags.length - 1; i >= 0; i--) {
+            this.bags[i].update();
+            for (let j = 0; j < this.scanners.length; j++) {
+                if (this.scanners[j].x == this.bags[i].position.x &&
+                    this.scanners[j].start <= (this.bags[i].position.y + this.bags[i].sprite.height / 2) &&
+                    this.bags[i].position.y < this.scanners[j].end) {
+                    this.scanners[j].EnterBag(this.bags[i]);
                 }
             }
-
-            //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
-            bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
         }
+        for (let j = 0; j < this.scanners.length; j++) {
+            this.scanners[j].UpdateScanner();
+        }
+
+        //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
+        bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
+
     },
 
     //EVENTS//
     //////////
-    onNonLastWaveEnd: function() {
+    onNonLastWaveEnd: function () {
         this.graph.resetGraph();
 
         pathLayer.destroy(true, true);
 
     },
 
-    onGameEnd: function() {
+    onGameEnd: function () {
         let state = game.state.getCurrentState();
 
         state.pathCreator.unsubscribeFromInputEvents();
@@ -192,5 +227,20 @@ gameplayState.prototype = {
 
     onBagScanned: function (scanner) {
         bags.push(scanner.ExitBag());
+    },
+
+    render: function() {
+        if (DEBUG_SHOW_COLLIDERS) {
+            for (let i = 0; i < this.bags.length; i++) {
+                game.debug.body(this.bags[i].sprite);
+            }
+        }
+    },
+    
+    onScannerSelected: function () {
+        for (var i = 0; i < this.scanners.length; i++) {
+            this.scanners[i].SetInactive();
+        }
+        this.scanner.SetActive();
     }
 }

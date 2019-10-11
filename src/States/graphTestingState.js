@@ -18,7 +18,8 @@ graphTestingState.prototype = {
     create : function() {
         console.log("Entered grapthTestingState")
         
-        this.graph = new Graph(this.CONVEYOR_BELT_NUMBER, this.CONVEYOR_BELT_SPAWN_X, this.CONVEYOR_BELT_SPAWN_Y, this.CONVEYOR_BELT_HORIZONTAL_OFFSET, this.CONVEYOR_BELT_VERTICAL_DISTANCE);
+        this.graph = new Graph(this.CONVEYOR_BELT_NUMBER, this.CONVEYOR_BELT_SPAWN_X, this.CONVEYOR_BELT_SPAWN_Y, 
+            this.CONVEYOR_BELT_HORIZONTAL_OFFSET, this.CONVEYOR_BELT_VERTICAL_DISTANCE);
         if (DEBUG_GRAPH) {
             console.log("Original state of the graph");
             this.graph.printGraph();
