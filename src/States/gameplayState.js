@@ -5,7 +5,7 @@ var gameplayState = function (game) {
 
 const GAMEPLAY_BACKGROUND_IMAGE_KEY = "img_GameplayBackground";
 const GAMEPLAY_MUSIC_KEY = "music_Gameplay";
-const GAMEPLAY_MUSIC_VOLUME = 0.5;
+const GAMEPLAY_MUSIC_VOLUME = .75;
 
 const LEVEL_DIMENSIONS = {
     laneHorizontalMargin: 135,
@@ -67,6 +67,7 @@ gameplayState.prototype = {
 
         this.music = game.add.audio(GAMEPLAY_MUSIC_KEY);
         this.music.volume = GAMEPLAY_MUSIC_VOLUME;
+        this.music.loop = true;
         this.music.play();
 
         //Empieza la primera oleada

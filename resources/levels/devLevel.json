@@ -5,9 +5,9 @@
     },
     "waves": [
         {
-            "numA": 3,
-            "numB_Safe": 2,
-            "numB_Danger": 2,
+            "numA": 2,
+            "numB_Safe": 1,
+            "numB_Danger": 1,
             "numC": 1
         },
         {

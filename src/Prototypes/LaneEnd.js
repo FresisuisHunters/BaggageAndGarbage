@@ -6,19 +6,23 @@ const LaneEndTypes = {
 
 const LANE_ICON_SPRITE_KEY_SAFE = "img_LaneIcon_Safe"
 const LANE_ICON_SPRITE_KEY_DANGER = "img_LaneIcon_Danger"
-
 const LANE_ICON_SCALE_FACTOR = 0.6;
-const LANE_ICON_Y_OFFSET = -30;
 
+const LANE_ICON_Y_OFFSET = -30;
 const LANE_END_LENGTH = 300;
 
-function LaneEnd(type, onBagKilled, bagList, position) {
+const SFX_CORRECT_BAG_KEY = "sfx_CorrectBag";
+const SFX_CORRECT_BAG_VOLUME = 1;
+const SFX_WRONG_BAG_KEY = "sfx_WrongBag";
+const SFX_WRONG_BAG_VOLUME = 1;
 
+function LaneEnd(type, onBagKilled, bagList, position) {
     this.killThreshold = position.y + LANE_END_LENGTH;
     this.type = type;
     this.onBagKilled = onBagKilled,
     this.bags = bagList;
 
+    //Initialize the sprite
     let iconSpriteKey;
     let beltSpriteSheet;
     switch (type) {
@@ -36,8 +40,15 @@ function LaneEnd(type, onBagKilled, bagList, position) {
     icon.anchor.set(0.5, 0);
     icon.scale.set(LANE_ICON_SCALE_FACTOR, LANE_ICON_SCALE_FACTOR);
 
+    //Create the ConveyorBelt
     new ConveyorBelt(laneLayer, position, new Vector2D(position.x, position.y + LANE_END_LENGTH), 
         CONVEYOR_LANE_SCALE_FACTOR, null, beltSpriteSheet);
+
+    //Set up audio
+    this.correctSFX = game.add.audio(SFX_CORRECT_BAG_KEY);
+    this.correctSFX.volume = SFX_CORRECT_BAG_VOLUME;
+    this.wrongSFX = game.add.audio(SFX_WRONG_BAG_KEY);
+    this.wrongSFX.volume = SFX_WRONG_BAG_VOLUME;
 }
 
 LaneEnd.prototype = {
@@ -57,7 +68,11 @@ LaneEnd.prototype = {
                 console.error("A bag has type " + bag.type + ". That value doesn't make sense.");
         }
 
+        if (isCorrect) this.correctSFX.play();
+        else this.wrongSFX.play();
+
         this.onBagKilled(isCorrect);
+
     },
 
     requestMove: function(bag) {

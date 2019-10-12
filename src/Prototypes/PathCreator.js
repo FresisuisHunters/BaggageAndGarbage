@@ -1,7 +1,11 @@
 const PATH_DRAW_TOLERANCE = 100;
+
 const CORRECT_PATH_COLOR = 0x00AA00;
 const WRONG_PATH_COLOR = 0xAA0000;
 const PREVIEW_ALPHA = 0.5;
+
+const SFX_BUILT_PATH_KEY = "sfx_BuiltPath";
+const SFX_BUILT_PATH_VOLUME = 0.75;
 
 function PathCreator(graph, columns, minAllowedY, maxAllowedY, mask) {
     this.graph = graph;
@@ -15,6 +19,9 @@ function PathCreator(graph, columns, minAllowedY, maxAllowedY, mask) {
     this.previewConveyorBelt.setAlpha(PREVIEW_ALPHA);
 
     this.subscribeToInputEvents();
+
+    this.builtPathSFX = game.add.audio(SFX_BUILT_PATH_KEY);
+    this.builtPathSFX.volume = SFX_BUILT_PATH_VOLUME;
 }
 
 PathCreator.prototype = {
@@ -50,6 +57,7 @@ PathCreator.prototype = {
             if (endPoint != null) {
                 if (this.graph.tryAddPath(this.pathDrawProcess.startPoint, endPoint)) {
                     new ConveyorBelt(pathLayer, this.pathDrawProcess.startPoint, endPoint, CONVEYOR_PATH_SCALE_FACTOR, null, CONVEYOR_BELT_SHEET_LANE);
+                    this.builtPathSFX.play();
                 }
             }
 
