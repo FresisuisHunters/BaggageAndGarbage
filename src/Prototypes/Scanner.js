@@ -18,7 +18,7 @@ function Scanner(position, lane) {
     this.windowEnd = 300;
     this.windowPosition = 650;
     this.scanSprites = game.add.group();
-    game.world.sendToBack(this.scanSprites);
+    game.world.sendToBack(this.scanSprites);    //Al hacer esto, se dibujan detrás de la cinta de la pantalla. Hay qu ehacer algo al respecto.
 
     this.SetInactive();
 

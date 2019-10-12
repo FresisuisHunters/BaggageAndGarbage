@@ -4,6 +4,8 @@ var gameplayState = function (game) {
 }
 
 const GAMEPLAY_BACKGROUND_IMAGE_KEY = "img_GameplayBackground";
+const GAMEPLAY_FOREGROUND_IMAGE_KEY = "img_GameplayForeground";
+
 const GAMEPLAY_MUSIC_KEY = "music_Gameplay";
 const GAMEPLAY_MUSIC_VOLUME = .75;
 
@@ -75,9 +77,22 @@ gameplayState.prototype = {
     },
 
     createBackground: function () {
+
+        let scannerBelt = new Phaser.TileSprite(game, GAME_WIDTH, 0, 512, 256, "img_ScannerBelt");
+        scannerBelt.anchor.set(1, 0);
+        scannerBelt.x = GAME_WIDTH;
+        scannerBelt.y = 0;
+        scannerBelt.scale.set(1.2, 1.15);
+        scannerBelt.autoScroll(0, BAG_MOVEMENT_SPEED / scannerBelt.scale.y);
+
+        backgroundLayer.add(scannerBelt);
+
+
         this.background = backgroundLayer.create(0, 0, GAMEPLAY_BACKGROUND_IMAGE_KEY);
         this.background.anchor.set(0, 0);
-        game.stage.backgroundColor = "#78E38E";
+        
+        this.foreground = overlayLayer.create(0, 0, GAMEPLAY_FOREGROUND_IMAGE_KEY);
+        this.foreground.anchor.set(0, 0);
     },
 
     createGraph: function (laneInfo) {

@@ -28,7 +28,7 @@ preloadState.prototype = {
         //Objetos del escenario
         game.load.image(LANE_ICON_SPRITE_KEY_SAFE, "resources/sprites/img_LaneIcon_Safe.png");
         game.load.image(LANE_ICON_SPRITE_KEY_DANGER, "resources/sprites/img_LaneIcon_Danger.png");
-        game.load.spritesheet(SCANNER_SHEET_KEY,"resources/sprites/sheet_Scanner.png", 256, 256,3,20,20);
+        game.load.spritesheet(SCANNER_SHEET_KEY,"resources/sprites/sheet_Scanner.png", 256, 256, 3,20, 10);
 
         //Audio
         game.load.audio(GAMEPLAY_MUSIC_KEY, "resources/audio/music_Gameplay.mp3");
@@ -39,6 +39,8 @@ preloadState.prototype = {
         game.load.audio(SFX_SCANNER_DETECTED_DANGER_KEY, "resources/audio/sfx_ScannerDetectedDanger.mp3");
 
         game.load.image(GAMEPLAY_BACKGROUND_IMAGE_KEY, "resources/sprites/img_GameplayBackground.png");
+        game.load.image(GAMEPLAY_FOREGROUND_IMAGE_KEY, "resources/sprites/img_GameplayForeground.png");
+        game.load.image("img_ScannerBelt", "resources/sprites/img_ScannerBelt.png");
     },
 
     loadBagSpriteFromName: function(name) {
