@@ -19,6 +19,7 @@ function Scanner(position, lane) {
     this.windowPosition = 650;
     this.scanSprites = game.add.group();
     game.world.sendToBack(this.scanSprites);    //Al hacer esto, se dibujan detrás de la cinta de la pantalla. Hay qu ehacer algo al respecto.
+    //this.scanSprites.z+=1;
 
     this.SetInactive();
 
@@ -50,6 +51,7 @@ Scanner.prototype = {
             this.currentBags.push(Bag);
             this.scanSprites.create(this.windowPosition, this.windowStart, Bag.scanSprite);
             if (this.active && !this.runningSFX.isPlaying) this.runningSFX.play();
+            console.log("Bag: " + Bag.position.x + " Scanner: " + this.x);
         }
     },
 
@@ -75,7 +77,8 @@ Scanner.prototype = {
                         (this.end - (this.start - this.currentBags[i].sprite.height * 2))));
             }
 
-            if (this.currentBags[0].position.y - this.currentBags[0].sprite.height > this.end) {
+            if (this.currentBags[0].position.y - this.currentBags[0].sprite.height > this.end
+                || this.currentBags[0].position.x != this.x) {
                 this.ExitBag();
             }
                 
@@ -97,7 +100,7 @@ Scanner.prototype = {
     },
 
     IsInScanner: function (point) {
-        if (point.x == this.belt && point.y >= this.start && point.y <= this.end) {
+        if (point.x == this.x && point.y >= this.start && point.y <= this.end) {
             return true;
         }
         else
@@ -108,12 +111,14 @@ Scanner.prototype = {
         this.active = true;
         this.scanSprites.visible = true;
         this.sprite.frame = 0;
+        console.log("active");
     },
 
     SetInactive: function () {
         this.sprite.frame = 2;
         this.active = false;
         this.scanSprites.visible = false;
+        console.log("inactive");
     }
 
 }

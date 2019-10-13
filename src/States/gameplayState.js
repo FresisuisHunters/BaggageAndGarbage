@@ -105,9 +105,11 @@ gameplayState.prototype = {
 
         let height = GAME_HEIGHT - startY - LEVEL_DIMENSIONS.laneBottomMargin;
 
+        this.createScanners(startX, gapBetweenLanes);
+
         this.graph = new Graph(laneCount, startX, startY, gapBetweenLanes, height, this.scanners);
 
-        this.createScanners(startX, gapBetweenLanes);
+        
     },
 
     createLaneConveyorBelts: function (columns) {
