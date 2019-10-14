@@ -74,6 +74,7 @@ Bag.prototype = {
         this.sprite.rotation = rotation;
 
         // Collision purposes
+        // https://phaser.io/docs/2.6.2/Phaser.Physics.Arcade.Body.html
         game.physics.arcade.enable(this.sprite);
         this.sprite.enableBody = true;
         this.sprite.body.immovable = true; 

@@ -9,6 +9,13 @@ const GAMEPLAY_FOREGROUND_IMAGE_KEY = "img_GameplayForeground";
 const GAMEPLAY_MUSIC_KEY = "music_Gameplay";
 const GAMEPLAY_MUSIC_VOLUME = .75;
 
+// Game speed
+const DEFAULT_GAME_SPEED = 1;
+const SPED_UP_GAME_SPEED = DEFAULT_GAME_SPEED / 4;
+const SPEED_UP_BUTTON_DOWN_SPRITE = LANE_ICON_SPRITE_KEY_SAFE;
+const SPEED_UP_BUTTON_UP_SPRITE = LANE_ICON_SPRITE_KEY_DANGER;
+
+// Level layout
 const LEVEL_DIMENSIONS = {
     laneHorizontalMargin: 135,
     laneTopMargin: 313,
@@ -41,6 +48,11 @@ gameplayState.prototype = {
 
     create: function () {
         console.log("Entered gameplayState")
+<<<<<<< HEAD
+=======
+        
+        this.gameSpeed = DEFAULT_GAME_SPEED;
+>>>>>>> gameSpeed
 
         //El orden en el que se crean es el orden en el que dibujan. Es decir, el último se dibuja por encima del resto.
         backgroundLayer = game.add.group();
@@ -54,6 +66,13 @@ gameplayState.prototype = {
         this.createGraph();
         this.createLaneEnds(this.graph, this.onBagKilled, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
+<<<<<<< HEAD
+=======
+        this.createSpeedUpButton();
+        
+        this.mask = this.getPathMask(this.graph);
+        pathLayer.mask = this.mask;
+>>>>>>> gameSpeed
 
         this.createScanners(this.levelData.scanners, this.lanes);
 
@@ -138,6 +157,7 @@ gameplayState.prototype = {
         }
     },
 
+<<<<<<< HEAD
     createScanners: function (scannerData, lanes) {
         for (let i = 0; i < scannerData.length; i++) {
 
@@ -153,6 +173,30 @@ gameplayState.prototype = {
     },
 
     getPathMask: function (graph) {     
+=======
+    createSpeedUpButton : function() {
+        let x = 20;
+        let y = 20;
+
+        this.speedUpButton = game.add.button(x, y, SPEED_UP_BUTTON_UP_SPRITE, this.speedUpButtonCallback, this);
+        this.speedUpButton.anchor.setTo(0, 0);
+        this.speedUpButton.down = false;
+
+        overlayLayer.add(this.speedUpButton);
+    },
+
+    speedUpButtonCallback : function() {
+        this.speedUpButton.down = !this.speedUpButton.down;
+        let newButtonSprite = (this.speedUpButton.down) ? SPEED_UP_BUTTON_DOWN_SPRITE : SPEED_UP_BUTTON_UP_SPRITE;
+        this.speedUpButton.loadTexture(newButtonSprite, 0);
+        this.gameSpeed = (this.speedUpButton.down) ? SPED_UP_GAME_SPEED : DEFAULT_GAME_SPEED;
+        
+        game.time.slowMotion = this.gameSpeed;
+        game.time.desiredFps = 60 * game.time.slowMotion;
+    },
+
+    getPathMask: function(graph) {
+>>>>>>> gameSpeed
         let columns = graph.getColumns();
         let bottomY = GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin;
 
