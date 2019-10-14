@@ -74,7 +74,7 @@ Scanner.prototype = {
         if (!Bag.inScan) {
             Bag.inScan = true;
             this.currentBags.push(Bag);
-            let newInteriorSprite = this.scanSprites.create(this.windowCenterX, this.windowStartY, Bag.scanSprite);
+            let newInteriorSprite = this.scanSprites.create(this.windowCenterX, this.windowStartY, Bag.interiorSpriteKey);
             newInteriorSprite.anchor.setTo(0.5, 1);
 
             if (this.isActive && !this.runningSFX.isPlaying) this.runningSFX.play();
@@ -106,9 +106,11 @@ Scanner.prototype = {
 
             //Actualiza la posición de los sprits interiores
             for (let i = 0; i < this.currentBags.length; i++) {
-                this.scanSprites.getAt(i).y = game.math.linear(this.windowStartY, this.windowEndY + this.currentBags[i].sprite.height,
-                    game.math.min(1, (this.currentBags[i].sprite.y - (this.start - this.currentBags[i].sprite.height)) /
-                        (this.end - (this.start - this.currentBags[i].sprite.height * 2))));
+
+                let t = game.math.min(1, (this.currentBags[i].sprite.y - (this.start - this.currentBags[i].sprite.height)) /
+                    (this.end - (this.start - this.currentBags[i].sprite.height * 2)));
+
+                this.scanSprites.getAt(i).y = game.math.linear(this.windowStartY, this.windowEndY + this.currentBags[i].sprite.height, t);       
             }
 
             //Ve si alguna maleta ha salido

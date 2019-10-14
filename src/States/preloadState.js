@@ -1,11 +1,14 @@
 "use strict";
 
 const BAG_SPRITE_FOLDER = "resources/sprites/bags/";
-const INTERIOR_SPRITE_FOLDER = "resources/sprites/interiors/";
+const INTERIOR_SPRITE_FOLDER = "resources/sprites/bags/interiores/";
 
 var A_TYPE_BAG_SPRITE_KEYS = [];
 var B_TYPE_BAG_SPRITE_KEYS = [];
 var C_TYPE_BAG_SPRITE_KEYS = [];
+
+var SAFE_INTERIOR_SPRITE_KEYS = {};
+var DANGEROUS_INTERIOR_SPRITE_KEYS = {};
 
 var preloadState = function (game) {
 
@@ -53,6 +56,18 @@ preloadState.prototype = {
 
     loadInteriorSpriteFromName: function(name) {
         game.load.image(name, INTERIOR_SPRITE_FOLDER + name + ".png");
+
+        let indexOfID = name.indexOf("ID", 0);
+        let endOfID = name.indexOf("_", indexOfID);
+        let ID = name.substring(indexOfID, endOfID);
+
+        let dictionary;
+        if (name.includes("_S_")) dictionary = SAFE_INTERIOR_SPRITE_KEYS;
+        else if (name.includes("_P_")) dictionary = DANGEROUS_INTERIOR_SPRITE_KEYS; //P de Peligroso
+
+        if (dictionary[ID] == undefined) dictionary[ID] = [];
+
+        dictionary[ID].push(name);
     },
 
     create: function () {
@@ -106,7 +121,17 @@ preloadState.prototype = {
     },
 
     loadInteriorSprites: function() {
+        game.load.image(INTERIOR_SPRITE_KEY_A, INTERIOR_SPRITE_FOLDER + "img_Interior_A.png");
+        game.load.image(INTERIOR_SPRITE_KEY_C, INTERIOR_SPRITE_FOLDER + "img_Interior_C.png");
 
+        this.loadInteriorSpriteFromName("img_Interior_P_ID03_01");
+        this.loadInteriorSpriteFromName("img_Interior_S_ID03_01");
+
+        this.loadInteriorSpriteFromName("img_Interior_P_ID12_01");
+        this.loadInteriorSpriteFromName("img_Interior_P_ID12_02");
+        this.loadInteriorSpriteFromName("img_Interior_S_ID12_01");
+        this.loadInteriorSpriteFromName("img_Interior_S_ID12_02");
+    
     }
 
 }

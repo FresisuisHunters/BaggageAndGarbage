@@ -140,7 +140,10 @@ gameplayState.prototype = {
 
     createScanners: function (scannerData, lanes) {
         for (let i = 0; i < scannerData.length; i++) {
-            this.scanners.push(new Scanner(new Vector2D(lanes[scannerData[i].lane].x, scannerData[i].y), scannerData[i].lane));
+
+            let x = lanes[scannerData[i].lane].x;
+            let y = LEVEL_DIMENSIONS.laneTopMargin + scannerData[i].y;
+            this.scanners.push(new Scanner(new Vector2D(x, y), scannerData[i].lane));
             this.scanners[i].sprite.inputEnabled = true;
             this.scanners[i].sprite.events.onInputDown.add(this.onScannerSelected, { 'scanner': this.scanners[i], 'scanners': this.scanners }, this);
         }
@@ -149,7 +152,7 @@ gameplayState.prototype = {
         this.scanners[0].SetActive();
     },
 
-    getPathMask: function (graph) {
+    getPathMask: function (graph) {     
         let columns = graph.getColumns();
         let bottomY = GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin;
 

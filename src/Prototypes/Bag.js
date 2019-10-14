@@ -12,12 +12,9 @@ const BagTypes = {
     B_Danger: "B_Danger",
     C: "C"
 };
-var ScanSprites = {
-    A: LANE_ICON_SPRITE_KEY_SAFE,
-    B_Safe: LANE_ICON_SPRITE_KEY_SAFE,
-    B_Danger: LANE_ICON_SPRITE_KEY_DANGER,
-    C: LANE_ICON_SPRITE_KEY_DANGER
-};
+
+const INTERIOR_SPRITE_KEY_A = "img_Interior_A";
+const INTERIOR_SPRITE_KEY_C = "img_Interior_C";
 
 /**
  * 
@@ -38,6 +35,7 @@ function Bag(bagType, position, graph, lanes) {
     this.inScan = false;
 
     this.initializeSprite();
+    this.chooseInteriorSprite(this.sprite.key);
 
     this.insideSprite = undefined; // TODO
 }
@@ -45,8 +43,6 @@ function Bag(bagType, position, graph, lanes) {
 Bag.prototype = {
 
     initializeSprite: function () {
-
-        this.scanSprite = ScanSprites[this.type];
 
         //Get out options depending on the bag type
         availableSpriteNames = null;
@@ -85,9 +81,45 @@ Bag.prototype = {
         let radius = MIN_DISTANCE_BETWEEN_BAGS / BAG_SCALE_FACTOR;
         let offset = -radius + (0.5 * BAG_SPRITE_SIZE);
         this.sprite.body.setCircle(radius, offset, offset);
-
         
         this.sprite.lastPosition = this.position;
+    },
+
+    chooseInteriorSprite: function(exteriorSpriteKey) {
+        
+        //Las maletas A y C no tienen interior, sólo un icono
+        if (this.type == BagTypes.A)  {
+            this.interiorSpriteKey = INTERIOR_SPRITE_KEY_A;
+            return;
+        }
+        else if (this.type == BagTypes.C) {
+            this.interiorSpriteKey = INTERIOR_SPRITE_KEY_C;
+            return;
+        }
+
+        //Busca el ID
+        let indexOfID = exteriorSpriteKey.indexOf("ID", 0);
+        let endOfID = exteriorSpriteKey.indexOf("_", indexOfID);
+        let ID = exteriorSpriteKey.substring(indexOfID, endOfID);
+
+        let choicePool;
+        if (this.type == BagTypes.B_Safe) choicePool = SAFE_INTERIOR_SPRITE_KEYS[ID];
+        else if (this.type == BagTypes.B_Danger) choicePool = DANGEROUS_INTERIOR_SPRITE_KEYS[ID];
+
+        if (choicePool == null) {
+            if (this.type == BagTypes.B_Safe) {
+                console.warn("There is no safe interior for " + ID + ".");
+                this.interiorSpriteKey = INTERIOR_SPRITE_KEY_A;
+            } else {
+                console.warn("There is no dangerous interior for " + ID + ".");
+                this.interiorSpriteKey = INTERIOR_SPRITE_KEY_C;
+            }
+            return;
+        } 
+
+        //Escoje una variación entre los sprites disponibles
+        let randomIndex = Math.floor((Math.random() * choicePool.length));
+        this.interiorSpriteKey = choicePool[randomIndex];
     },
 
     update: function () {

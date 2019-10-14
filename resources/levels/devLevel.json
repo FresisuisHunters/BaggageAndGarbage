@@ -19,12 +19,12 @@
     ],
     "scanners": [
         {
-            "lane":1,
-            "y":800
+            "lane":0,
+            "y":400
         },
         {
             "lane":2,
-            "y":1000
+            "y":700
         }
     ],
     "starThresholds": [5, 2, 0]
