@@ -5,11 +5,9 @@ var gameplayState = function (game) {
 
 // Game speed
 const DEFAULT_GAME_SPEED = 1;
-const SPED_UP_GAME_SPEED = 2;
+const SPED_UP_GAME_SPEED = DEFAULT_GAME_SPEED / 4;
 const SPEED_UP_BUTTON_DOWN_SPRITE = LANE_ICON_SPRITE_KEY_SAFE;
 const SPEED_UP_BUTTON_UP_SPRITE = LANE_ICON_SPRITE_KEY_DANGER;
-
-var gameSpeed = DEFAULT_GAME_SPEED;
 
 // Level layout
 const LEVEL_DIMENSIONS = {
@@ -43,6 +41,8 @@ gameplayState.prototype = {
     create: function () {
         console.log("Entered gameplayState")
         
+        this.gameSpeed = DEFAULT_GAME_SPEED;
+
         //El orden en el que se crean es el orden en el que dibujan. Es decir, el último se dibuja por encima del resto.
         laneLayer = game.add.group();
         pathLayer = game.add.group();
@@ -122,7 +122,10 @@ gameplayState.prototype = {
         this.speedUpButton.down = !this.speedUpButton.down;
         let newButtonSprite = (this.speedUpButton.down) ? SPEED_UP_BUTTON_DOWN_SPRITE : SPEED_UP_BUTTON_UP_SPRITE;
         this.speedUpButton.loadTexture(newButtonSprite, 0);
-        gameSpeed = (this.speedUpButton.down) ? SPED_UP_GAME_SPEED : DEFAULT_GAME_SPEED;
+        this.gameSpeed = (this.speedUpButton.down) ? SPED_UP_GAME_SPEED : DEFAULT_GAME_SPEED;
+        
+        game.time.slowMotion = this.gameSpeed;
+        game.time.desiredFps = 60 * game.time.slowMotion;
     },
 
     getPathMask: function(graph) {
@@ -155,7 +158,7 @@ gameplayState.prototype = {
         if (!this.gameHasEnded) {
             //Updatea todo lo que tenga que ser updateado
             this.pathCreator.update();
-            this.waveManager.update(game.time.physicsElapsed * gameSpeed);
+            this.waveManager.update(game.time.physicsElapsed);
 
             //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
             for (let i = this.bags.length - 1; i >= 0; i--) {
