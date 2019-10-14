@@ -78,15 +78,15 @@ Scanner.prototype = {
 
             if (Bag.type == BagTypes.A || Bag.type == BagTypes.C) {
                 //let bagSprite = new Phaser.Sprite(game, this.windowCenterX, this.windowStartY, Bag.sprite.key);
-                let bagSprite = new Phaser.Sprite(game, 0, 0, Bag.sprite.key);
+                let bagSprite = new Phaser.Sprite(game, 0, 0, Bag.interiorSpriteKey);
                 bagSprite.anchor.setTo(0.5, 1);
-                let iconSprite = new Phaser.Sprite(game, this.windowCenterX, this.windowStartY, Bag.interiorSpriteKey);
+                let iconSprite = new Phaser.Sprite(game, this.windowCenterX, this.windowStartY,Bag.sprite.key);
                 iconSprite.anchor.setTo(0.5, 1);
 
                 this.backgroundScanSprites.add(bagSprite);
                 this.scanSprites.add(iconSprite);
 
-                iconSprite.addChild(bagSprite);
+                iconSprite.addChildAt(bagSprite,0);
                 iconSprite.bringToTop();
                 bagSprite.sendToBack();
 
