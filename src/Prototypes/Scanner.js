@@ -24,11 +24,12 @@ function Scanner(position, lane) {
     this.windowStartY = 0;
     this.windowEndY = LEVEL_DIMENSIONS.laneTopMargin;
     this.windowCenterX = GAME_WIDTH - (LEVEL_DIMENSIONS.scannerScreenWidth / 2);
+    this.backgroundScanSprites = game.add.group();
     this.scanSprites = game.add.group();
-    game.world.sendToBack(this.scanSprites);    //Al hacer esto, se dibujan detrás de la cinta de la pantalla. Hay que hacer algo al respecto.
+    game.world.sendToBack(this.scanSprites);
+    game.world.sendToBack(this.backgroundScanSprites);
     game.world.sendToBack(backgroundLayer);
     this.scanSprites.mask = this.createWindowMask();
-    //this.scanSprites.z+=1;
 
     //Audio
     this.runningSFX = game.add.audio(SFX_SCANNER_RUNNING_KEY);
@@ -74,12 +75,27 @@ Scanner.prototype = {
         if (!Bag.inScan) {
             Bag.inScan = true;
             this.currentBags.push(Bag);
-            let newInteriorSprite = this.scanSprites.create(this.windowCenterX, this.windowStartY, Bag.interiorSpriteKey);
-            newInteriorSprite.anchor.setTo(0.5, 1);
 
+            if (Bag.type == BagTypes.A || Bag.type == BagTypes.C) {
+                //let bagSprite = new Phaser.Sprite(game, this.windowCenterX, this.windowStartY, Bag.sprite.key);
+                let bagSprite = new Phaser.Sprite(game, 0, 0, Bag.sprite.key);
+                bagSprite.anchor.setTo(0.5, 1);
+                let iconSprite = new Phaser.Sprite(game, this.windowCenterX, this.windowStartY, Bag.interiorSpriteKey);
+                iconSprite.anchor.setTo(0.5, 1);
+
+                this.backgroundScanSprites.add(bagSprite);
+                this.scanSprites.add(iconSprite);
+
+                iconSprite.addChild(bagSprite);
+                iconSprite.bringToTop();
+                bagSprite.sendToBack();
+
+            } else {
+                let newInteriorSprite = this.scanSprites.create(this.windowCenterX, this.windowStartY, Bag.interiorSpriteKey);
+                newInteriorSprite.anchor.setTo(0.5, 1);
+            }
+            
             if (this.isActive && !this.runningSFX.isPlaying) this.runningSFX.play();
-
-            //console.log("Bag: " + Bag.position.x + " Scanner: " + this.x);
         }
     },
 
