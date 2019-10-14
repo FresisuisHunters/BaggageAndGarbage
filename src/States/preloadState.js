@@ -118,6 +118,8 @@ preloadState.prototype = {
         this.loadBagSpriteFromName("img_Maleta_B_ID12_02");
         this.loadBagSpriteFromName("img_Maleta_B_ID12_03");
 
+        this.loadBagSpriteFromName("img_Maleta_C_ID13_01");
+
     },
 
     loadInteriorSprites: function() {
