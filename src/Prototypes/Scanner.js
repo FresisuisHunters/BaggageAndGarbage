@@ -64,8 +64,8 @@ Scanner.prototype = {
     },
 
     ExitBag: function () {
-        this.currentBags.inScan = false;    //TODO: Esto parece un typo, bórrame si no lo es. -Aitor
-        this.currentBags.shift();
+        let bag = this.currentBags.shift();
+        bag.inScan = false;
         this.scanSprites.remove(this.scanSprites.getAt(0), true, false);
 
         if (this.currentBags.length ==  0)  {
@@ -81,25 +81,30 @@ Scanner.prototype = {
         let detectedDanger = false;
         if (this.currentBags.length > 0) {
             
+            //Al haber al menos una maleta, runningSFX tiene que reproducirse
+            if (!this.runningSFX.isPlaying) this.runningSFX.play();
+
+            //Actualiza la posición de los sprits interiores
             for (let i = 0; i < this.currentBags.length; i++) {
                 this.scanSprites.getAt(i).y = game.math.linear(this.windowStart, this.windowEnd,
                     game.math.min(1, (this.currentBags[i].sprite.y - (this.start - this.currentBags[i].sprite.height)) /
                         (this.end - (this.start - this.currentBags[i].sprite.height * 2))));
             }
 
+            //Ve si alguna maleta ha salido
             if (this.currentBags[0].position.y - this.currentBags[0].sprite.height > this.end
                 || this.currentBags[0].position.x != this.x) {
                 this.ExitBag();
             }
-                
-            if (this.isActive) {
-                for (let i = 0; i < this.currentBags.length; i++) {
-                    if (this.currentBags[i].type == BagTypes.C || this.currentBags[i].type == BagTypes.B_Danger)
-                        detectedDanger = true;
-                }
+            
+            //Ve si hay peligro
+            for (let i = 0; i < this.currentBags.length; i++) {
+                if (this.currentBags[i].type == BagTypes.C || this.currentBags[i].type == BagTypes.B_Danger)
+                    detectedDanger = true;
             }
         }
 
+        //Si hay peligro, reproduce su SFX
         if (detectedDanger) {
             this.sprite.frame = SCANNER_FRAMES.DANGER;
             if (!this.dangerDetectedSFX.isPlaying) this.dangerDetectedSFX.play();

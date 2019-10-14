@@ -88,8 +88,7 @@ gameplayState.prototype = {
         scannerBelt.scale.set(1.2, 1.15);
         scannerBelt.autoScroll(0, BAG_MOVEMENT_SPEED / scannerBelt.scale.y);
 
-        backgroundLayer.add(scannerBelt);
-
+        //backgroundLayer.add(scannerBelt);
 
         this.background = backgroundLayer.create(0, 0, GAMEPLAY_BACKGROUND_IMAGE_KEY);
         this.background.anchor.set(0, 0);
