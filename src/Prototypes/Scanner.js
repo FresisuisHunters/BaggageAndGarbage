@@ -7,6 +7,8 @@ const SCANNER_FRAMES = {
     INACTIVE: 2
 }
 
+const SCANNER_SCALE_FACTOR = 0.8;
+
 const SFX_SCANNER_RUNNING_KEY = "sfx_ScannerRunning";
 const SFX_SCANNER_RUNNING_VOLUME = 0.05;
 const SFX_SCANNER_DETECTED_DANGER_KEY = "sfx_ScannerDetectedDanger";
@@ -19,11 +21,13 @@ function Scanner(position, lane) {
     this.currentBags = [];
     this.initSprite(position);
 
-    this.windowStart = -300;
-    this.windowEnd = 300;
-    this.windowPosition = 650;
+    this.windowStartY = 0;
+    this.windowEndY = LEVEL_DIMENSIONS.laneTopMargin;
+    this.windowCenterX = GAME_WIDTH - (LEVEL_DIMENSIONS.scannerScreenWidth / 2);
     this.scanSprites = game.add.group();
-    game.world.sendToBack(this.scanSprites);    //Al hacer esto, se dibujan detrás de la cinta de la pantalla. Hay qu ehacer algo al respecto.
+    game.world.sendToBack(this.scanSprites);    //Al hacer esto, se dibujan detrás de la cinta de la pantalla. Hay que hacer algo al respecto.
+    game.world.sendToBack(backgroundLayer);
+    this.scanSprites.mask = this.createWindowMask();
     //this.scanSprites.z+=1;
 
     //Audio
@@ -48,18 +52,34 @@ Scanner.prototype = {
             SCANNER_SHEET_KEY
         );
         this.sprite.frame = SCANNER_FRAMES.INACTIVE;
-        this.sprite.scale.set(0.8, 0.8);
+        this.sprite.scale.set(SCANNER_SCALE_FACTOR, SCANNER_SCALE_FACTOR);
         this.sprite.anchor = new Phaser.Point(0.5, 0);
         this.end = this.start + this.sprite.height * this.sprite.scale.y;
+    },
+
+    createWindowMask: function() {
+        let mask = new Phaser.Graphics(game);
+        mask.beginFill(0xffffff);
+
+        let topLeft = {x: GAME_WIDTH - LEVEL_DIMENSIONS.scannerScreenWidth, y: 0};
+        let bottomLeft = {x: topLeft.x, y: LEVEL_DIMENSIONS.laneTopMargin};
+        let bottomRight = {x: GAME_WIDTH, y: bottomLeft.y};
+        let topRight = {x: bottomRight.x, y: topLeft.y};
+
+        mask.drawPolygon(new Phaser.Polygon([topLeft, topRight, bottomRight, bottomLeft]));
+        return mask;
     },
 
     EnterBag: function (Bag) {
         if (!Bag.inScan) {
             Bag.inScan = true;
             this.currentBags.push(Bag);
-            this.scanSprites.create(this.windowPosition, this.windowStart, Bag.scanSprite);
+            let newInteriorSprite = this.scanSprites.create(this.windowCenterX, this.windowStartY, Bag.scanSprite);
+            newInteriorSprite.anchor.setTo(0.5, 1);
+
             if (this.isActive && !this.runningSFX.isPlaying) this.runningSFX.play();
-            console.log("Bag: " + Bag.position.x + " Scanner: " + this.x);
+
+            //console.log("Bag: " + Bag.position.x + " Scanner: " + this.x);
         }
     },
 
@@ -86,7 +106,7 @@ Scanner.prototype = {
 
             //Actualiza la posición de los sprits interiores
             for (let i = 0; i < this.currentBags.length; i++) {
-                this.scanSprites.getAt(i).y = game.math.linear(this.windowStart, this.windowEnd,
+                this.scanSprites.getAt(i).y = game.math.linear(this.windowStartY, this.windowEndY + this.currentBags[i].sprite.height,
                     game.math.min(1, (this.currentBags[i].sprite.y - (this.start - this.currentBags[i].sprite.height)) /
                         (this.end - (this.start - this.currentBags[i].sprite.height * 2))));
             }
