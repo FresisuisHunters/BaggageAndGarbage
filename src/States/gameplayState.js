@@ -234,7 +234,6 @@ gameplayState.prototype = {
 
         //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
         for (let i = this.bags.length - 1; i >= 0; i--) {
-            this.bags[i].update();
             for (let j = 0; j < this.scanners.length; j++) {
                 if (this.scanners[j].x == this.bags[i].position.x &&
                     this.scanners[j].start <= (this.bags[i].position.y + this.bags[i].sprite.height / 2) &&
@@ -242,6 +241,9 @@ gameplayState.prototype = {
                     this.scanners[j].EnterBag(this.bags[i]);
                 }
             }
+            
+            this.bags[i].update();
+            
         }
         for (let j = 0; j < this.scanners.length; j++) {
             this.scanners[j].UpdateScanner();
