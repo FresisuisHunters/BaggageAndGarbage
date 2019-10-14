@@ -17,13 +17,13 @@
             "numC": 2
         }
     ],
-    "scannerPositions": [
+    "scanners": [
         {
-            "belt":1,
+            "lane":1,
             "y":800
         },
         {
-            "belt":2,
+            "lane":2,
             "y":1000
         }
     ],

@@ -1,6 +1,11 @@
 const SCAN_TIME = 100;
 
 const SCANNER_SHEET_KEY = "scanner_spritesheet";
+const SCANNER_FRAMES = {
+    ACTIVE: 0,
+    DANGER: 1,
+    INACTIVE: 2
+}
 
 const SFX_SCANNER_RUNNING_KEY = "sfx_ScannerRunning";
 const SFX_SCANNER_RUNNING_VOLUME = 0.05;
@@ -21,8 +26,7 @@ function Scanner(position, lane) {
     game.world.sendToBack(this.scanSprites);    //Al hacer esto, se dibujan detrás de la cinta de la pantalla. Hay qu ehacer algo al respecto.
     //this.scanSprites.z+=1;
 
-    this.SetInactive();
-
+    //Audio
     this.runningSFX = game.add.audio(SFX_SCANNER_RUNNING_KEY);
     this.runningSFX.volume = SFX_SCANNER_RUNNING_VOLUME;
     this.runningSFX.loop = true;
@@ -30,6 +34,10 @@ function Scanner(position, lane) {
     this.dangerDetectedSFX = game.add.audio(SFX_SCANNER_DETECTED_DANGER_KEY);
     this.dangerDetectedSFX.volume = SFX_SCANNER_DETECTED_DANGER_VOLUME;
     this.dangerDetectedSFX.loop = true;
+
+    //Primero se pone a true para que dentro de inactive no se ignore la llamada por ser redundante
+    this.isActive = true;
+    this.SetInactive();
 }
 
 Scanner.prototype = {
@@ -39,7 +47,7 @@ Scanner.prototype = {
             position.y,
             SCANNER_SHEET_KEY
         );
-        this.sprite.frame = 2;
+        this.sprite.frame = SCANNER_FRAMES.INACTIVE;
         this.sprite.scale.set(0.8, 0.8);
         this.sprite.anchor = new Phaser.Point(0.5, 0);
         this.end = this.start + this.sprite.height * this.sprite.scale.y;
@@ -50,7 +58,7 @@ Scanner.prototype = {
             Bag.inScan = true;
             this.currentBags.push(Bag);
             this.scanSprites.create(this.windowPosition, this.windowStart, Bag.scanSprite);
-            if (this.active && !this.runningSFX.isPlaying) this.runningSFX.play();
+            if (this.isActive && !this.runningSFX.isPlaying) this.runningSFX.play();
             console.log("Bag: " + Bag.position.x + " Scanner: " + this.x);
         }
     },
@@ -68,6 +76,8 @@ Scanner.prototype = {
 
     UpdateScanner: function () {
 
+        if (!this.isActive) return;
+
         let detectedDanger = false;
         if (this.currentBags.length > 0) {
             
@@ -82,7 +92,7 @@ Scanner.prototype = {
                 this.ExitBag();
             }
                 
-            if (this.active) {
+            if (this.isActive) {
                 for (let i = 0; i < this.currentBags.length; i++) {
                     if (this.currentBags[i].type == BagTypes.C || this.currentBags[i].type == BagTypes.B_Danger)
                         detectedDanger = true;
@@ -91,10 +101,10 @@ Scanner.prototype = {
         }
 
         if (detectedDanger) {
-            this.sprite.frame = 1;
+            this.sprite.frame = SCANNER_FRAMES.DANGER;
             if (!this.dangerDetectedSFX.isPlaying) this.dangerDetectedSFX.play();
         } else {
-            this.sprite.frame = 0;
+            this.sprite.frame = SCANNER_FRAMES.ACTIVE;
             if (this.dangerDetectedSFX.isPlaying) this.dangerDetectedSFX.stop();
         }
     },
@@ -103,22 +113,27 @@ Scanner.prototype = {
         if (point.x == this.x && point.y >= this.start && point.y <= this.end) {
             return true;
         }
-        else
+        else {
             return false;
+        }
     },
 
     SetActive: function () {
-        this.active = true;
+        if (this.isActive) return;
+
+        this.isActive = true;
         this.scanSprites.visible = true;
-        this.sprite.frame = 0;
-        console.log("active");
+        this.sprite.frame = SCANNER_FRAMES.ACTIVE;
     },
 
     SetInactive: function () {
-        this.sprite.frame = 2;
-        this.active = false;
-        this.scanSprites.visible = false;
-        console.log("inactive");
-    }
+        if (!this.isActive) return;
 
+        this.sprite.frame = SCANNER_FRAMES.INACTIVE;
+        this.isActive = false;
+        this.scanSprites.visible = false;
+
+        if (this.runningSFX.isPlaying) this.runningSFX.stop();
+        if (this.dangerDetectedSFX.isPlaying) this.dangerDetectedSFX.stop();
+    }
 }

@@ -54,6 +54,8 @@ gameplayState.prototype = {
         this.createLaneEnds(this.graph, this.onBagKilled, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
 
+        this.createScanners(this.levelData.scanners, this.lanes);
+
         //Crea las máscaras
         this.pathMask = this.getPathMask(this.graph);
         pathLayer.mask = this.pathMask;
@@ -67,6 +69,7 @@ gameplayState.prototype = {
         this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
 
+        //Reproduce la música
         this.music = game.add.audio(GAMEPLAY_MUSIC_KEY);
         this.music.volume = GAMEPLAY_MUSIC_VOLUME;
         this.music.loop = true;
@@ -105,11 +108,7 @@ gameplayState.prototype = {
 
         let height = GAME_HEIGHT - startY - LEVEL_DIMENSIONS.laneBottomMargin;
 
-        this.createScanners(startX, gapBetweenLanes);
-
         this.graph = new Graph(laneCount, startX, startY, gapBetweenLanes, height, this.scanners);
-
-        
     },
 
     createLaneConveyorBelts: function (columns) {
@@ -139,14 +138,15 @@ gameplayState.prototype = {
         }
     },
 
-    createScanners: function (startx, gapBetweenLanes) {
-
-        let scannersData = this.levelData.scannerPositions;
-        for (let i = 0; i < scannersData.length; i++) {
-            this.scanners.push(new Scanner(new Vector2D(scannersData[i].belt * gapBetweenLanes + startx, scannersData[i].y), scannersData[i].belt));
+    createScanners: function (scannerData, lanes) {
+        for (let i = 0; i < scannerData.length; i++) {
+            this.scanners.push(new Scanner(new Vector2D(lanes[scannerData[i].lane].x, scannerData[i].y), scannerData[i].lane));
             this.scanners[i].sprite.inputEnabled = true;
             this.scanners[i].sprite.events.onInputDown.add(this.onScannerSelected, { 'scanner': this.scanners[i], 'scanners': this.scanners }, this);
         }
+
+        //Activa el primer Scanner
+        this.scanners[0].SetActive();
     },
 
     getPathMask: function (graph) {
@@ -257,7 +257,7 @@ gameplayState.prototype = {
     
     onScannerSelected: function () {
         for (var i = 0; i < this.scanners.length; i++) {
-            this.scanners[i].SetInactive();
+            if (this.scanners[i] != this.scanner) this.scanners[i].SetInactive();
         }
         this.scanner.SetActive();
     }
