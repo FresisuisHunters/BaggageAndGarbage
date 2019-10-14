@@ -48,11 +48,8 @@ gameplayState.prototype = {
 
     create: function () {
         console.log("Entered gameplayState")
-<<<<<<< HEAD
-=======
         
         this.gameSpeed = DEFAULT_GAME_SPEED;
->>>>>>> gameSpeed
 
         //El orden en el que se crean es el orden en el que dibujan. Es decir, el último se dibuja por encima del resto.
         backgroundLayer = game.add.group();
@@ -66,13 +63,10 @@ gameplayState.prototype = {
         this.createGraph();
         this.createLaneEnds(this.graph, this.onBagKilled, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
-<<<<<<< HEAD
-=======
         this.createSpeedUpButton();
         
         this.mask = this.getPathMask(this.graph);
         pathLayer.mask = this.mask;
->>>>>>> gameSpeed
 
         this.createScanners(this.levelData.scanners, this.lanes);
 
@@ -157,7 +151,6 @@ gameplayState.prototype = {
         }
     },
 
-<<<<<<< HEAD
     createScanners: function (scannerData, lanes) {
         for (let i = 0; i < scannerData.length; i++) {
 
@@ -172,8 +165,6 @@ gameplayState.prototype = {
         this.scanners[0].SetActive();
     },
 
-    getPathMask: function (graph) {     
-=======
     createSpeedUpButton : function() {
         let x = 20;
         let y = 20;
@@ -196,7 +187,6 @@ gameplayState.prototype = {
     },
 
     getPathMask: function(graph) {
->>>>>>> gameSpeed
         let columns = graph.getColumns();
         let bottomY = GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin;
 
