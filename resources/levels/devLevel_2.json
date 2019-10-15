@@ -1,5 +1,5 @@
 {
-    "difficulty":0,
+    "difficulty":2,
     "lanes": {
         "count": 4,
         "types": ["S", "D", "S", "D"]
