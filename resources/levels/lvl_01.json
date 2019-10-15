@@ -5,27 +5,29 @@
     },
     "waves": [
         {
-            "numA": 2,
-            "numB_Safe": 1,
+            "numA": 1,
+            "numB_Safe": 0,
             "numB_Danger": 1,
             "numC": 1
         },
         {
             "numA": 1,
-            "numB_Safe": 2,
+            "numB_Safe": 1,
+            "numB_Danger": 2,
+            "numC": 1
+        },
+        {
+            "numA": 2,
+            "numB_Safe": 1,
             "numB_Danger": 2,
             "numC": 2
         }
     ],
     "scanners": [
         {
-            "lane":0,
-            "y":400
-        },
-        {
             "lane":2,
-            "y":700
+            "y":500
         }
     ],
-    "starThresholds": [10, 2, 0]
+    "starThresholds": [8, 4, 0]
 }
