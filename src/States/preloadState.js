@@ -78,9 +78,6 @@ preloadState.prototype = {
     },
 
     create: function () {
-        // TODO: Borrar la siguiente linea y descomentar la segunda
-        //game.state.start("graphTestingState");
-
         //https://photonstorm.github.io/phaser-ce/Phaser.StateManager.html#start
         game.state.start("levelLoadState", true, false, "resources/levels/devLevel.json");
         console.log(game.cache.getKeys(Phaser.Cache.IMAGE));
@@ -109,7 +106,6 @@ preloadState.prototype = {
 
         this.loadBagSpriteFromName("img_Maleta_A_ID07_02_00");
         this.loadBagSpriteFromName("img_Maleta_A_ID07_02_01");
-
 
         this.loadBagSpriteFromName("img_Maleta_A_ID08_01");
         this.loadBagSpriteFromName("img_Maleta_A_ID08_02");
@@ -151,8 +147,8 @@ preloadState.prototype = {
         this.loadInteriorSpriteFromName("img_Interior_P_ID09_01");
 
         this.loadInteriorSpriteFromName("img_Interior_P_ID10_01");
-        this.loadInteriorSpriteFromName("img_Interior_P_ID10_01");
-        this.loadInteriorSpriteFromName("img_Interior_S_ID10_02");
+        this.loadInteriorSpriteFromName("img_Interior_P_ID10_02");
+        this.loadInteriorSpriteFromName("img_Interior_S_ID10_01");
     
     }
 
