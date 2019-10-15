@@ -27,5 +27,5 @@
             "y":700
         }
     ],
-    "starThresholds": [5, 2, 0]
+    "starThresholds": [10, 2, 0]
 }

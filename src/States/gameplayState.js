@@ -5,16 +5,42 @@ var gameplayState = function (game) {
 
 const GAMEPLAY_BACKGROUND_IMAGE_KEY = "img_GameplayBackground";
 const GAMEPLAY_FOREGROUND_IMAGE_KEY = "img_GameplayForeground";
+const SCORE_BACKGROUND_IMAGE_KEY = "img_ScoreBackground"
 
 const GAMEPLAY_MUSIC_KEY = "music_Gameplay";
 const GAMEPLAY_MUSIC_VOLUME = .75;
 
+// Game speed
+const DEFAULT_GAME_SPEED = 1;
+const SPED_UP_GAME_SPEED = DEFAULT_GAME_SPEED / 50;
+const SPEED_UP_BUTTON_DOWN_SPRITE = LANE_ICON_SPRITE_KEY_SAFE;
+const SPEED_UP_BUTTON_UP_SPRITE = LANE_ICON_SPRITE_KEY_DANGER;
+
+// Level layout
 const LEVEL_DIMENSIONS = {
     laneHorizontalMargin: 135,
     laneTopMargin: 313,
     laneBottomMargin: 259,
     scannerScreenWidth: 609
 }
+
+//End screen stuff
+const SCORE_SCREEN_DIMENSIONS = {
+    starY: 525,
+    starRatingWidth: 325,
+    starScaleFactor: 0.8,
+    numberRightX: 675,
+    correctNumberY: 652,
+    wrongNumberY: 880,
+    buttonY: 1600,
+    buttonSpacing: 50,
+    buttonScale: 1.75
+}
+
+const OBTAINED_STAR_IMAGE_KEY = "img_StarObtained"
+const UNOBTAINED_STAR_IMAGE_KEY = "img_StarUnobtained"
+const REMATCH_BUTTON_IMAGE_KEY = "img_LaneIcon_Safe"
+const MENU_BUTTON_IMAGE_KEY = "img_LaneIcon_Danger"
 
 //Layers
 var backgroundLayer;
@@ -33,6 +59,7 @@ gameplayState.prototype = {
     //INICIALIZACIÓN//
     //////////////////
     init: function (levelData) {
+        this.originalLevelData = JSON.parse(JSON.stringify(levelData));
         this.levelData = levelData;
         this.bags = [];
         this.scanners = [];
@@ -41,6 +68,9 @@ gameplayState.prototype = {
 
     create: function () {
         console.log("Entered gameplayState")
+        
+        game.time.slowMotion = DEFAULT_GAME_SPEED;
+        game.time.desiredFps = 60 * game.time.slowMotion;
 
         //El orden en el que se crean es el orden en el que dibujan. Es decir, el último se dibuja por encima del resto.
         backgroundLayer = game.add.group();
@@ -54,6 +84,10 @@ gameplayState.prototype = {
         this.createGraph();
         this.createLaneEnds(this.graph, this.onBagKilled, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
+        this.createSpeedUpButton();
+        
+        this.mask = this.getPathMask(this.graph);
+        pathLayer.mask = this.mask;
 
         this.createScanners(this.levelData.scanners, this.lanes);
 
@@ -152,7 +186,29 @@ gameplayState.prototype = {
         this.scanners[0].SetActive();
     },
 
-    getPathMask: function (graph) {     
+    createSpeedUpButton : function() {
+        let x = 20;
+        let y = 20;
+
+        this.speedUpButton = game.add.button(x, y, SPEED_UP_BUTTON_UP_SPRITE, this.speedUpButtonCallback);
+        this.speedUpButton.anchor.setTo(0, 0);
+        this.speedUpButton.down = false;
+
+        overlayLayer.add(this.speedUpButton);
+    },
+
+    speedUpButtonCallback : function(button, pointer, isOver) {
+        if (isOver) {
+            button.down = !button.down;
+            let newButtonSprite = (button.down) ? SPEED_UP_BUTTON_DOWN_SPRITE : SPEED_UP_BUTTON_UP_SPRITE;
+            button.loadTexture(newButtonSprite, 0);
+            
+            game.time.slowMotion = (button.down) ? SPED_UP_GAME_SPEED : DEFAULT_GAME_SPEED;
+            game.time.desiredFps = 60 * game.time.slowMotion;
+        }
+    },
+
+    getPathMask: function(graph) {
         let columns = graph.getColumns();
         let bottomY = GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin;
 
@@ -200,7 +256,6 @@ gameplayState.prototype = {
 
         //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
         for (let i = this.bags.length - 1; i >= 0; i--) {
-            this.bags[i].update();
             for (let j = 0; j < this.scanners.length; j++) {
                 if (this.scanners[j].x == this.bags[i].position.x &&
                     this.scanners[j].start <= (this.bags[i].position.y + this.bags[i].sprite.height / 2) &&
@@ -208,6 +263,9 @@ gameplayState.prototype = {
                     this.scanners[j].EnterBag(this.bags[i]);
                 }
             }
+            
+            this.bags[i].update();
+            
         }
         for (let j = 0; j < this.scanners.length; j++) {
             this.scanners[j].UpdateScanner();
@@ -215,7 +273,6 @@ gameplayState.prototype = {
 
         //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
         bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
-
     },
 
     //EVENTS//
@@ -230,6 +287,8 @@ gameplayState.prototype = {
     onGameEnd: function () {
         let state = game.state.getCurrentState();
 
+        //Stop responding to input. 
+        //TODO: Stop responding to fast forwards input as well. Also scanner switching.
         state.pathCreator.unsubscribeFromInputEvents();
 
         state.gameHasEnded = true;
@@ -237,17 +296,16 @@ gameplayState.prototype = {
 
         let starRating = state.scoreManager.getStarRating(state.levelData.starThresholds);
         console.log("You got a rating of " + starRating + " stars!");
+
+        state.showEndScreen(starRating, state.scoreManager.currentCorrectBagCount, state.scoreManager.currentWrongBagCount);
     },
 
     onBagKilled: function (isCorrect) {
         let state = game.state.getCurrentState();
         state.waveManager.notifyOfBagDone();
 
-        if (!isCorrect) state.scoreManager.currentMistakeCount++;
-    },
-
-    onBagScanned: function (scanner) {
-        bags.push(scanner.ExitBag());
+        if (isCorrect) state.scoreManager.currentCorrectBagCount++;
+        else state.scoreManager.currentWrongBagCount++;
     },
 
     render: function() {
@@ -263,5 +321,71 @@ gameplayState.prototype = {
             if (this.scanners[i] != this.scanner) this.scanners[i].SetInactive();
         }
         this.scanner.SetActive();
+    },
+
+    //END SCREEN//
+    //////////////
+    showEndScreen: function(starRating, correctBagCount, wrongBagCount) {
+        //Create a new layer for the score screen
+        let scoreLayer = game.add.group();
+
+        //Show the main image
+        let background = new Phaser.Image(game, 0, 0, SCORE_BACKGROUND_IMAGE_KEY);
+        background.anchor.setTo(0, 0);
+        scoreLayer.add(background);
+
+        //Make the background block clicks so that the gameplay stage becomes uninteractable
+        background.inputEnabled = true;
+
+        //Show stars
+        let starY = SCORE_SCREEN_DIMENSIONS.starY;
+        let starSpacing = SCORE_SCREEN_DIMENSIONS.starRatingWidth / 2;
+        let starX = (GAME_WIDTH / 2) - starSpacing;
+
+        for (let i = 1; i <= 3; i++) {
+            let starKey = (i <= starRating) ? OBTAINED_STAR_IMAGE_KEY : UNOBTAINED_STAR_IMAGE_KEY;
+            let star = new Phaser.Image(game, starX, starY, starKey);
+
+            star.anchor.setTo(0.5, 0.5);
+            star.scale.setTo(SCORE_SCREEN_DIMENSIONS.starScaleFactor, SCORE_SCREEN_DIMENSIONS.starScaleFactor);
+
+            scoreLayer.add(star);
+
+
+            starX += starSpacing;
+        }
+
+        //Show correct and wrong bag counts
+        let textStyle = { font: "bold Arial", fontSize: "140px",fill: "#fff", boundsAlignH: "right", boundsAlignV: "middle" };
+
+        let correctText = new Phaser.Text(game, SCORE_SCREEN_DIMENSIONS.numberRightX, SCORE_SCREEN_DIMENSIONS.correctNumberY, correctBagCount, textStyle);
+        scoreLayer.add(correctText);
+
+        let wrongText = new Phaser.Text(game, SCORE_SCREEN_DIMENSIONS.numberRightX, SCORE_SCREEN_DIMENSIONS.wrongNumberY, wrongBagCount, textStyle);
+        scoreLayer.add(wrongText);
+
+        //Prepare the button callbacks
+        let doRematch = function(button, pointer, isOver) {
+            if (isOver) game.state.start("gameplayState", true, false, game.state.getCurrentState().originalLevelData);
+        }
+        //TODO: Go to menu state once it exists.
+        let goToMenu = function(button, pointer, isOver) {
+            //if (isOver) game.state.start("mainMenuState", true, false);
+            if (isOver) console.warn("Go to menu button is not implemented yet.");
+        }
+
+
+        //Show buttons
+        let xPos = (GAME_WIDTH / 2) - (SCORE_SCREEN_DIMENSIONS.buttonSpacing / 2);
+        let rematchButton = new Phaser.Button(game, xPos, SCORE_SCREEN_DIMENSIONS.buttonY, REMATCH_BUTTON_IMAGE_KEY, doRematch);
+        rematchButton.scale.setTo(SCORE_SCREEN_DIMENSIONS.buttonScale, SCORE_SCREEN_DIMENSIONS.buttonScale);
+        rematchButton.anchor.setTo(1, 0.5);
+        scoreLayer.add(rematchButton);
+
+        xPos = (GAME_WIDTH / 2) + (SCORE_SCREEN_DIMENSIONS.buttonSpacing / 2);
+        let menuButton = new Phaser.Button(game, xPos, SCORE_SCREEN_DIMENSIONS.buttonY, MENU_BUTTON_IMAGE_KEY, goToMenu);
+        menuButton.scale.setTo(SCORE_SCREEN_DIMENSIONS.buttonScale, SCORE_SCREEN_DIMENSIONS.buttonScale);
+        menuButton.anchor.setTo(0, 0.5);
+        scoreLayer.add(menuButton);
     }
 }

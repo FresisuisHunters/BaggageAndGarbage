@@ -41,9 +41,16 @@ preloadState.prototype = {
         game.load.audio(SFX_SCANNER_RUNNING_KEY, "resources/audio/sfx_ScannerRunning.mp3");
         game.load.audio(SFX_SCANNER_DETECTED_DANGER_KEY, "resources/audio/sfx_ScannerDetectedDanger.mp3");
 
+        //Fondos
         game.load.image(GAMEPLAY_BACKGROUND_IMAGE_KEY, "resources/sprites/img_GameplayBackground.png");
         game.load.image(GAMEPLAY_FOREGROUND_IMAGE_KEY, "resources/sprites/img_GameplayForeground.png");
+        game.load.image(SCORE_BACKGROUND_IMAGE_KEY, "resources/sprites/img_ScoreBackground.png")
+
+        //UI
         game.load.image("img_ScannerBelt", "resources/sprites/img_ScannerBelt.png");
+        game.load.image(OBTAINED_STAR_IMAGE_KEY, "resources/sprites/img_StarObtained.png");
+        game.load.image(UNOBTAINED_STAR_IMAGE_KEY, "resources/sprites/img_StarUnobtained.png");
+        
     },
 
     loadBagSpriteFromName: function(name) {
@@ -71,9 +78,6 @@ preloadState.prototype = {
     },
 
     create: function () {
-        // TODO: Borrar la siguiente linea y descomentar la segunda
-        //game.state.start("graphTestingState");
-
         //https://photonstorm.github.io/phaser-ce/Phaser.StateManager.html#start
         game.state.start("levelLoadState", true, false, "resources/levels/devLevel.json");
         console.log(game.cache.getKeys(Phaser.Cache.IMAGE));
@@ -102,7 +106,6 @@ preloadState.prototype = {
 
         this.loadBagSpriteFromName("img_Maleta_A_ID07_02_00");
         this.loadBagSpriteFromName("img_Maleta_A_ID07_02_01");
-
 
         this.loadBagSpriteFromName("img_Maleta_A_ID08_01");
         this.loadBagSpriteFromName("img_Maleta_A_ID08_02");
@@ -139,7 +142,12 @@ preloadState.prototype = {
         this.loadInteriorSpriteFromName("img_Interior_S_ID04_02");
         this.loadInteriorSpriteFromName("img_Interior_P_ID04_01");
         this.loadInteriorSpriteFromName("img_Interior_P_ID04_02");
-    
-    }
 
+        this.loadInteriorSpriteFromName("img_Interior_S_ID09_01");
+        this.loadInteriorSpriteFromName("img_Interior_P_ID09_01");
+
+        this.loadInteriorSpriteFromName("img_Interior_P_ID10_01");
+        this.loadInteriorSpriteFromName("img_Interior_P_ID10_02");
+        this.loadInteriorSpriteFromName("img_Interior_S_ID10_01");
+    }
 }

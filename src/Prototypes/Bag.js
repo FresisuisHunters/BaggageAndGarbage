@@ -2,7 +2,7 @@ const BAG_MOVEMENT_SPEED = 75;
 const BAG_SPRITE_SIZE = 256;
 const BAG_SCALE_FACTOR = 0.6;
 
-const DEBUG_SHOW_COLLIDERS = true;
+const DEBUG_SHOW_COLLIDERS = false;
 const MIN_DISTANCE_BETWEEN_BAGS = 100;
 const MAX_DISTANCE_TO_LANE_FOR_PRIORITY = 100;
 
@@ -74,6 +74,7 @@ Bag.prototype = {
         this.sprite.rotation = rotation;
 
         // Collision purposes
+        // https://phaser.io/docs/2.6.2/Phaser.Physics.Arcade.Body.html
         game.physics.arcade.enable(this.sprite);
         this.sprite.enableBody = true;
         this.sprite.body.immovable = true; 

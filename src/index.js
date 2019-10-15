@@ -9,6 +9,8 @@ const MUTE_AUDIO = true;
 
 var game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.AUTO, 'gameDiv', null, false, USE_ANTIALIASING);
 
+localizationManager.currentLanguage = Languages.English;
+
 //Add states
 game.state.add("bootState", bootState);
 game.state.add("gameplayState", gameplayState);
