@@ -33,6 +33,12 @@ preloadState.prototype = {
         game.load.image(LANE_ICON_SPRITE_KEY_DANGER, "resources/sprites/img_LaneIcon_Danger.png");
         game.load.spritesheet(SCANNER_SHEET_KEY,"resources/sprites/sheet_Scanner.png", 256, 256, 3,20, 10);
 
+        // Sprites menu
+        game.load.image(MENU_BACKGROUND_KEY, "resources/sprites/img_LevelSelectBackground.png");
+        game.load.image(EASY_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardEasy.png");
+        game.load.image(NORMAL_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardNormal.png");
+        game.load.image(HARD_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardHard.png");
+
         //Audio
         game.load.audio(GAMEPLAY_MUSIC_KEY, "resources/audio/music_Gameplay.mp3");
         game.load.audio(SFX_BUILT_PATH_KEY, "resources/audio/sfx_BuiltPath.mp3");
@@ -79,7 +85,8 @@ preloadState.prototype = {
 
     create: function () {
         //https://photonstorm.github.io/phaser-ce/Phaser.StateManager.html#start
-        game.state.start("levelLoadState", true, false, "resources/levels/devLevel.json");
+        game.state.start("menuState");
+        // game.state.start("levelLoadState", true, false, "resources/levels/devLevel.json");
         console.log(game.cache.getKeys(Phaser.Cache.IMAGE));
     },
 
