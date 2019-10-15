@@ -13,8 +13,8 @@ const GAMEPLAY_MUSIC_VOLUME = .75;
 // Game speed
 const DEFAULT_GAME_SPEED = 1;
 const SPED_UP_GAME_SPEED = DEFAULT_GAME_SPEED / 5;
-const SPEED_UP_BUTTON_DOWN_SPRITE = LANE_ICON_SPRITE_KEY_SAFE;
-const SPEED_UP_BUTTON_UP_SPRITE = LANE_ICON_SPRITE_KEY_DANGER;
+const SPEED_UP_BUTTON_DOWN_IMAGE_KEY = "img_SpeedUpButtonDown";
+const SPEED_UP_BUTTON_UP_IMAGE_KEY = "img_SpeedUpButtonUp";
 
 // Level layout
 const LEVEL_DIMENSIONS = {
@@ -67,8 +67,8 @@ gameplayState.prototype = {
     },
 
     create: function () {
-        console.log("Entered gameplayState")
-
+        
+        //Tiempo normal
         game.time.slowMotion = DEFAULT_GAME_SPEED;
         game.time.desiredFps = 60 * game.time.slowMotion;
 
@@ -80,7 +80,7 @@ gameplayState.prototype = {
         overlayLayer = game.add.group();
         this.createBackground();
 
-        //Crea los cariiles
+        //Crea los carriles
         this.createGraph();
         this.createLaneEnds(this.graph, this.onBagKilled, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
@@ -190,8 +190,9 @@ gameplayState.prototype = {
         let x = 20;
         let y = 20;
 
-        this.speedUpButton = game.add.button(x, y, SPEED_UP_BUTTON_UP_SPRITE, this.speedUpButtonCallback);
+        this.speedUpButton = game.add.button(x, y, SPEED_UP_BUTTON_UP_IMAGE_KEY, this.speedUpButtonCallback);
         this.speedUpButton.anchor.setTo(0, 0);
+        this.speedUpButton.scale.setTo(1.5, 1.5);
         this.speedUpButton.down = false;
 
         overlayLayer.add(this.speedUpButton);
@@ -200,7 +201,7 @@ gameplayState.prototype = {
     speedUpButtonCallback: function (button, pointer, isOver) {
         if (isOver) {
             button.down = !button.down;
-            let newButtonSprite = (button.down) ? SPEED_UP_BUTTON_DOWN_SPRITE : SPEED_UP_BUTTON_UP_SPRITE;
+            let newButtonSprite = (button.down) ? SPEED_UP_BUTTON_DOWN_IMAGE_KEY : SPEED_UP_BUTTON_UP_IMAGE_KEY;
             button.loadTexture(newButtonSprite, 0);
 
             game.time.slowMotion = (button.down) ? SPED_UP_GAME_SPEED : DEFAULT_GAME_SPEED;
