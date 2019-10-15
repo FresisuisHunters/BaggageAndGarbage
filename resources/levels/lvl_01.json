@@ -1,5 +1,6 @@
 {
     "levelIndex":-1,
+    "bagSpeed": 60,
     "lanes": {
         "count": 4,
         "types": ["S", "D", "S", "D"]
