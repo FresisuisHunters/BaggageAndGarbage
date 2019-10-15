@@ -31,11 +31,16 @@ const SCORE_SCREEN_DIMENSIONS = {
     starScaleFactor: 0.8,
     numberRightX: 675,
     correctNumberY: 652,
-    wrongNumberY: 880
+    wrongNumberY: 880,
+    buttonY: 1600,
+    buttonSpacing: 50,
+    buttonScale: 1.75
 }
 
 const OBTAINED_STAR_IMAGE_KEY = "img_StarObtained"
 const UNOBTAINED_STAR_IMAGE_KEY = "img_StarUnobtained"
+const REMATCH_BUTTON_IMAGE_KEY = "img_LaneIcon_Safe"
+const MENU_BUTTON_IMAGE_KEY = "img_LaneIcon_Danger"
 
 //Layers
 var backgroundLayer;
@@ -54,6 +59,7 @@ gameplayState.prototype = {
     //INICIALIZACIÓN//
     //////////////////
     init: function (levelData) {
+        this.originalLevelData = JSON.parse(JSON.stringify(levelData));
         this.levelData = levelData;
         this.bags = [];
         this.scanners = [];
@@ -63,7 +69,8 @@ gameplayState.prototype = {
     create: function () {
         console.log("Entered gameplayState")
         
-        this.gameSpeed = DEFAULT_GAME_SPEED;
+        game.time.slowMotion = DEFAULT_GAME_SPEED;
+        game.time.desiredFps = 60 * game.time.slowMotion;
 
         //El orden en el que se crean es el orden en el que dibujan. Es decir, el último se dibuja por encima del resto.
         backgroundLayer = game.add.group();
@@ -194,9 +201,8 @@ gameplayState.prototype = {
         this.speedUpButton.down = !this.speedUpButton.down;
         let newButtonSprite = (this.speedUpButton.down) ? SPEED_UP_BUTTON_DOWN_SPRITE : SPEED_UP_BUTTON_UP_SPRITE;
         this.speedUpButton.loadTexture(newButtonSprite, 0);
-        this.gameSpeed = (this.speedUpButton.down) ? SPED_UP_GAME_SPEED : DEFAULT_GAME_SPEED;
         
-        game.time.slowMotion = this.gameSpeed;
+        game.time.slowMotion = (this.speedUpButton.down) ? SPED_UP_GAME_SPEED : DEFAULT_GAME_SPEED;
         game.time.desiredFps = 60 * game.time.slowMotion;
     },
 
@@ -356,5 +362,20 @@ gameplayState.prototype = {
         let wrongText = new Phaser.Text(game, SCORE_SCREEN_DIMENSIONS.numberRightX, SCORE_SCREEN_DIMENSIONS.wrongNumberY, wrongBagCount, textStyle);
         scoreLayer.add(wrongText);
 
+        //Show buttons
+        let xPos = (GAME_WIDTH / 2) - (SCORE_SCREEN_DIMENSIONS.buttonSpacing / 2);
+        let rematchButton = new Phaser.Image(game, xPos, SCORE_SCREEN_DIMENSIONS.buttonY, REMATCH_BUTTON_IMAGE_KEY);
+        rematchButton.scale.setTo(SCORE_SCREEN_DIMENSIONS.buttonScale, SCORE_SCREEN_DIMENSIONS.buttonScale);
+        rematchButton.anchor.setTo(1, 0.5);
+        scoreLayer.add(rematchButton);
+
+        let menuButton = new Phaser.Image(game, (GAME_WIDTH / 2) + (SCORE_SCREEN_DIMENSIONS.buttonSpacing / 2), SCORE_SCREEN_DIMENSIONS.buttonY, MENU_BUTTON_IMAGE_KEY);
+        menuButton.scale.setTo(SCORE_SCREEN_DIMENSIONS.buttonScale, SCORE_SCREEN_DIMENSIONS.buttonScale);
+        menuButton.anchor.setTo(0, 0.5);
+        scoreLayer.add(menuButton);
+
+        //Add functionality to the buttons
+        rematchButton.inputEnabled = true;
+        rematchButton.events.onInputDown.add(() => game.state.start("gameplayState", true, false, game.state.getCurrentState().originalLevelData));
     }
 }

@@ -149,7 +149,5 @@ preloadState.prototype = {
         this.loadInteriorSpriteFromName("img_Interior_P_ID10_01");
         this.loadInteriorSpriteFromName("img_Interior_P_ID10_02");
         this.loadInteriorSpriteFromName("img_Interior_S_ID10_01");
-    
     }
-
 }
