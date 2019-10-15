@@ -1,4 +1,5 @@
 {
+    "levelIndex":-1,
     "lanes": {
         "count": 4,
         "types": ["S", "D", "S", "D"]

@@ -80,7 +80,7 @@ preloadState.prototype = {
     create: function () {
         //https://photonstorm.github.io/phaser-ce/Phaser.StateManager.html#start
         game.state.start("levelLoadState", true, false, "resources/levels/devLevel.json");
-        console.log(game.cache.getKeys(Phaser.Cache.IMAGE));
+        //console.log(game.cache.getKeys(Phaser.Cache.IMAGE));
     },
 
     loadBagSprites: function() {

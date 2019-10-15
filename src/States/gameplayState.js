@@ -68,7 +68,7 @@ gameplayState.prototype = {
 
     create: function () {
         console.log("Entered gameplayState")
-        
+
         game.time.slowMotion = DEFAULT_GAME_SPEED;
         game.time.desiredFps = 60 * game.time.slowMotion;
 
@@ -85,7 +85,7 @@ gameplayState.prototype = {
         this.createLaneEnds(this.graph, this.onBagKilled, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
         this.createSpeedUpButton();
-        
+
         this.mask = this.getPathMask(this.graph);
         pathLayer.mask = this.mask;
 
@@ -127,7 +127,7 @@ gameplayState.prototype = {
 
         this.background = backgroundLayer.create(0, 0, GAMEPLAY_BACKGROUND_IMAGE_KEY);
         this.background.anchor.set(0, 0);
-        
+
         this.foreground = overlayLayer.create(0, 0, GAMEPLAY_FOREGROUND_IMAGE_KEY);
         this.foreground.anchor.set(0, 0);
     },
@@ -186,7 +186,7 @@ gameplayState.prototype = {
         this.scanners[0].SetActive();
     },
 
-    createSpeedUpButton : function() {
+    createSpeedUpButton: function () {
         let x = 20;
         let y = 20;
 
@@ -197,18 +197,18 @@ gameplayState.prototype = {
         overlayLayer.add(this.speedUpButton);
     },
 
-    speedUpButtonCallback : function(button, pointer, isOver) {
+    speedUpButtonCallback: function (button, pointer, isOver) {
         if (isOver) {
             button.down = !button.down;
             let newButtonSprite = (button.down) ? SPEED_UP_BUTTON_DOWN_SPRITE : SPEED_UP_BUTTON_UP_SPRITE;
             button.loadTexture(newButtonSprite, 0);
-            
+
             game.time.slowMotion = (button.down) ? SPED_UP_GAME_SPEED : DEFAULT_GAME_SPEED;
             game.time.desiredFps = 60 * game.time.slowMotion;
         }
     },
 
-    getPathMask: function(graph) {
+    getPathMask: function (graph) {
         let columns = graph.getColumns();
         let bottomY = GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin;
 
@@ -263,9 +263,9 @@ gameplayState.prototype = {
                     this.scanners[j].EnterBag(this.bags[i]);
                 }
             }
-            
+
             this.bags[i].update();
-            
+
         }
         for (let j = 0; j < this.scanners.length; j++) {
             this.scanners[j].UpdateScanner();
@@ -297,6 +297,13 @@ gameplayState.prototype = {
         let starRating = state.scoreManager.getStarRating(state.levelData.starThresholds);
         console.log("You got a rating of " + starRating + " stars!");
 
+        if (game.userLevelData[state.levelData.levelIndex] !== null || game.userLevelData[state.levelData.levelIndex] < starRating) {
+            game.userLevelData[state.levelData.levelIndex] = starRating;
+            localStorage.userLevelData = JSON.stringify(game.userLevelData);
+
+            console.log(localStorage.userLevelData);
+        }
+
         state.showEndScreen(starRating, state.scoreManager.currentCorrectBagCount, state.scoreManager.currentWrongBagCount);
     },
 
@@ -308,14 +315,14 @@ gameplayState.prototype = {
         else state.scoreManager.currentWrongBagCount++;
     },
 
-    render: function() {
+    render: function () {
         if (DEBUG_SHOW_COLLIDERS) {
             for (let i = 0; i < this.bags.length; i++) {
                 game.debug.body(this.bags[i].sprite);
             }
         }
     },
-    
+
     onScannerSelected: function () {
         for (var i = 0; i < this.scanners.length; i++) {
             if (this.scanners[i] != this.scanner) this.scanners[i].SetInactive();
@@ -325,7 +332,7 @@ gameplayState.prototype = {
 
     //END SCREEN//
     //////////////
-    showEndScreen: function(starRating, correctBagCount, wrongBagCount) {
+    showEndScreen: function (starRating, correctBagCount, wrongBagCount) {
         //Create a new layer for the score screen
         let scoreLayer = game.add.group();
 
@@ -356,7 +363,7 @@ gameplayState.prototype = {
         }
 
         //Show correct and wrong bag counts
-        let textStyle = { font: "bold Arial", fontSize: "140px",fill: "#fff", boundsAlignH: "right", boundsAlignV: "middle" };
+        let textStyle = { font: "bold Arial", fontSize: "140px", fill: "#fff", boundsAlignH: "right", boundsAlignV: "middle" };
 
         let correctText = new Phaser.Text(game, SCORE_SCREEN_DIMENSIONS.numberRightX, SCORE_SCREEN_DIMENSIONS.correctNumberY, correctBagCount, textStyle);
         scoreLayer.add(correctText);
@@ -365,11 +372,11 @@ gameplayState.prototype = {
         scoreLayer.add(wrongText);
 
         //Prepare the button callbacks
-        let doRematch = function(button, pointer, isOver) {
+        let doRematch = function (button, pointer, isOver) {
             if (isOver) game.state.start("gameplayState", true, false, game.state.getCurrentState().originalLevelData);
         }
         //TODO: Go to menu state once it exists.
-        let goToMenu = function(button, pointer, isOver) {
+        let goToMenu = function (button, pointer, isOver) {
             //if (isOver) game.state.start("mainMenuState", true, false);
             if (isOver) console.warn("Go to menu button is not implemented yet.");
         }
