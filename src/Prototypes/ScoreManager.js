@@ -1,6 +1,7 @@
 "use strict"
 function ScoreManager() {
-    this.currentMistakeCount = 0;
+    this.currentCorrectBagCount = 0;
+    this.currentWrongBagCount = 0;
 }
 
 ScoreManager.prototype = {
@@ -9,7 +10,7 @@ ScoreManager.prototype = {
 
         let rating = 0;
         for (let i = 0; i < starThresholds.length; i++) {
-            if (this.currentMistakeCount <= starThresholds[i]) rating++; 
+            if (this.currentWrongBagCount <= starThresholds[i]) rating++; 
         }
 
         return rating;

@@ -5,13 +5,14 @@ var gameplayState = function (game) {
 
 const GAMEPLAY_BACKGROUND_IMAGE_KEY = "img_GameplayBackground";
 const GAMEPLAY_FOREGROUND_IMAGE_KEY = "img_GameplayForeground";
+const SCORE_BACKGROUND_IMAGE_KEY = "img_ScoreBackground"
 
 const GAMEPLAY_MUSIC_KEY = "music_Gameplay";
 const GAMEPLAY_MUSIC_VOLUME = .75;
 
 // Game speed
 const DEFAULT_GAME_SPEED = 1;
-const SPED_UP_GAME_SPEED = DEFAULT_GAME_SPEED / 4;
+const SPED_UP_GAME_SPEED = DEFAULT_GAME_SPEED / 50;
 const SPEED_UP_BUTTON_DOWN_SPRITE = LANE_ICON_SPRITE_KEY_SAFE;
 const SPEED_UP_BUTTON_UP_SPRITE = LANE_ICON_SPRITE_KEY_DANGER;
 
@@ -22,6 +23,19 @@ const LEVEL_DIMENSIONS = {
     laneBottomMargin: 259,
     scannerScreenWidth: 609
 }
+
+//End screen stuff
+const SCORE_SCREEN_DIMENSIONS = {
+    starY: 525,
+    starRatingWidth: 325,
+    starScaleFactor: 0.8,
+    numberRightX: 675,
+    correctNumberY: 652,
+    wrongNumberY: 880
+}
+
+const OBTAINED_STAR_IMAGE_KEY = "img_StarObtained"
+const UNOBTAINED_STAR_IMAGE_KEY = "img_StarUnobtained"
 
 //Layers
 var backgroundLayer;
@@ -251,7 +265,6 @@ gameplayState.prototype = {
 
         //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
         bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
-
     },
 
     //EVENTS//
@@ -266,6 +279,8 @@ gameplayState.prototype = {
     onGameEnd: function () {
         let state = game.state.getCurrentState();
 
+        //Stop responding to input. 
+        //TODO: Stop responding to fast forwards input as well. Also scanner switching.
         state.pathCreator.unsubscribeFromInputEvents();
 
         state.gameHasEnded = true;
@@ -273,17 +288,16 @@ gameplayState.prototype = {
 
         let starRating = state.scoreManager.getStarRating(state.levelData.starThresholds);
         console.log("You got a rating of " + starRating + " stars!");
+
+        state.showEndScreen(starRating, state.scoreManager.currentCorrectBagCount, state.scoreManager.currentWrongBagCount);
     },
 
     onBagKilled: function (isCorrect) {
         let state = game.state.getCurrentState();
         state.waveManager.notifyOfBagDone();
 
-        if (!isCorrect) state.scoreManager.currentMistakeCount++;
-    },
-
-    onBagScanned: function (scanner) {
-        bags.push(scanner.ExitBag());
+        if (isCorrect) state.scoreManager.currentCorrectBagCount++;
+        else state.scoreManager.currentWrongBagCount++;
     },
 
     render: function() {
@@ -299,5 +313,48 @@ gameplayState.prototype = {
             if (this.scanners[i] != this.scanner) this.scanners[i].SetInactive();
         }
         this.scanner.SetActive();
+    },
+
+    //END SCREEN//
+    //////////////
+    showEndScreen: function(starRating, correctBagCount, wrongBagCount) {
+        //Create a new layer for the score screen
+        let scoreLayer = game.add.group();
+
+        //Show the main image
+        let background = new Phaser.Image(game, 0, 0, SCORE_BACKGROUND_IMAGE_KEY);
+        background.anchor.setTo(0, 0);
+        scoreLayer.add(background);
+
+        //Make the background block clicks so that the gameplay stage becomes uninteractable
+        background.inputEnabled = true;
+
+        //Show stars
+        let starY = SCORE_SCREEN_DIMENSIONS.starY;
+        let starSpacing = SCORE_SCREEN_DIMENSIONS.starRatingWidth / 2;
+        let starX = (GAME_WIDTH / 2) - starSpacing;
+
+        for (let i = 1; i <= 3; i++) {
+            let starKey = (i <= starRating) ? OBTAINED_STAR_IMAGE_KEY : UNOBTAINED_STAR_IMAGE_KEY;
+            let star = new Phaser.Image(game, starX, starY, starKey);
+
+            star.anchor.setTo(0.5, 0.5);
+            star.scale.setTo(SCORE_SCREEN_DIMENSIONS.starScaleFactor, SCORE_SCREEN_DIMENSIONS.starScaleFactor);
+
+            scoreLayer.add(star);
+
+
+            starX += starSpacing;
+        }
+
+        //Show correct and wrong bag counts
+        let textStyle = { font: "bold Arial", fontSize: "140px",fill: "#fff", boundsAlignH: "right", boundsAlignV: "middle" };
+
+        let correctText = new Phaser.Text(game, SCORE_SCREEN_DIMENSIONS.numberRightX, SCORE_SCREEN_DIMENSIONS.correctNumberY, correctBagCount, textStyle);
+        scoreLayer.add(correctText);
+
+        let wrongText = new Phaser.Text(game, SCORE_SCREEN_DIMENSIONS.numberRightX, SCORE_SCREEN_DIMENSIONS.wrongNumberY, wrongBagCount, textStyle);
+        scoreLayer.add(wrongText);
+
     }
 }

@@ -41,9 +41,16 @@ preloadState.prototype = {
         game.load.audio(SFX_SCANNER_RUNNING_KEY, "resources/audio/sfx_ScannerRunning.mp3");
         game.load.audio(SFX_SCANNER_DETECTED_DANGER_KEY, "resources/audio/sfx_ScannerDetectedDanger.mp3");
 
+        //Fondos
         game.load.image(GAMEPLAY_BACKGROUND_IMAGE_KEY, "resources/sprites/img_GameplayBackground.png");
         game.load.image(GAMEPLAY_FOREGROUND_IMAGE_KEY, "resources/sprites/img_GameplayForeground.png");
+        game.load.image(SCORE_BACKGROUND_IMAGE_KEY, "resources/sprites/img_ScoreBackground.png")
+
+        //UI
         game.load.image("img_ScannerBelt", "resources/sprites/img_ScannerBelt.png");
+        game.load.image(OBTAINED_STAR_IMAGE_KEY, "resources/sprites/img_StarObtained.png");
+        game.load.image(UNOBTAINED_STAR_IMAGE_KEY, "resources/sprites/img_StarUnobtained.png");
+        
     },
 
     loadBagSpriteFromName: function(name) {
