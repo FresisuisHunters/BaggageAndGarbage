@@ -190,20 +190,22 @@ gameplayState.prototype = {
         let x = 20;
         let y = 20;
 
-        this.speedUpButton = game.add.button(x, y, SPEED_UP_BUTTON_UP_SPRITE, this.speedUpButtonCallback, this);
+        this.speedUpButton = game.add.button(x, y, SPEED_UP_BUTTON_UP_SPRITE, this.speedUpButtonCallback);
         this.speedUpButton.anchor.setTo(0, 0);
         this.speedUpButton.down = false;
 
         overlayLayer.add(this.speedUpButton);
     },
 
-    speedUpButtonCallback : function() {
-        this.speedUpButton.down = !this.speedUpButton.down;
-        let newButtonSprite = (this.speedUpButton.down) ? SPEED_UP_BUTTON_DOWN_SPRITE : SPEED_UP_BUTTON_UP_SPRITE;
-        this.speedUpButton.loadTexture(newButtonSprite, 0);
-        
-        game.time.slowMotion = (this.speedUpButton.down) ? SPED_UP_GAME_SPEED : DEFAULT_GAME_SPEED;
-        game.time.desiredFps = 60 * game.time.slowMotion;
+    speedUpButtonCallback : function(button, pointer, isOver) {
+        if (isOver) {
+            button.down = !button.down;
+            let newButtonSprite = (button.down) ? SPEED_UP_BUTTON_DOWN_SPRITE : SPEED_UP_BUTTON_UP_SPRITE;
+            button.loadTexture(newButtonSprite, 0);
+            
+            game.time.slowMotion = (button.down) ? SPED_UP_GAME_SPEED : DEFAULT_GAME_SPEED;
+            game.time.desiredFps = 60 * game.time.slowMotion;
+        }
     },
 
     getPathMask: function(graph) {
@@ -362,20 +364,28 @@ gameplayState.prototype = {
         let wrongText = new Phaser.Text(game, SCORE_SCREEN_DIMENSIONS.numberRightX, SCORE_SCREEN_DIMENSIONS.wrongNumberY, wrongBagCount, textStyle);
         scoreLayer.add(wrongText);
 
+        //Prepare the button callbacks
+        let doRematch = function(button, pointer, isOver) {
+            if (isOver) game.state.start("gameplayState", true, false, game.state.getCurrentState().originalLevelData);
+        }
+        //TODO: Go to menu state once it exists.
+        let goToMenu = function(button, pointer, isOver) {
+            //if (isOver) game.state.start("mainMenuState", true, false);
+            if (isOver) console.warn("Go to menu button is not implemented yet.");
+        }
+
+
         //Show buttons
         let xPos = (GAME_WIDTH / 2) - (SCORE_SCREEN_DIMENSIONS.buttonSpacing / 2);
-        let rematchButton = new Phaser.Image(game, xPos, SCORE_SCREEN_DIMENSIONS.buttonY, REMATCH_BUTTON_IMAGE_KEY);
+        let rematchButton = new Phaser.Button(game, xPos, SCORE_SCREEN_DIMENSIONS.buttonY, REMATCH_BUTTON_IMAGE_KEY, doRematch);
         rematchButton.scale.setTo(SCORE_SCREEN_DIMENSIONS.buttonScale, SCORE_SCREEN_DIMENSIONS.buttonScale);
         rematchButton.anchor.setTo(1, 0.5);
         scoreLayer.add(rematchButton);
 
-        let menuButton = new Phaser.Image(game, (GAME_WIDTH / 2) + (SCORE_SCREEN_DIMENSIONS.buttonSpacing / 2), SCORE_SCREEN_DIMENSIONS.buttonY, MENU_BUTTON_IMAGE_KEY);
+        xPos = (GAME_WIDTH / 2) + (SCORE_SCREEN_DIMENSIONS.buttonSpacing / 2);
+        let menuButton = new Phaser.Button(game, xPos, SCORE_SCREEN_DIMENSIONS.buttonY, MENU_BUTTON_IMAGE_KEY, goToMenu);
         menuButton.scale.setTo(SCORE_SCREEN_DIMENSIONS.buttonScale, SCORE_SCREEN_DIMENSIONS.buttonScale);
         menuButton.anchor.setTo(0, 0.5);
         scoreLayer.add(menuButton);
-
-        //Add functionality to the buttons
-        rematchButton.inputEnabled = true;
-        rematchButton.events.onInputDown.add(() => game.state.start("gameplayState", true, false, game.state.getCurrentState().originalLevelData));
     }
 }
