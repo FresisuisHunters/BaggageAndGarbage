@@ -394,5 +394,9 @@ gameplayState.prototype = {
         menuButton.scale.setTo(SCORE_SCREEN_DIMENSIONS.buttonScale, SCORE_SCREEN_DIMENSIONS.buttonScale);
         menuButton.anchor.setTo(0, 0.5);
         scoreLayer.add(menuButton);
+    },
+
+    shutdown: function() {
+        this.music.stop();
     }
 }
