@@ -39,8 +39,8 @@ const SCORE_SCREEN_DIMENSIONS = {
 
 const OBTAINED_STAR_IMAGE_KEY = "img_StarObtained"
 const UNOBTAINED_STAR_IMAGE_KEY = "img_StarUnobtained"
-const REMATCH_BUTTON_IMAGE_KEY = "img_LaneIcon_Safe"
-const MENU_BUTTON_IMAGE_KEY = "img_LaneIcon_Danger"
+const RETRY_BUTTON_IMAGE_KEY = "img_RetryButton"
+const HOME_BUTTON_IMAGE_KEY = "img_HomeButton"
 
 //Layers
 var backgroundLayer;
@@ -386,13 +386,13 @@ gameplayState.prototype = {
 
         //Show buttons
         let xPos = (GAME_WIDTH / 2) - (SCORE_SCREEN_DIMENSIONS.buttonSpacing / 2);
-        let rematchButton = new Phaser.Button(game, xPos, SCORE_SCREEN_DIMENSIONS.buttonY, REMATCH_BUTTON_IMAGE_KEY, doRematch);
+        let rematchButton = new Phaser.Button(game, xPos, SCORE_SCREEN_DIMENSIONS.buttonY, RETRY_BUTTON_IMAGE_KEY, doRematch);
         rematchButton.scale.setTo(SCORE_SCREEN_DIMENSIONS.buttonScale, SCORE_SCREEN_DIMENSIONS.buttonScale);
         rematchButton.anchor.setTo(1, 0.5);
         scoreLayer.add(rematchButton);
 
         xPos = (GAME_WIDTH / 2) + (SCORE_SCREEN_DIMENSIONS.buttonSpacing / 2);
-        let menuButton = new Phaser.Button(game, xPos, SCORE_SCREEN_DIMENSIONS.buttonY, MENU_BUTTON_IMAGE_KEY, goToMenu);
+        let menuButton = new Phaser.Button(game, xPos, SCORE_SCREEN_DIMENSIONS.buttonY, HOME_BUTTON_IMAGE_KEY, goToMenu);
         menuButton.scale.setTo(SCORE_SCREEN_DIMENSIONS.buttonScale, SCORE_SCREEN_DIMENSIONS.buttonScale);
         menuButton.anchor.setTo(0, 0.5);
         scoreLayer.add(menuButton);
