@@ -41,7 +41,7 @@ preloadState.prototype = {
 
         // Sprites menu
         game.load.image(MENU_BACKGROUND_KEY, "resources/sprites/img_MainMenuBackground.png");
-        // game.load.image(MENU_INTERFACE_KEY, "resources/sprites/img_LevelSelectBackground.png");
+        game.load.image(MENU_INTERFACE_KEY, "resources/sprites/img_LevelSelectBackground.png");
         game.load.image(EASY_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardEasy.png");
         game.load.image(NORMAL_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardNormal.png");
         game.load.image(HARD_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardHard.png");

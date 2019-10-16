@@ -4,7 +4,7 @@ var menuState = function (game) {
 }
 
 const MENU_BACKGROUND_KEY = "MenuBackground";
-// const MENU_INTERFACE_KEY = "MenuInterface";
+const MENU_INTERFACE_KEY = "MenuInterface";
 const EASY_LEVEL_CARD_SPRITE = "EasyLevel";
 const NORMAL_LEVEL_CARD_SPRITE = "NormalLevel";
 const HARD_LEVEL_CARD_SPRITE = "HardLevel";
@@ -45,11 +45,9 @@ menuState.prototype = {
         backgroundSprite.anchor.set(0, 0);
         this.backgroundLayer.add(backgroundSprite);
 
-        /*
-        let interface = game.add.sprite(0, 0, MENU_INTERFACE_KEY);
-        interface.anchor.set(0, 0);
-        this.backgroundLayer.add(interface);
-        */
+        let interfaceSprite = game.add.sprite(0, 0, MENU_INTERFACE_KEY);
+        interfaceSprite.anchor.set(0, 0);
+        this.backgroundLayer.add(interfaceSprite);
     },
 
     displayLevelCards: function () {
