@@ -55,7 +55,6 @@ Empieza levelLoadState con un path a un JSON de nivel.
 levelLoadState se encargará de empezar el estado de gaemplay cuando todo esté listo.
 */
 gameplayState.prototype = {
-
     //INICIALIZACIÓN//
     //////////////////
     init: function (levelData) {
@@ -114,6 +113,16 @@ gameplayState.prototype = {
 
         //Empieza la primera oleada
         this.waveManager.startNextWave();
+
+        if (SHOW_FPS) {
+            let textStyle = { font: "bold Arial", fontSize: "140px", fill: "#f00", align: "left", boundsAlignH: "right", boundsAlignV: "middle" };
+
+            this.fspCounter = new Phaser.Text(game, 0, 0, "--", textStyle);
+            this.fspCounter.anchor.setTo(0, 0);
+            overlayLayer.add(this.fspCounter);
+
+            game.time.advancedTiming = true;
+        }
     },
 
     createBackground: function () {
@@ -251,10 +260,9 @@ gameplayState.prototype = {
     //GAME LOOP//
     /////////////
     update: function () {
-
         if (!this.gameHasEnded) {
             this.pathCreator.update();
-            this.waveManager.update(game.time.physicsElapsed);
+            this.waveManager.update();
         }
 
         //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
@@ -276,6 +284,10 @@ gameplayState.prototype = {
 
         //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
         bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
+
+        if (SHOW_FPS) {
+            this.fspCounter.text = game.time.fps;
+        }
     },
 
     //EVENTS//

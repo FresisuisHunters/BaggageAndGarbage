@@ -5,6 +5,8 @@ const CANVAS_MARGIN = 0;
 const POWER_OF_2_SCALING_ONLY = false;
 const USE_ANTIALIASING = false;
 
+const SHOW_FPS = true;
+
 const MUTE_AUDIO = false;
 
 var game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.AUTO, 'gameDiv', null, false, USE_ANTIALIASING);
