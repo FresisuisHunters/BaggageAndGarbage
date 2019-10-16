@@ -86,7 +86,7 @@ preloadState.prototype = {
 
     update: function() {
         if (game.input.activePointer.isDown) {
-            game.state.start("levelLoadState", true, false, "resources/levels/lvl_01.json");   
+            game.state.start("levelLoadState", true, false, "resources/levels/lvl_02.json");   
         }
     },
     
