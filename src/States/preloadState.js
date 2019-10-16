@@ -1,5 +1,10 @@
 "use strict";
 
+const JSON_KEY = "JSONLevel_";
+const LEVELS_JSON_DIR = "resources/levels/";
+const LEVEL_JSON_PREFIX = "devLevel_";
+const LEVEL_JSON_SUFFIX = ".json";
+
 const BAG_SPRITE_FOLDER = "resources/sprites/bags/";
 const INTERIOR_SPRITE_FOLDER = "resources/sprites/bags/interiores/";
 
@@ -19,6 +24,7 @@ preloadState.prototype = {
     preload: function () {
         this.loadBagSprites();
         this.loadInteriorSprites();
+        this.loadLevelsJSONs();
 
         //Cintas
         game.load.spritesheet(CONVEYOR_BELT_SHEET_LANE.KEY, "resources/sprites/sheet_ConveyorBelt.png", CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_SIZE, 
@@ -57,6 +63,14 @@ preloadState.prototype = {
         game.load.image(OBTAINED_STAR_IMAGE_KEY, "resources/sprites/img_StarObtained.png");
         game.load.image(UNOBTAINED_STAR_IMAGE_KEY, "resources/sprites/img_StarUnobtained.png");
         
+    },
+
+    loadLevelsJSONs: function () {
+        for (let level = 0; level < 3; ++level) {
+            let key = JSON_KEY + level;
+            let jsonFile = LEVELS_JSON_DIR + LEVEL_JSON_PREFIX + level + LEVEL_JSON_SUFFIX;
+            game.load.json(key, jsonFile, true);
+        }
     },
 
     loadBagSpriteFromName: function(name) {
