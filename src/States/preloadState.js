@@ -81,9 +81,16 @@ preloadState.prototype = {
 
     create: function () {
         //https://photonstorm.github.io/phaser-ce/Phaser.StateManager.html#start
-        game.state.start("levelLoadState", true, false, "resources/levels/lvl_01.json");
+        //game.state.start("levelLoadState", true, false, "resources/levels/lvl_01.json");
     },
 
+    update: function() {
+        if (game.input.activePointer.isDown) {
+            game.state.start("levelLoadState", true, false, "resources/levels/lvl_01.json");
+            
+        }
+    },
+    
     loadBagSprites: function() {
         this.loadBagSpriteFromName("img_Maleta_A_ID01_01");
         this.loadBagSpriteFromName("img_Maleta_A_ID01_02");
