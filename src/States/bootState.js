@@ -9,6 +9,12 @@ bootState.prototype = {
         game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE;
         game.scale.setResizeCallback(this.onResize, this);
         game.physics.startSystem(Phaser.Physics.ARCADE);
+        this.context = this.createAudioContext(game);
+        this.locked = this.context.state === 'suspended' && ('ontouchstart' in window || 'onclick' in window);
+        if (this.locked)
+        {
+            this.unlock();
+        }
         game.sound.mute = MUTE_AUDIO;
     },
 
@@ -66,6 +72,43 @@ bootState.prototype = {
         }
 
         game.scale.setUserScale(scaleFactor, scaleFactor, 0, 0, false, false);
+    },
+
+    unlock: function ()
+    {
+        var _this = this;
+
+        var unlockHandler = function unlockHandler ()
+        {
+            _this.context.resume().then(function ()
+            {
+                document.body.removeEventListener('touchstart', unlockHandler);
+                document.body.removeEventListener('touchend', unlockHandler);
+                document.body.removeEventListener('click', unlockHandler);
+
+                _this.unlocked = true;
+            });
+        };
+
+        if (document.body)
+        {
+            document.body.addEventListener('touchstart', unlockHandler, false);
+            document.body.addEventListener('touchend', unlockHandler, false);
+            document.body.addEventListener('click', unlockHandler, false);
+        }
+    },
+    createAudioContext: function (game)
+    {
+        var audioConfig = game.config.audio;
+
+        if (audioConfig && audioConfig.context)
+        {
+            audioConfig.context.resume();
+
+            return audioConfig.context;
+        }
+
+        return new AudioContext();
     }
 
 }
