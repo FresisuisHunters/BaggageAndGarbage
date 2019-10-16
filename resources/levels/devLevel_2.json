@@ -1,5 +1,7 @@
 {
     "difficulty":2,
+    "levelIndex":2,
+    "bagSpeed": 60,
     "lanes": {
         "count": 4,
         "types": ["S", "D", "S", "D"]

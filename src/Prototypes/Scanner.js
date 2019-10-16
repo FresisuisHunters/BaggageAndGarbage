@@ -9,11 +9,6 @@ const SCANNER_FRAMES = {
 
 const SCANNER_SCALE_FACTOR = 0.8;
 
-const SFX_SCANNER_RUNNING_KEY = "sfx_ScannerRunning";
-const SFX_SCANNER_RUNNING_VOLUME = 0.05;
-const SFX_SCANNER_DETECTED_DANGER_KEY = "sfx_ScannerDetectedDanger";
-const SFX_SCANNER_DETECTED_DANGER_VOLUME = 1;
-
 function Scanner(position, lane) {
     this.belt = lane;
     this.x = position.x;
@@ -30,15 +25,6 @@ function Scanner(position, lane) {
     game.world.sendToBack(this.backgroundScanSprites);
     game.world.sendToBack(backgroundLayer);
     this.scanSprites.mask = this.createWindowMask();
-
-    //Audio
-    this.runningSFX = game.add.audio(SFX_SCANNER_RUNNING_KEY);
-    this.runningSFX.volume = SFX_SCANNER_RUNNING_VOLUME;
-    this.runningSFX.loop = true;
-
-    this.dangerDetectedSFX = game.add.audio(SFX_SCANNER_DETECTED_DANGER_KEY);
-    this.dangerDetectedSFX.volume = SFX_SCANNER_DETECTED_DANGER_VOLUME;
-    this.dangerDetectedSFX.loop = true;
 
     //Primero se pone a true para que dentro de inactive no se ignore la llamada por ser redundante
     this.isActive = true;
@@ -94,8 +80,6 @@ Scanner.prototype = {
                 let newInteriorSprite = this.scanSprites.create(this.windowCenterX, this.windowStartY, Bag.interiorSpriteKey);
                 newInteriorSprite.anchor.setTo(0.5, 1);
             }
-            
-            if (this.isActive && !this.runningSFX.isPlaying) this.runningSFX.play();
         }
     },
 
@@ -103,11 +87,6 @@ Scanner.prototype = {
         let bag = this.currentBags.shift();
         bag.inScan = false;
         this.scanSprites.remove(this.scanSprites.getAt(0), true, false);
-
-        if (this.currentBags.length ==  0)  {
-            if (this.runningSFX.isPlaying) this.runningSFX.stop();
-            if (this.dangerDetectedSFX.isPlaying) this.dangerDetectedSFX.stop();
-        }
     },
 
     UpdateScanner: function () {
@@ -116,9 +95,6 @@ Scanner.prototype = {
 
         let detectedDanger = false;
         if (this.currentBags.length > 0) {
-            
-            //Al haber al menos una maleta, runningSFX tiene que reproducirse
-            if (!this.runningSFX.isPlaying) this.runningSFX.play();
 
             //Actualiza la posición de los sprits interiores
             for (let i = 0; i < this.currentBags.length; i++) {
@@ -140,15 +116,6 @@ Scanner.prototype = {
                 if (this.currentBags[i].type == BagTypes.C || this.currentBags[i].type == BagTypes.B_Danger)
                     detectedDanger = true;
             }
-        }
-
-        //Si hay peligro, reproduce su SFX
-        if (detectedDanger) {
-            this.sprite.frame = SCANNER_FRAMES.DANGER;
-            if (!this.dangerDetectedSFX.isPlaying) this.dangerDetectedSFX.play();
-        } else {
-            this.sprite.frame = SCANNER_FRAMES.ACTIVE;
-            if (this.dangerDetectedSFX.isPlaying) this.dangerDetectedSFX.stop();
         }
     },
 
@@ -175,8 +142,5 @@ Scanner.prototype = {
         this.sprite.frame = SCANNER_FRAMES.INACTIVE;
         this.isActive = false;
         this.scanSprites.visible = false;
-
-        if (this.runningSFX.isPlaying) this.runningSFX.stop();
-        if (this.dangerDetectedSFX.isPlaying) this.dangerDetectedSFX.stop();
     }
 }

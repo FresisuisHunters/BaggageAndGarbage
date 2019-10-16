@@ -40,7 +40,8 @@ preloadState.prototype = {
         game.load.spritesheet(SCANNER_SHEET_KEY,"resources/sprites/sheet_Scanner.png", 256, 256, 3,20, 10);
 
         // Sprites menu
-        game.load.image(MENU_BACKGROUND_KEY, "resources/sprites/img_LevelSelectBackground.png");
+        game.load.image(MENU_BACKGROUND_KEY, "resources/sprites/img_MainMenuBackground.png");
+        // game.load.image(MENU_INTERFACE_KEY, "resources/sprites/img_LevelSelectBackground.png");
         game.load.image(EASY_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardEasy.png");
         game.load.image(NORMAL_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardNormal.png");
         game.load.image(HARD_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardHard.png");
@@ -50,8 +51,6 @@ preloadState.prototype = {
         game.load.audio(SFX_BUILT_PATH_KEY, "resources/audio/sfx_BuiltPath.mp3");
         game.load.audio(SFX_CORRECT_BAG_KEY, "resources/audio/sfx_CorrectBag.mp3");
         game.load.audio(SFX_WRONG_BAG_KEY, "resources/audio/sfx_WrongBag.mp3");
-        game.load.audio(SFX_SCANNER_RUNNING_KEY, "resources/audio/sfx_ScannerRunning.mp3");
-        game.load.audio(SFX_SCANNER_DETECTED_DANGER_KEY, "resources/audio/sfx_ScannerDetectedDanger.mp3");
 
         //Fondos
         game.load.image(GAMEPLAY_BACKGROUND_IMAGE_KEY, "resources/sprites/img_GameplayBackground.png");
@@ -60,8 +59,12 @@ preloadState.prototype = {
 
         //UI
         game.load.image("img_ScannerBelt", "resources/sprites/img_ScannerBelt.png");
+        game.load.image(SPEED_UP_BUTTON_DOWN_IMAGE_KEY, "resources/sprites/img_FastForwardActivated.png");
+        game.load.image(SPEED_UP_BUTTON_UP_IMAGE_KEY, "resources/sprites/img_FastForwardDeactivated.png");
         game.load.image(OBTAINED_STAR_IMAGE_KEY, "resources/sprites/img_StarObtained.png");
         game.load.image(UNOBTAINED_STAR_IMAGE_KEY, "resources/sprites/img_StarUnobtained.png");
+        game.load.image(RETRY_BUTTON_IMAGE_KEY, "resources/sprites/img_RetryButton.png");
+        game.load.image(HOME_BUTTON_IMAGE_KEY, "resources/sprites/img_HomeButton.png");
         
     },
 
@@ -104,6 +107,13 @@ preloadState.prototype = {
         console.log(game.cache.getKeys(Phaser.Cache.IMAGE));
     },
 
+    update: function() {
+        if (game.input.activePointer.isDown) {
+            game.state.start("levelLoadState", true, false, "resources/levels/lvl_01.json");
+            
+        }
+    },
+    
     loadBagSprites: function() {
         this.loadBagSpriteFromName("img_Maleta_A_ID01_01");
         this.loadBagSpriteFromName("img_Maleta_A_ID01_02");
@@ -144,7 +154,6 @@ preloadState.prototype = {
 
         this.loadBagSpriteFromName("img_Maleta_C_ID13_01");
         this.loadBagSpriteFromName("img_Maleta_C_ID14_01");
-
     },
 
     loadInteriorSprites: function() {
