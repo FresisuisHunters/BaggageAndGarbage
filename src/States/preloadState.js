@@ -80,15 +80,8 @@ preloadState.prototype = {
     },
 
     create: function () {
-        
-        //console.log(game.cache.getKeys(Phaser.Cache.IMAGE));
-    },
-
-    update: function() {
-        if (game.input.activePointer.isDown) {
-            //https://photonstorm.github.io/phaser-ce/Phaser.StateManager.html#start
-            game.state.start("levelLoadState", true, false, "resources/levels/lvl_01.json");
-        }
+        //https://photonstorm.github.io/phaser-ce/Phaser.StateManager.html#start
+        game.state.start("levelLoadState", true, false, "resources/levels/lvl_01.json");
     },
 
     loadBagSprites: function() {
@@ -131,7 +124,6 @@ preloadState.prototype = {
 
         this.loadBagSpriteFromName("img_Maleta_C_ID13_01");
         this.loadBagSpriteFromName("img_Maleta_C_ID14_01");
-
     },
 
     loadInteriorSprites: function() {

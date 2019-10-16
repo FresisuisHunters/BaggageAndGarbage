@@ -26,7 +26,13 @@ bootState.prototype = {
         else
             game.userLevelData = new Map();
         console.log("localStorage" + localStorage.userLevelData);
-        game.state.start("preloadState");
+        
+    },
+
+    update: function() {
+        if (game.input.activePointer.isDown) {
+            game.state.start("preloadState");
+        }
     },
 
     onResize: function () {
