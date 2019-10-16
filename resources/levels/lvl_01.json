@@ -2,8 +2,8 @@
     "levelIndex":-1,
     "bagSpeed": 60,
     "lanes": {
-        "count": 4,
-        "types": ["S", "D", "S", "D"]
+        "count": 5,
+        "types": ["S", "D", "S", "D", "S"]
     },
     "waves": [
         {
@@ -19,10 +19,10 @@
             "numC": 1
         },
         {
-            "numA": 2,
+            "numA": 1,
             "numB_Safe": 1,
             "numB_Danger": 2,
-            "numC": 2
+            "numC": 1
         }
     ],
     "scanners": [
