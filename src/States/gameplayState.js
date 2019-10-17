@@ -279,8 +279,13 @@ gameplayState.prototype = {
             this.bags[i].update();
 
         }
+        
         for (let j = 0; j < this.scanners.length; j++) {
             this.scanners[j].UpdateScanner();
+        }
+
+        for (let i = 0; i < this.lanes.length; i++) {
+            this.lanes[i].laneEnd.update();
         }
 
         //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
