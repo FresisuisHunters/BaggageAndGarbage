@@ -9,7 +9,13 @@ bootState.prototype = {
         game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE;
         game.scale.setResizeCallback(this.onResize, this);
         game.physics.startSystem(Phaser.Physics.ARCADE);
-        game.sound.mute = MUTE_AUDIO;
+        //game.sound.mute = MUTE_AUDIO;
+        this. soundContext = game.sound.context;
+        this.locked = this.soundContext.state === 'suspended' && ('ontouchstart' in window || 'onclick' in window);
+        if (this.locked)
+        {
+            this.unlock();
+        }
     },
 
     preload: function () {
@@ -66,6 +72,30 @@ bootState.prototype = {
         }
 
         game.scale.setUserScale(scaleFactor, scaleFactor, 0, 0, false, false);
+    },
+
+    unlock: function ()
+    {
+        var _this = this;
+
+        var unlockHandler = function unlockHandler ()
+        {
+            _this.soundContext.resume().then(function ()
+            {
+                document.body.removeEventListener('touchstart', unlockHandler);
+                document.body.removeEventListener('touchend', unlockHandler);
+                document.body.removeEventListener('click', unlockHandler);
+
+                _this.unlocked = true;
+            });
+        };
+
+        if (document.body)
+        {
+            document.body.addEventListener('touchstart', unlockHandler, false);
+            document.body.addEventListener('touchend', unlockHandler, false);
+            document.body.addEventListener('click', unlockHandler, false);
+        }
     }
 
 }
