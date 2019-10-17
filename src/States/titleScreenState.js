@@ -23,6 +23,11 @@ const TITLE_SCREEN_DIMENSIONS = {
     creditsButtonScaleFactor: 1,
 }
 
+
+const MENU_MUSIC_KEY = "music_Menu"
+const MENU_MUSIC_VOLUME = 0.5;
+var menuMusic;
+
 titleScreenState.prototype = {
 
     create: function() {
@@ -34,6 +39,10 @@ titleScreenState.prototype = {
         this.showPlayButton();
         this.showLanguageButtons();
         this.showCreditsButton();
+
+        if (menuMusic == null) menuMusic = game.add.audio(MENU_MUSIC_KEY);
+        menuMusic.volume = MENU_MUSIC_VOLUME;
+        menuMusic.play();
     },
 
     showBackground: function () {

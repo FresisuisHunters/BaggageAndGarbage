@@ -107,6 +107,8 @@ gameplayState.prototype = {
         this.scoreManager = new ScoreManager();
 
         //Reproduce la música
+        if (menuMusic.isPlaying) menuMusic.stop();
+
         this.music = game.add.audio(GAMEPLAY_MUSIC_KEY);
         this.music.volume = GAMEPLAY_MUSIC_VOLUME;
         this.music.loop = true;
@@ -401,7 +403,7 @@ gameplayState.prototype = {
         
         let goToMenu = function (button, pointer, isOver) {
             if (isOver) {
-                game.state.start("levelSelectState", true, false);
+                game.state.start("titleScreenState", true, false);
             }
         }
 
