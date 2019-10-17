@@ -61,16 +61,19 @@ Graph.prototype = {
     pathIsValid: function (origin, destiny) {
         if (!this.pointsBelongToAdjacentConveyors(origin, destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
+            conflictNonAdjacentConveyors(this.conveyorBelts, origin, destiny);
             return false;
         }
 
         if (this.pointIsOnScanner(origin) || this.pointIsOnScanner(destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny are placed on top of a scanner");
+            conflictConveyorOnScanner(this.conveyorBelts, origin, destiny);
             return false;
         }
 
         if (this.pathIntersectsOtherPaths(origin, destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Paths can't intersect");
+            conflictPathIntersection(this.conveyorBelts, origin, destiny);
             return false;
         }
 
@@ -82,6 +85,7 @@ Graph.prototype = {
         if (this.positionIsTooCloseToExistingNodes(origin) ||
             this.positionIsTooCloseToExistingNodes(destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny are too close to existing objects");
+            conflictNewBeltCloseToExistent(this.conveyorBelts, origin, destiny);
             return false;
         }
 
