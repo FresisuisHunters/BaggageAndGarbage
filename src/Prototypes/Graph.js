@@ -12,6 +12,7 @@ function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight, scanners
     this.graph = new Map();
     this.initializeGraph();
     this.verboseMode = false;
+    this.tintedDrawables = [];
 }
 
 Graph.prototype = {
@@ -71,21 +72,23 @@ Graph.prototype = {
     pathIsValid: function (origin, destiny) {
         let pathIsValid = true;
 
+        this.tintedDrawables.length = 0;
+
         if (!this.pointsBelongToAdjacentConveyors(origin, destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
-            conflictNonAdjacentConveyors(this.conveyorBelts, origin, destiny);
+            conflictNonAdjacentConveyors(this.conveyorBelts, origin, destiny, this.tintedDrawables);
             pathIsValid = false;
         }
 
         if (this.pointIsOnScanner(origin) || this.pointIsOnScanner(destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny are placed on top of a scanner");
-            conflictConveyorOnScanner(this.scanners, origin, destiny);
+            conflictConveyorOnScanner(this.scanners, origin, destiny, this.tintedDrawables);
             pathIsValid = false;
         }
 
         if (this.pathIntersectsOtherPaths(origin, destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Paths can't intersect");
-            conflictPathIntersection(this.conveyorBelts, origin, destiny);
+            conflictPathIntersection(this.conveyorBelts, origin, destiny, this.tintedDrawables);
             pathIsValid = false;
         }
 
@@ -97,9 +100,21 @@ Graph.prototype = {
         if (this.positionIsTooCloseToExistingNodes(origin) ||
             this.positionIsTooCloseToExistingNodes(destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny are too close to existing objects");
-            conflictNewBeltCloseToExistent(this.conveyorBelts, origin, destiny);
+            conflictNewBeltCloseToExistent(this.conveyorBelts, origin, destiny, this.tintedDrawables);
             pathIsValid = false;
         }
+
+        this.conveyorBelts.forEach(function(belt) {
+            if (!this.tintedDrawables.includes(belt)) {
+                belt.setColor(0xFFFFFF);
+            }
+        }, this);
+
+        this.scanners.forEach(function(scanner) {
+            if (!this.tintedDrawables.includes(scanner)) {
+                scanner.setColor(0xFFFFFF);
+            }
+        }, this);
 
         return pathIsValid;
     },
