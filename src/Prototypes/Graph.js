@@ -1,13 +1,13 @@
 const MIN_DISTANCE_BETWEEN_NODES = 115;
 
 function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight, scanners) {
-
     this.laneCount = laneCount;
     this.spawnX = spawnX;
     this.spawnY = spawnY;
     this.horizontalOffset = horizontalOffset;
     this.laneHeight = laneHeight;
     this.scanners = scanners;
+    this.conveyorBelts = new Array();
 
     this.graph = new Map();
     this.initializeGraph();
@@ -31,6 +31,10 @@ Graph.prototype = {
             this.graph.set(originNodePosition.toString(), originNode);
             this.graph.set(destinyNodePosition.toString(), destinyNode);
         }
+    },
+
+    addConveyorBelt : function(conveyorBelt) {
+        this.conveyorBelts.push(conveyorBelt);
     },
 
     //CAMINOS//
@@ -248,6 +252,7 @@ Graph.prototype = {
 
     resetGraph: function () {
         this.graph.clear();
+        this.conveyorBelts.splice(0, this.conveyorBeltSprites.length);
         this.initializeGraph();
     },
 
