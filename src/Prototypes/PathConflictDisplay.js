@@ -5,7 +5,7 @@ function conflictNonAdjacentConveyors(conveyorBeltList, origin, destiny) {
     let intersectingConveyors = new Array();
     conveyorBeltList.forEach(function(conveyor) {
         conveyor.setColor("0xFFFFFF");
-        let isVerticalConveyor = conveyor.start.y == LEVEL_DIMENSIONS.laneTopMargin;
+        let isVerticalConveyor = conveyor.isVerticalConveyor();
         if (isVerticalConveyor) {
             let conveyorX = conveyor.start.x;
             if (conveyorX > minX && conveyorX < maxX) {
@@ -21,7 +21,34 @@ function conflictNonAdjacentConveyors(conveyorBeltList, origin, destiny) {
 }
 
 function conflictConveyorOnScanner(scanners, origin, destiny) {
+    let closestScanner = null;
+    let minDistance = Infinity;
 
+    scanners.forEach(function(scanner) {
+        // TODO: Cambiar el color del escaner
+
+        let scannerX = scanner.x;
+        let scannerY = scanner.start;
+
+        let distanceToOrigin = Math.sqrt(
+            Math.pow(scannerX - origin.x, 2) + 
+            Math.pow(scannerY - origin.y, 2)
+        );
+
+        let distanceToDestiny = Math.sqrt(
+            Math.pow(scannerX - destiny.x, 2) + 
+            Math.pow(scannerY - destiny.y, 2)
+        );
+
+        let closestDistance = Math.min(distanceToOrigin, distanceToDestiny);
+        if (closestDistance < minDistance) {
+            minDistance = closestDistance;
+            closestScanner = scanner;
+        }
+    });
+
+    // TODO: Cambiar el color del escaner
+    console.log(closestScanner);
 }
 
 function conflictPathIntersection(conveyorBeltList, origin, destiny) {

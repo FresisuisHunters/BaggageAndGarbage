@@ -168,5 +168,10 @@ ConveyorBelt.prototype = {
 
             position = addVectors(position, deltaPosition);
         }
+    },
+
+    isVerticalConveyor : function() {
+        return this.start.y == LEVEL_DIMENSIONS.laneTopMargin;
     }
+
 }

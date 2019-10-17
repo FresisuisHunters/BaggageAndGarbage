@@ -262,8 +262,16 @@ Graph.prototype = {
 
     resetGraph: function () {
         this.graph.clear();
-        this.conveyorBelts.splice(0, this.conveyorBelts.length);
         this.initializeGraph();
+
+        // Remove from conveyor list those that aren't lines
+        let conveyorCount = this.conveyorBelts.length;
+        while (conveyorCount--) {
+            let conveyor = this.conveyorBelts[conveyorCount];
+            if (!conveyor.isVerticalConveyor()) {
+                this.conveyorBelts.splice(conveyorCount, 1);
+            }
+        }
     },
 
     requestMove: function (currentPosition, movementParameters, distance) {
