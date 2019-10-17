@@ -1,4 +1,4 @@
-const MIN_DISTANCE_BETWEEN_NODES = 115;
+const MIN_DISTANCE_BETWEEN_NODES = 50;
 
 function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight, scanners) {
 

@@ -51,7 +51,7 @@ menuState.prototype = {
     },
 
     displayLevelCards: function () {
-        for (let level = 0; level < 3; ++level) {
+        for (let level = 1; level <= 3; ++level) {
             let key = JSON_KEY + level;
             let levelData = game.cache.getJSON(key);
 

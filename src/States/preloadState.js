@@ -2,7 +2,7 @@
 
 const JSON_KEY = "JSONLevel_";
 const LEVELS_JSON_DIR = "resources/levels/";
-const LEVEL_JSON_PREFIX = "devLevel_";
+const LEVEL_JSON_PREFIX = "lvl_";
 const LEVEL_JSON_SUFFIX = ".json";
 
 const BAG_SPRITE_FOLDER = "resources/sprites/bags/";
@@ -69,11 +69,15 @@ preloadState.prototype = {
     },
 
     loadLevelsJSONs: function () {
-        for (let level = 0; level < 3; ++level) {
+        for (let level = 1; level <= 3; ++level) {
             let key = JSON_KEY + level;
             let jsonFile = LEVELS_JSON_DIR + LEVEL_JSON_PREFIX + level + LEVEL_JSON_SUFFIX;
             game.load.json(key, jsonFile, true);
         }
+    },
+
+    loadLevelJSON: function() {
+
     },
 
     loadBagSpriteFromName: function(name) {
@@ -109,8 +113,7 @@ preloadState.prototype = {
 
     update: function() {
         if (game.input.activePointer.isDown) {
-            game.state.start("levelLoadState", true, false, "resources/levels/lvl_01.json");
-            
+            game.state.start("levelLoadState", true, false, "resources/levels/lvl_03.json");   
         }
     },
     
