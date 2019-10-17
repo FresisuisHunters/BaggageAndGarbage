@@ -29,7 +29,7 @@ const SCORE_SCREEN_DIMENSIONS = {
     starY: 525,
     starRatingWidth: 325,
     starScaleFactor: 0.8,
-    numberRightX: 750,
+    numberRightX: 550,
     wrongNumberY: 735,
     correctNumberY: 960,
     buttonY: 1600,
@@ -378,14 +378,14 @@ gameplayState.prototype = {
         }
 
         //Show correct and wrong bag counts
-        let textStyle = { font: "bold Arial", fontSize: "140px", fill: "#fff", align: "right", boundsAlignH: "right", boundsAlignV: "middle" };
+        let textStyle = { font: "bold Arial", fontSize: "120px", fill: "#fff", align: "left", boundsAlignH: "left", boundsAlignV: "middle" };
 
         let wrongText = new Phaser.Text(game, SCORE_SCREEN_DIMENSIONS.numberRightX, SCORE_SCREEN_DIMENSIONS.wrongNumberY, wrongBagCount, textStyle);
-        wrongText.anchor.setTo(1, 0.5);
+        wrongText.anchor.setTo(0, 0.5);
         scoreLayer.add(wrongText);
 
         let correctText = new Phaser.Text(game, SCORE_SCREEN_DIMENSIONS.numberRightX, SCORE_SCREEN_DIMENSIONS.correctNumberY, correctBagCount, textStyle);
-        correctText.anchor.setTo(1, 0.5);
+        correctText.anchor.setTo(0, 0.5);
         scoreLayer.add(correctText);
 
         //Prepare the button callbacks
