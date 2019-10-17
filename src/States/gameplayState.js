@@ -60,8 +60,9 @@ gameplayState.prototype = {
     //////////////////
     init: function (levelData) {
         this.originalLevelData = JSON.parse(JSON.stringify(levelData));
-        this.levelData = levelData;
-        BAG_MOVEMENT_SPEED = levelData.bagSpeed;
+        this.levelData = JSON.parse(JSON.stringify(levelData));
+
+        BAG_MOVEMENT_SPEED = this.levelData.bagSpeed;
 
         this.bags = [];
         this.scanners = [];
