@@ -286,7 +286,6 @@ gameplayState.prototype = {
         this.graph.resetGraph();
 
         pathLayer.destroy(true, true);
-
     },
 
     onGameEnd: function () {

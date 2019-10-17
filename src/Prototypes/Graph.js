@@ -37,6 +37,12 @@ Graph.prototype = {
         this.conveyorBelts.push(conveyorBelt);
     },
 
+    returnBeltsToOriginalColor : function() {
+        this.conveyorBelts.forEach(function(conveyor) {
+            conveyor.setColor("0xFFFFFF");
+        });
+    },
+
     //CAMINOS//
     ///////////
     // Origin y destiny son Vector2D
@@ -67,7 +73,7 @@ Graph.prototype = {
 
         if (this.pointIsOnScanner(origin) || this.pointIsOnScanner(destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny are placed on top of a scanner");
-            conflictConveyorOnScanner(this.conveyorBelts, origin, destiny);
+            conflictConveyorOnScanner(this.scanners, origin, destiny);
             return false;
         }
 
@@ -256,7 +262,7 @@ Graph.prototype = {
 
     resetGraph: function () {
         this.graph.clear();
-        this.conveyorBelts.splice(0, this.conveyorBeltSprites.length);
+        this.conveyorBelts.splice(0, this.conveyorBelts.length);
         this.initializeGraph();
     },
 
