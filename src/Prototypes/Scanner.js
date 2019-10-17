@@ -142,5 +142,10 @@ Scanner.prototype = {
         this.sprite.frame = SCANNER_FRAMES.INACTIVE;
         this.isActive = false;
         this.scanSprites.visible = false;
+    },
+
+    setColor : function(color) {
+        // TODO: Change tint properly
+        this.sprite.tint = color;
     }
 }

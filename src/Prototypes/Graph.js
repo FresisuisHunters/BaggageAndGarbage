@@ -37,9 +37,13 @@ Graph.prototype = {
         this.conveyorBelts.push(conveyorBelt);
     },
 
-    returnBeltsToOriginalColor : function() {
+    returnBeltsAndScannersToOriginalColors : function() {
         this.conveyorBelts.forEach(function(conveyor) {
             conveyor.setColor("0xFFFFFF");
+        });
+
+        this.scanners.forEach(function(scanner) {
+            scanner.setColor("0xFFFFFF");
         });
     },
 
@@ -65,37 +69,39 @@ Graph.prototype = {
     },
 
     pathIsValid: function (origin, destiny) {
+        let pathIsValid = true;
+
         if (!this.pointsBelongToAdjacentConveyors(origin, destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
             conflictNonAdjacentConveyors(this.conveyorBelts, origin, destiny);
-            return false;
+            pathIsValid = false;
         }
 
         if (this.pointIsOnScanner(origin) || this.pointIsOnScanner(destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny are placed on top of a scanner");
             conflictConveyorOnScanner(this.scanners, origin, destiny);
-            return false;
+            pathIsValid = false;
         }
 
         if (this.pathIntersectsOtherPaths(origin, destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Paths can't intersect");
             conflictPathIntersection(this.conveyorBelts, origin, destiny);
-            return false;
+            pathIsValid = false;
         }
 
         if (this.graph.has(origin) || this.graph.has(destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny already exist in the graph");
-            return false;
+            pathIsValid = false;
         }
 
         if (this.positionIsTooCloseToExistingNodes(origin) ||
             this.positionIsTooCloseToExistingNodes(destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny are too close to existing objects");
             conflictNewBeltCloseToExistent(this.conveyorBelts, origin, destiny);
-            return false;
+            pathIsValid = false;
         }
 
-        return true;
+        return pathIsValid;
     },
 
     pointsBelongToAdjacentConveyors: function (origin, destiny) {

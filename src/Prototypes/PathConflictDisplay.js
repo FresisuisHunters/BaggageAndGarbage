@@ -2,22 +2,17 @@ function conflictNonAdjacentConveyors(conveyorBeltList, origin, destiny) {
     let minX = Math.min(origin.x, destiny.x);
     let maxX = Math.max(origin.x, destiny.x);
 
-    let intersectingConveyors = new Array();
     conveyorBeltList.forEach(function(conveyor) {
-        conveyor.setColor("0xFFFFFF");
         let isVerticalConveyor = conveyor.isVerticalConveyor();
         if (isVerticalConveyor) {
             let conveyorX = conveyor.start.x;
             if (conveyorX > minX && conveyorX < maxX) {
-                intersectingConveyors.push(conveyor);
+                conveyor.setColor(WRONG_PATH_COLOR);
+            } else {
+                conveyor.setColor("0xFFFFFF");
             }
         }
-    });
-
-    intersectingConveyors.forEach(function(conveyor) {
-        conveyor.setColor(WRONG_PATH_COLOR);
-    });
-    
+    });    
 }
 
 function conflictConveyorOnScanner(scanners, origin, destiny) {
@@ -25,7 +20,7 @@ function conflictConveyorOnScanner(scanners, origin, destiny) {
     let minDistance = Infinity;
 
     scanners.forEach(function(scanner) {
-        // TODO: Cambiar el color del escaner
+        scanner.setColor("0xFFFFFF");
 
         let scannerX = scanner.x;
         let scannerY = scanner.start;
@@ -47,12 +42,35 @@ function conflictConveyorOnScanner(scanners, origin, destiny) {
         }
     });
 
-    // TODO: Cambiar el color del escaner
-    console.log(closestScanner);
+    closestScanner.setColor(WRONG_PATH_COLOR);
 }
 
 function conflictPathIntersection(conveyorBeltList, origin, destiny) {
+    // https://stackoverflow.com/questions/9043805/test-if-two-lines-intersect-javascript-function
 
+    let originX = origin.x;
+    let originY = origin.y;
+    let destinyX = destiny.x;
+    let destinyY = destiny.y;
+    conveyorBeltList.forEach(function(conveyor) {
+        let conveyorStartX = conveyor.start.x;
+        let conveyorStartY = conveyor.start.y;
+        let conveyorEndX = conveyor.end.x;
+        let conveyorEndY = conveyor.end.y;
+
+        var det, gamma, lambda;
+        det = (destinyX - originX) * (conveyorEndY - conveyorStartY) - (conveyorEndX - conveyorStartX) * (destinyY - originY);
+        if (det !== 0) {
+            lambda = ((conveyorEndY - conveyorStartY) * (conveyorEndX - originX) + (conveyorStartX - conveyorEndX) * (conveyorEndY - originY)) / det;
+            gamma = ((originY - destinyY) * (conveyorEndX - originX) + (destinyX - originX) * (conveyorEndY - originY)) / det;
+            let intersect = (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
+            if (intersect) {
+                conveyor.setColor(WRONG_PATH_COLOR);
+            } else {
+                conveyor.setColor("0xFFFFFF");
+            }
+        }
+    });
 }
 
 function conflictNewBeltCloseToExistent(conveyorBeltList, origin, destiny) {
@@ -64,6 +82,7 @@ function conflictNewBeltCloseToExistent(conveyorBeltList, origin, destiny) {
     conveyorBeltList.forEach(function(conveyor) {
         conveyor.setColor("0xFFFFFF");
         if (!conveyor.isVerticalConveyor()) {
+            // Find conveyor's node closest to origin
             let distanceOrigin_ConveyorStart = Math.sqrt(
                 Math.pow(origin.x - conveyor.start.x, 2) +
                 Math.pow(origin.y - conveyor.start.y, 2)
@@ -76,6 +95,7 @@ function conflictNewBeltCloseToExistent(conveyorBeltList, origin, destiny) {
 
             let minDistanceOrigin_Conveyor = Math.min(distanceOrigin_ConveyorStart, distanceOrigin_ConveyorEnd);
 
+            // Find conveyor's node closest to destiny
             let distanceDestiny_ConveyorStart = Math.sqrt(
                 Math.pow(destiny.x - conveyor.start.x, 2) +
                 Math.pow(destiny.y - conveyor.start.y, 2)
@@ -88,6 +108,7 @@ function conflictNewBeltCloseToExistent(conveyorBeltList, origin, destiny) {
 
             let minDistanceDestiny_Conveyor = Math.min(distanceDestiny_ConveyorStart, distanceDestiny_ConveyorEnd);
 
+            // Update variables outside of the loop
             if (minDistanceOrigin_Conveyor < distanceToOriginsClosestConveyor) {
                 distanceToOriginsClosestConveyor = minDistanceOrigin_Conveyor;
                 closestConveyorToOrigin = conveyor;
@@ -99,6 +120,7 @@ function conflictNewBeltCloseToExistent(conveyorBeltList, origin, destiny) {
             }
         }
 
+        // Display the belts only if they are close enough
         if (distanceToOriginsClosestConveyor < MIN_DISTANCE_BETWEEN_NODES) {
             closestConveyorToOrigin.setColor(WRONG_PATH_COLOR);
         }

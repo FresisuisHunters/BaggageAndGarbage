@@ -36,8 +36,6 @@ function Bag(bagType, position, graph, lanes) {
 
     this.initializeSprite();
     this.chooseInteriorSprite(this.sprite.key);
-
-    this.insideSprite = undefined; // TODO
 }
 
 Bag.prototype = {

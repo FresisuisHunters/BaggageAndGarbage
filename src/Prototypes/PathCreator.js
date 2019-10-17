@@ -62,7 +62,7 @@ PathCreator.prototype = {
                 }
             }
 
-            this.graph.returnBeltsToOriginalColor();
+            this.graph.returnBeltsAndScannersToOriginalColors();
             this.pathDrawProcess = null;
         }
     },
