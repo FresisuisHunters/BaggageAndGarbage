@@ -5,9 +5,10 @@ var titleScreenState = function (game) {
 
 const LOGO_IMAGE_KEY = "img_Logo";
 const PLAY_BUTTON_SHEET_KEY = "sheet_PlayButton";
+const CREDITS_BUTTON_SHEET_KEY = "sheet_CreditsButton";
 const SPANISH_PLANE_IMAGE_KEY = "img_SpanishPlane"
 const ENGLISH_PLANE_IMAGE_KEY = "img_EnglishPlane"
-const UNSELECTED_LANGUAGE_TINT = 0x666666;
+const UNSELECTED_LANGUAGE_TINT = 0xaaaaaa;
 
 const TITLE_SCREEN_DIMENSIONS = {
     logoY: 500,
@@ -17,7 +18,9 @@ const TITLE_SCREEN_DIMENSIONS = {
     buttonToTextOffset: 0,
     languageButtonMargin: 30,
     languageButtonScaleFactor: 1,
-    languageButtonSeparation: 10
+    languageButtonSeparation: 10,
+    creditsButtonMargin: 30,
+    creditsButtonScaleFactor: 1,
 }
 
 titleScreenState.prototype = {
@@ -30,6 +33,7 @@ titleScreenState.prototype = {
         this.showLogo();
         this.showPlayButton();
         this.showLanguageButtons();
+        this.showCreditsButton();
     },
 
     showBackground: function () {
@@ -103,8 +107,30 @@ titleScreenState.prototype = {
         this.buttonLayer.add(plane);
         planes.push(plane);
         
-    }
+    },
 
+    showCreditsButton: function() {
 
+        let callback = function (button, pointer, isOver) {
+            if (isOver) {
+                game.state.start("creditsState");
+            }
+        }
+
+        let button = new Phaser.Button(game, TITLE_SCREEN_DIMENSIONS.creditsButtonMargin, GAME_HEIGHT - TITLE_SCREEN_DIMENSIONS.creditsButtonMargin + 20, CREDITS_BUTTON_SHEET_KEY, callback, 2, 1, 3, 2);
+        button.anchor.setTo(0, 1);
+        button.scale.setTo(TITLE_SCREEN_DIMENSIONS.creditsButtonScaleFactor, TITLE_SCREEN_DIMENSIONS.creditsButtonScaleFactor);
+        this.buttonLayer.add(button);
+
+        let textStyle = { font: "bold Arial", fontSize: "60px", fill: "#000", align: "left", boundsAlignH: "left", boundsAlignV: "middle" };
+
+        let text = new Phaser.Text(game, button.right, button.bottom - 30, getString("CREDITS"), textStyle);
+        text.anchor.setTo(0, 1);
+        this.buttonLayer.add(text);
+
+        
+
+        
+    },
 }
 
