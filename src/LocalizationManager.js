@@ -28,3 +28,7 @@ localizationManager["PLAY"] = {
     en: "PLAY",
     es: "JUGAR"
 }
+localizationManager["CREDITS"] = {
+    en: "CREDITS",
+    es: "CRÉDITOS"
+}

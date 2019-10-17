@@ -48,6 +48,7 @@ preloadState.prototype = {
         game.load.image(HARD_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardHard.png");
 
         //Audio
+        game.load.audio(MENU_MUSIC_KEY, "resources/audio/music_Menu.mp3");
         game.load.audio(GAMEPLAY_MUSIC_KEY, "resources/audio/music_Gameplay.mp3");
         game.load.audio(SFX_BUILT_PATH_KEY, "resources/audio/sfx_BuiltPath.mp3");
         game.load.audio(SFX_CORRECT_BAG_KEY, "resources/audio/sfx_CorrectBag.mp3");
@@ -68,6 +69,7 @@ preloadState.prototype = {
         game.load.image(HOME_BUTTON_IMAGE_KEY, "resources/sprites/img_HomeButton.png");
 
         game.load.spritesheet(PLAY_BUTTON_SHEET_KEY, "resources/sprites/sheet_ButtonPlay.png", 256, 256, 4, 20, 10);
+        game.load.spritesheet(CREDITS_BUTTON_SHEET_KEY, "resources/sprites/sheet_ButtonCredits.png", 256, 256, 4, 20, 10);
         game.load.image(SPANISH_PLANE_IMAGE_KEY, "resources/sprites/img_PlaneSpain.png");
         game.load.image(ENGLISH_PLANE_IMAGE_KEY, "resources/sprites/img_PlaneUk.png");
         
