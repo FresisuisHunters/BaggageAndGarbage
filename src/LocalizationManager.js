@@ -24,7 +24,7 @@ function getString(key) {
 
 //STRINGS//
 ///////////
-localizationManager["TEST_STRING"] = {
-    en: "This is a test.",
-    es: "Esto es una prueba."
+localizationManager["PLAY"] = {
+    en: "PLAY",
+    es: "JUGAR"
 }

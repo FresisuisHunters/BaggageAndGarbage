@@ -1,5 +1,5 @@
 "use strict"
-var menuState = function (game) {
+var levelSelectState = function (game) {
 
 }
 
@@ -21,7 +21,7 @@ const STARS_X_OFFSET = 90;
 const STAR_Y = -47.5;
 const STAR_SPRITE_SCALE = 0.5;
 
-menuState.prototype = {
+levelSelectState.prototype = {
 
     create: function () {
         this.backgroundLayer = game.add.group();

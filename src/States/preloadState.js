@@ -42,6 +42,7 @@ preloadState.prototype = {
         // Sprites menu
         game.load.image(MENU_BACKGROUND_KEY, "resources/sprites/img_MainMenuBackground.png");
         game.load.image(MENU_INTERFACE_KEY, "resources/sprites/img_LevelSelectBackground.png");
+        game.load.image(LOGO_IMAGE_KEY, "resources/sprites/img_Logo.png");
         game.load.image(EASY_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardEasy.png");
         game.load.image(NORMAL_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardNormal.png");
         game.load.image(HARD_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardHard.png");
@@ -65,6 +66,10 @@ preloadState.prototype = {
         game.load.image(UNOBTAINED_STAR_IMAGE_KEY, "resources/sprites/img_StarUnobtained.png");
         game.load.image(RETRY_BUTTON_IMAGE_KEY, "resources/sprites/img_RetryButton.png");
         game.load.image(HOME_BUTTON_IMAGE_KEY, "resources/sprites/img_HomeButton.png");
+
+        game.load.spritesheet(PLAY_BUTTON_SHEET_KEY, "resources/sprites/sheet_ButtonPlay.png", 256, 256, 4, 20, 10);
+        game.load.image(SPANISH_PLANE_IMAGE_KEY, "resources/sprites/img_PlaneSpain.png");
+        game.load.image(ENGLISH_PLANE_IMAGE_KEY, "resources/sprites/img_PlaneUk.png");
         
     },
 
@@ -105,16 +110,7 @@ preloadState.prototype = {
     },
 
     create: function () {
-        //https://photonstorm.github.io/phaser-ce/Phaser.StateManager.html#start
-        game.state.start("menuState");
-        // game.state.start("levelLoadState", true, false, "resources/levels/devLevel.json");
-        console.log(game.cache.getKeys(Phaser.Cache.IMAGE));
-    },
-
-    update: function() {
-        if (game.input.activePointer.isDown) {
-            game.state.start("levelLoadState", true, false, "resources/levels/lvl_03.json");   
-        }
+        game.state.start("titleScreenState");
     },
     
     loadBagSprites: function() {
