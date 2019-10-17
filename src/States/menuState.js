@@ -83,11 +83,13 @@ menuState.prototype = {
         }
     },
 
-    onLevelCardClick : function(button) {
-        let levelIndex = button.levelIndex;
+    onLevelCardClick : function(button, pointer, isOver) {
+        if (isOver) {
+            let levelIndex = button.levelIndex;
         
-        let clickedLevelJSONKey = JSON_KEY + levelIndex;
-        game.state.start("levelLoadState", true, false, clickedLevelJSONKey);
+            let clickedLevelJSONKey = JSON_KEY + levelIndex;
+            game.state.start("levelLoadState", true, false, clickedLevelJSONKey);
+        }
     },
 
     displayPlayerScore: function (cardX, cardY, levelIndex) {
