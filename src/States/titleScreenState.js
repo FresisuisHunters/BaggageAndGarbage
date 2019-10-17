@@ -127,10 +127,6 @@ titleScreenState.prototype = {
         let text = new Phaser.Text(game, button.right, button.bottom - 30, getString("CREDITS"), textStyle);
         text.anchor.setTo(0, 1);
         this.buttonLayer.add(text);
-
-        
-
-        
     },
 }
 
