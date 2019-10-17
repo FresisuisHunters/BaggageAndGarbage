@@ -56,11 +56,13 @@ PathCreator.prototype = {
             let endPoint = this.getGraphPointFromTouch(new Vector2D(pointer.x, pointer.y));
             if (endPoint != null) {
                 if (this.graph.tryAddPath(this.pathDrawProcess.startPoint, endPoint)) {
-                    new ConveyorBelt(pathLayer, this.pathDrawProcess.startPoint, endPoint, CONVEYOR_PATH_SCALE_FACTOR, null, CONVEYOR_BELT_SHEET_LANE);
+                    let conveyorBelt = new ConveyorBelt(pathLayer, this.pathDrawProcess.startPoint, endPoint, CONVEYOR_PATH_SCALE_FACTOR, null, CONVEYOR_BELT_SHEET_LANE);
+                    this.graph.addConveyorBelt(conveyorBelt);
                     this.builtPathSFX.play();
                 }
             }
 
+            this.graph.returnBeltsAndScannersToOriginalColors();
             this.pathDrawProcess = null;
         }
     },

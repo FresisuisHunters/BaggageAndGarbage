@@ -1,17 +1,18 @@
 const MIN_DISTANCE_BETWEEN_NODES = 50;
 
 function Graph(laneCount, spawnX, spawnY, horizontalOffset, laneHeight, scanners) {
-
     this.laneCount = laneCount;
     this.spawnX = spawnX;
     this.spawnY = spawnY;
     this.horizontalOffset = horizontalOffset;
     this.laneHeight = laneHeight;
     this.scanners = scanners;
+    this.conveyorBelts = new Array();
 
     this.graph = new Map();
     this.initializeGraph();
     this.verboseMode = false;
+    this.tintedDrawables = [];
 }
 
 Graph.prototype = {
@@ -31,6 +32,20 @@ Graph.prototype = {
             this.graph.set(originNodePosition.toString(), originNode);
             this.graph.set(destinyNodePosition.toString(), destinyNode);
         }
+    },
+
+    addConveyorBelt : function(conveyorBelt) {
+        this.conveyorBelts.push(conveyorBelt);
+    },
+
+    returnBeltsAndScannersToOriginalColors : function() {
+        this.conveyorBelts.forEach(function(conveyor) {
+            conveyor.setColor("0xFFFFFF");
+        });
+
+        this.scanners.forEach(function(scanner) {
+            scanner.setColor("0xFFFFFF");
+        });
     },
 
     //CAMINOS//
@@ -55,33 +70,53 @@ Graph.prototype = {
     },
 
     pathIsValid: function (origin, destiny) {
+        let pathIsValid = true;
+
+        this.tintedDrawables.length = 0;
+
         if (!this.pointsBelongToAdjacentConveyors(origin, destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. A path must connect two adjacent conveyor belts");
-            return false;
+            conflictNonAdjacentConveyors(this.conveyorBelts, origin, destiny, this.tintedDrawables);
+            pathIsValid = false;
         }
 
         if (this.pointIsOnScanner(origin) || this.pointIsOnScanner(destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny are placed on top of a scanner");
-            return false;
+            conflictConveyorOnScanner(this.scanners, origin, destiny, this.tintedDrawables);
+            pathIsValid = false;
         }
 
         if (this.pathIntersectsOtherPaths(origin, destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Paths can't intersect");
-            return false;
+            conflictPathIntersection(this.conveyorBelts, origin, destiny, this.tintedDrawables);
+            pathIsValid = false;
         }
 
         if (this.graph.has(origin) || this.graph.has(destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny already exist in the graph");
-            return false;
+            pathIsValid = false;
         }
 
         if (this.positionIsTooCloseToExistingNodes(origin) ||
             this.positionIsTooCloseToExistingNodes(destiny)) {
             if (this.verboseMode) console.error("Error adding a path to the graph. Either origin or destiny are too close to existing objects");
-            return false;
+            conflictNewBeltCloseToExistent(this.conveyorBelts, origin, destiny, this.tintedDrawables);
+            pathIsValid = false;
         }
 
-        return true;
+        this.conveyorBelts.forEach(function(belt) {
+            if (!this.tintedDrawables.includes(belt)) {
+                belt.setColor(0xFFFFFF);
+            }
+        }, this);
+
+        this.scanners.forEach(function(scanner) {
+            if (!this.tintedDrawables.includes(scanner)) {
+                scanner.setColor(0xFFFFFF);
+            }
+        }, this);
+
+        return pathIsValid;
     },
 
     pointsBelongToAdjacentConveyors: function (origin, destiny) {
@@ -249,6 +284,15 @@ Graph.prototype = {
     resetGraph: function () {
         this.graph.clear();
         this.initializeGraph();
+
+        // Remove from conveyor list those that aren't lines
+        let conveyorCount = this.conveyorBelts.length;
+        while (conveyorCount--) {
+            let conveyor = this.conveyorBelts[conveyorCount];
+            if (!conveyor.isVerticalConveyor()) {
+                this.conveyorBelts.splice(conveyorCount, 1);
+            }
+        }
     },
 
     requestMove: function (currentPosition, movementParameters, distance) {
