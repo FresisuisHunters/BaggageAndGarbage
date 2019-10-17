@@ -59,8 +59,9 @@ gameplayState.prototype = {
     //////////////////
     init: function (levelData) {
         this.originalLevelData = JSON.parse(JSON.stringify(levelData));
-        this.levelData = levelData;
-        BAG_MOVEMENT_SPEED = levelData.bagSpeed;
+        this.levelData = JSON.parse(JSON.stringify(levelData));
+
+        BAG_MOVEMENT_SPEED = this.levelData.bagSpeed;
 
         this.bags = [];
         this.scanners = [];
@@ -392,10 +393,11 @@ gameplayState.prototype = {
         let doRematch = function (button, pointer, isOver) {
             if (isOver) game.state.start("gameplayState", true, false, game.state.getCurrentState().originalLevelData);
         }
-        //TODO: Go to menu state once it exists.
+        
         let goToMenu = function (button, pointer, isOver) {
-            //if (isOver) game.state.start("mainMenuState", true, false);
-            if (isOver) console.warn("Go to menu button is not implemented yet.");
+            if (isOver) {
+                game.state.start("menuState", true, false);
+            }
         }
 
 

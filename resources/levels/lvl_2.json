@@ -1,0 +1,36 @@
+{
+    "difficulty":1,
+    "levelIndex":2,
+    "bagSpeed": 70,
+    "lanes": {
+        "count": 5,
+        "types": ["D", "S", "S", "S", "D"]
+    },
+    "waves": [
+        {
+            "numA": 1,
+            "numB_Safe": 1,
+            "numB_Danger": 1,
+            "numC": 2
+        },
+        {
+            "numA": 1,
+            "numB_Safe": 0,
+            "numB_Danger": 2,
+            "numC": 3
+        },
+        {
+            "numA": 2,
+            "numB_Safe": 2,
+            "numB_Danger": 2,
+            "numC": 3
+        }
+    ],
+    "scanners": [
+        {
+            "lane":2,
+            "y":600
+        }
+    ],
+    "starThresholds": [4, 2, 0]
+}

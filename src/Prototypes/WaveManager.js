@@ -1,6 +1,6 @@
 "use strict"
 
-const TIME_BETWEEN_BAG_SPAWNS = 2;
+const TIME_BETWEEN_BAG_SPAWNS = 3;
 const CONVEYOR_SPAWN_COOLDOWN = 3;
 
 const TIME_BETWEEN_WAVES = 4;

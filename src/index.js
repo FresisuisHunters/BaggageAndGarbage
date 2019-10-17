@@ -22,9 +22,9 @@ localizationManager.currentLanguage = Languages.English;
 
 //Add states
 game.state.add("bootState", bootState);
-game.state.add("gameplayState", gameplayState);
 game.state.add("preloadState", preloadState);
+game.state.add("menuState", menuState);
 game.state.add("levelLoadState", levelLoadState);
-game.state.add("graphTestingState", graphTestingState);
+game.state.add("gameplayState", gameplayState);
 
 game.state.start("bootState");
