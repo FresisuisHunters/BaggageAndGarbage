@@ -308,6 +308,14 @@ gameplayState.prototype = {
             console.log(localStorage.userLevelData);
         }
 
+        // Access the JSON of the current level, since the context of onGameEnd() is WaveManager
+        let originalLevelData = game.state.callbackContext.originalLevelData;
+        if (game.userLevelData.levelIndexToComplete == originalLevelData.levelIndex) {
+            game.userLevelData.levelIndexToComplete = originalLevelData.levelIndex + 1;
+
+            localStorage.userLevelData = JSON.stringify(game.userLevelData);
+        }
+
         state.showEndScreen(starRating, state.scoreManager.currentCorrectBagCount, state.scoreManager.currentWrongBagCount);
     },
 

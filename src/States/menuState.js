@@ -65,8 +65,10 @@ menuState.prototype = {
 
             this.levelCardsLayer.add(levelButton);
 
-            this.displayPlayerScore(x, y, levelData.levelIndex);
-            this.displayPlayText(x, y);
+            if (level <= game.userLevelData.levelIndexToComplete) {
+                this.displayPlayerScore(x, y, levelData.levelIndex);
+                this.displayPlayText(x, y);
+            }
         }
     },
 
@@ -85,7 +87,10 @@ menuState.prototype = {
 
     onLevelCardClick : function(button) {
         let levelIndex = button.levelIndex;
-        
+        if (levelIndex > game.userLevelData.levelIndexToComplete) {
+            return;
+        }
+
         let clickedLevelJSONKey = JSON_KEY + levelIndex;
         game.state.start("levelLoadState", true, false, clickedLevelJSONKey);
     },

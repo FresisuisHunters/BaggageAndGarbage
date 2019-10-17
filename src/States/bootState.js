@@ -23,6 +23,7 @@ bootState.prototype = {
         }
         else {
             game.userLevelData = new Map();
+            game.userLevelData.levelIndexToComplete = 0;
         }
             
         console.log("localStorage" + localStorage.userLevelData);
