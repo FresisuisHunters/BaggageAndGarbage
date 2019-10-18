@@ -41,6 +41,6 @@ localizationManager["EMBARK"] = {
     es:"EMBARCAR"
 }
 localizationManager["NEW_WAVE_TEXT"] = {
-    en : "More bags\nincoming",
-    es : "Llegan más\nmaletas"
+    en : "Next wave: \nIncoming",
+    es : "Siguiente oleada: \nInminente"
 }

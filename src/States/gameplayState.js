@@ -13,7 +13,7 @@ const GAMEPLAY_MUSIC_VOLUME = .75;
 
 // Game speed
 const DEFAULT_GAME_SPEED = 1;
-const SPED_UP_GAME_SPEED = DEFAULT_GAME_SPEED / 5;
+const SPED_UP_GAME_SPEED = DEFAULT_GAME_SPEED / 50;
 const SPEED_UP_BUTTON_DOWN_IMAGE_KEY = "img_SpeedUpButtonDown";
 const SPEED_UP_BUTTON_UP_IMAGE_KEY = "img_SpeedUpButtonUp";
 
@@ -42,7 +42,7 @@ const SCORE_SCREEN_DIMENSIONS = {
 const NEW_WAVE_OVERLAY_VALUES = {
     displayX : 1080 / 2,
     displayY : LEVEL_DIMENSIONS.laneTopMargin + 132,
-    textOffsetX : 75,
+    textOffsetX : -150,
     textOffsetY : 10,
     scale : 1,
     fadeSpeed : 1
@@ -287,13 +287,13 @@ gameplayState.prototype = {
         sprite.scale.setTo(scale, scale);
         sprite.anchor.setTo(0.5, 0.5);
 
-        let textStyle = { font: "bold Arial", fontSize: "80px", fill: "#FFE500", align: "left", boundsAlignH: "right", boundsAlignV: "middle" };
+        let textStyle = { font: "bold Arial", fontSize: "70px", fill: "#FFE500", align: "left", boundsAlignH: "right", boundsAlignV: "middle" };
 
         // TODO: Get the text from locationManager:getString()
         let textX = x + NEW_WAVE_OVERLAY_VALUES.textOffsetX;
         let textY = y + NEW_WAVE_OVERLAY_VALUES.textOffsetY;
         let text = new Phaser.Text(game, textX, textY, getString("NEW_WAVE_TEXT"), textStyle);
-        text.anchor.setTo(0.5, 0.5);
+        text.anchor.setTo(0, 0.5);
 
         overlayLayer.add(sprite);
         overlayLayer.add(text);
@@ -306,6 +306,21 @@ gameplayState.prototype = {
         this.newWaveOverlaySprite = sprite;
         this.newWaveOverlaySprite.text = text;
         this.newWaveOverlaySprite.show = false;
+
+        this.newWaveOverlaySprite.update = function() {
+            // Hide/show new wave overlay, depending on current status
+            let sign = (this.show) ? 1 : -1;
+            let deltaAlpha = sign * NEW_WAVE_OVERLAY_VALUES.fadeSpeed * game.time.physicsElapsed;
+            this.alpha += deltaAlpha;
+            this.text.alpha += deltaAlpha;
+            if (this.alpha > 1) {
+                this.alpha = 1;
+                this.text.alpha = 1;
+            } else if (this.alpha < 0) {
+                this.alpha = 0;
+                this.text.alpha = 0;
+            }
+        }
     },
 
     hideNewWaveOverlay : function() {
@@ -353,18 +368,7 @@ gameplayState.prototype = {
         //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
         bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
 
-        // Hide/show new wave overlay, depending on current status
-        let sign = (this.newWaveOverlaySprite.show) ? 1 : -1;
-        let deltaAlpha = sign * NEW_WAVE_OVERLAY_VALUES.fadeSpeed * game.time.physicsElapsed;
-        this.newWaveOverlaySprite.alpha += deltaAlpha;
-        this.newWaveOverlaySprite.text.alpha += deltaAlpha;
-        if (this.newWaveOverlaySprite.alpha > 1) {
-            this.newWaveOverlaySprite.alpha = 1;
-            this.newWaveOverlaySprite.text.alpha = 1;
-        } else if (this.newWaveOverlaySprite.alpha < 0) {
-            this.newWaveOverlaySprite.alpha = 0;
-            this.newWaveOverlaySprite.text.alpha = 0;
-        }
+        this.newWaveOverlaySprite.update();
 
         // FPS display
         if (SHOW_FPS) {
