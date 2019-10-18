@@ -17,7 +17,6 @@ if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigat
     var IS_MOBILE = false;
 }
 
-
 localizationManager.currentLanguage = Languages.English;
 
 //Add states

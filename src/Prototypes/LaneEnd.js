@@ -17,6 +17,7 @@ const SFX_WRONG_BAG_KEY = "sfx_WrongBag";
 const SFX_WRONG_BAG_VOLUME = .5;
 
 const CORRECT_BAG_FEEDBACK_COLOR = 0x00FF00;
+const NO_TINT = 0xFFFFFF;
 const WRONG_BAG_SHAKE_SCALE = 20;
 const BAG_FEEDBACK_ANIMATION_LENGTH = 1;
 
@@ -137,7 +138,7 @@ LaneEnd.prototype = {
             this.t += dt;
 
             if (this.t < 1) {
-                let color = Phaser.Color.linear(CORRECT_BAG_FEEDBACK_COLOR, 0xFFFFFF, this.t);
+                let color = Phaser.Color.interpolateColorWithRGB(CORRECT_BAG_FEEDBACK_COLOR, 0xFF, 0xFF, 0xFF, 1, this.t);
                 this.belt.setColor(color);
                 this.icon.tint = color;
             } else {
@@ -146,8 +147,8 @@ LaneEnd.prototype = {
         }
 
         newAnimation.stop = function() {
-            this.belt.setColor(0xFFFFFF);
-            this.icon.tint = 0xFFFFFF;
+            this.belt.setColor(NO_TINT);
+            this.icon.tint = NO_TINT;
         }
 
         this.currentAnimation = newAnimation;
