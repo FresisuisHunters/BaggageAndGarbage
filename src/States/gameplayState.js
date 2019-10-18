@@ -409,7 +409,7 @@ gameplayState.prototype = {
 
         // Access the JSON of the current level, since the context of onGameEnd() is WaveManager
         let originalLevelData = game.state.callbackContext.originalLevelData;
-        if (game.userLevelData.levelIndexToComplete == originalLevelData.levelIndex) {
+        if (game.userLevelData.levelIndexToComplete == originalLevelData.levelIndex && starRating > 0) {
             game.userLevelData.levelIndexToComplete = originalLevelData.levelIndex + 1;
 
             localStorage.userLevelData = JSON.stringify(game.userLevelData);
