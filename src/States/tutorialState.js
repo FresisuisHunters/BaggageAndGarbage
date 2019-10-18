@@ -32,7 +32,7 @@ tutorialState.prototype = {
 
     createButtons: function() {
 
-        this.homeButton = createBackButton("titleScreenState");
+        this.homeButton = createBackButton("levelSelectState");
         
         this.previousButton = new Phaser.Button(game, this.homeButton.left, this.homeButton.bottom, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showPreviousPageButtonCallback, this);
         this.previousButton.scale.x *= -1;
@@ -83,11 +83,9 @@ tutorialState.prototype = {
 
     disableButton: function(button) {
         button.visible = false;
-        button.inputEnabled = false;
     },
 
     enableButton: function(button) {
         button.visible = true;
-        button.inputEnabled = true;
     }
 }
