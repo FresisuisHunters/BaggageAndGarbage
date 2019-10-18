@@ -33,10 +33,14 @@ localizationManager["CREDITS"] = {
     es: "CRÉDITOS"
 }
 localizationManager["DESTINATIONS"] = {
-    en:"Destinations",
-    es:"Destinaciones"
+    en:"Departures",
+    es:"Salidas"
 }
 localizationManager["EMBARK"] = {
     en:"EMBARK",
     es:"EMBARCAR"
+}
+localizationManager["NEW_WAVE_TEXT"] = {
+    en : "More bags\nincoming",
+    es : "Llegan más\nmaletas"
 }

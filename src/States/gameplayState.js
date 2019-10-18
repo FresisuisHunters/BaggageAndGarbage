@@ -292,7 +292,7 @@ gameplayState.prototype = {
         // TODO: Get the text from locationManager:getString()
         let textX = x + NEW_WAVE_OVERLAY_VALUES.textOffsetX;
         let textY = y + NEW_WAVE_OVERLAY_VALUES.textOffsetY;
-        let text = new Phaser.Text(game, textX, textY, "New wave\nincoming", textStyle);
+        let text = new Phaser.Text(game, textX, textY, getString("NEW_WAVE_TEXT"), textStyle);
         text.anchor.setTo(0.5, 0.5);
 
         overlayLayer.add(sprite);
