@@ -491,7 +491,7 @@ gameplayState.prototype = {
         
         let goToMenu = function (button, pointer, isOver) {
             if (isOver) {
-                game.state.start("titleScreenState", true, false);
+                game.state.start("levelSelectState", true, false);
             }
         }
 
