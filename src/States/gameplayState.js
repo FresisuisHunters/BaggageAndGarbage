@@ -5,6 +5,7 @@ var gameplayState = function (game) {
 
 const GAMEPLAY_BACKGROUND_IMAGE_KEY = "img_GameplayBackground";
 const GAMEPLAY_FOREGROUND_IMAGE_KEY = "img_GameplayForeground";
+const NEW_WAVE_OVERLAY_KEY = "img_NewWaveOverlay";
 const SCORE_BACKGROUND_IMAGE_KEY = "img_ScoreBackground"
 
 const GAMEPLAY_MUSIC_KEY = "music_Gameplay";
@@ -37,10 +38,21 @@ const SCORE_SCREEN_DIMENSIONS = {
     buttonScale: 1.75
 }
 
-const OBTAINED_STAR_IMAGE_KEY = "img_StarObtained"
-const UNOBTAINED_STAR_IMAGE_KEY = "img_StarUnobtained"
-const RETRY_BUTTON_IMAGE_KEY = "img_RetryButton"
-const HOME_BUTTON_IMAGE_KEY = "img_HomeButton"
+// New wave overlay variables
+const NEW_WAVE_OVERLAY_VALUES = {
+    spawnX : -500,  // Overlay is created out of canvas and it's brought into focus when necessary
+    spawnY : -500,
+    scale : 1,
+    displayX : 1080 / 2,
+    displayY : LEVEL_DIMENSIONS.laneTopMargin + 132,
+    textOffsetX : 75,
+    textOffsetY : 10
+}
+
+const OBTAINED_STAR_IMAGE_KEY = "img_StarObtained";
+const UNOBTAINED_STAR_IMAGE_KEY = "img_StarUnobtained";
+const RETRY_BUTTON_IMAGE_KEY = "img_RetryButton";
+const HOME_BUTTON_IMAGE_KEY = "img_HomeButton";
 
 //Layers
 var backgroundLayer;
@@ -92,6 +104,9 @@ gameplayState.prototype = {
         pathLayer.mask = this.mask;
 
         this.createScanners(this.levelData.scanners, this.lanes);
+
+        // Creates the new wave overlay
+        this.createNewWaveOverlay();
 
         //Crea las máscaras
         this.pathMask = this.getPathMask(this.graph);
@@ -259,6 +274,27 @@ gameplayState.prototype = {
         ]));
 
         return mask;
+    },
+
+    createNewWaveOverlay : function() {
+        let x = NEW_WAVE_OVERLAY_VALUES.displayX;
+        let y = NEW_WAVE_OVERLAY_VALUES.displayY;
+        let sprite = game.add.sprite(x, y, NEW_WAVE_OVERLAY_KEY);
+
+        let scale = NEW_WAVE_OVERLAY_VALUES.scale;
+        sprite.scale.setTo(scale, scale);
+        sprite.anchor.setTo(0.5, 0.5);
+
+        let textStyle = { font: "bold Arial", fontSize: "80px", fill: "#FFE500", align: "left", boundsAlignH: "right", boundsAlignV: "middle" };
+
+        // TODO: Make the display text language dependant via locationManager:getString()
+        let textX = x + NEW_WAVE_OVERLAY_VALUES.textOffsetX;
+        let textY = y + NEW_WAVE_OVERLAY_VALUES.textOffsetY;
+        let text = new Phaser.Text(game, textX, textY, "New wave\nincoming", textStyle);
+        text.anchor.setTo(0.5, 0.5);
+
+        overlayLayer.add(sprite);
+        overlayLayer.add(text);
     },
 
     //GAME LOOP//

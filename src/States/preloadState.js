@@ -64,6 +64,7 @@ preloadState.prototype = {
 
         //UI
         game.load.image("img_ScannerBelt", "resources/sprites/img_ScannerBelt.png");
+        game.load.image(NEW_WAVE_OVERLAY_KEY, "resources/sprites/img_NewWaveOverlay.png");
         game.load.image(SPEED_UP_BUTTON_DOWN_IMAGE_KEY, "resources/sprites/img_FastForwardActivated.png");
         game.load.image(SPEED_UP_BUTTON_UP_IMAGE_KEY, "resources/sprites/img_FastForwardDeactivated.png");
         game.load.image(OBTAINED_STAR_IMAGE_KEY, "resources/sprites/img_StarObtained.png");
