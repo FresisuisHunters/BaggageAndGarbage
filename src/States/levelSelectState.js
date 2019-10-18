@@ -122,10 +122,10 @@ levelSelectState.prototype = {
     },
 
     displayPlayText: function(cardX, cardY) {
-        let textStyle = { font: "bold Arial", fontSize: "35px", fill: "#000", align: "right", boundsAlignH: "right", boundsAlignV: "middle" };
+        let textStyle = { font: "bold Arial", fontSize: "28px", fill: "#000", align: "right", boundsAlignH: "right", boundsAlignV: "middle" };
         let x = cardX + 227.5;
         let y = cardY - 58.5;
-        let text = new Phaser.Text(game, x, y, "EMBARK", textStyle);
+        let text = new Phaser.Text(game, x, y, getString("EMBARK"), textStyle);
         text.anchor.set(0.5, 0.5);
         this.overlayLayer.add(text);
     }

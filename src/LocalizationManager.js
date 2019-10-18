@@ -36,3 +36,7 @@ localizationManager["DESTINATIONS"] = {
     en:"Destinations",
     es:"Destinaciones"
 }
+localizationManager["EMBARK"] = {
+    en:"EMBARK",
+    es:"EMBARCAR"
+}
