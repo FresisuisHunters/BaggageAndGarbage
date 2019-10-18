@@ -14,7 +14,7 @@ bootState.prototype = {
         game.physics.startSystem(Phaser.Physics.ARCADE);
         
 
-        
+        /*
         if (this.game.device.android && this.game.device.chrome && this.game.device.chromeVersion >= 55) {
             this.game.sound.touchLocked = true;
             this.game.input.touch.addTouchLockCallback(function () {
@@ -49,6 +49,7 @@ bootState.prototype = {
             }, this.game.sound, true);
         }
 
+        */
         
         //game.sound.mute = MUTE_AUDIO;
     },
