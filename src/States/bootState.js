@@ -1,4 +1,7 @@
 "use strict";
+
+window.PhaserGlobal = { disableWebAudio: true };
+
 var bootState = function (game) {
 
 }
