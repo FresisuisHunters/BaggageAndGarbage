@@ -75,6 +75,10 @@ preloadState.prototype = {
         game.load.spritesheet(CREDITS_BUTTON_SHEET_KEY, "resources/sprites/sheet_ButtonCredits.png", 256, 256, 4, 20, 10);
         game.load.image(SPANISH_PLANE_IMAGE_KEY, "resources/sprites/img_PlaneSpain.png");
         game.load.image(ENGLISH_PLANE_IMAGE_KEY, "resources/sprites/img_PlaneUk.png");
+
+        //Tutorial
+        game.load.image("img_Tutorial_1", "resources/sprites/img_Tutorial_1.png");
+        game.load.image("img_Tutorial_2", "resources/sprites/img_Tutorial_2.png");
         
     },
 

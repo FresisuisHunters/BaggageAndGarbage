@@ -24,6 +24,7 @@ game.state.add("bootState", bootState);
 game.state.add("preloadState", preloadState);
 game.state.add("titleScreenState", titleScreenState);
 game.state.add("creditsState", creditsState);
+game.state.add("tutorialState", tutorialState);
 game.state.add("levelSelectState", levelSelectState);
 game.state.add("levelLoadState", levelLoadState);
 game.state.add("gameplayState", gameplayState);
