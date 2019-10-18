@@ -59,11 +59,19 @@ menuState.prototype = {
 
             let x = LEVEL_CARDS_X;
             let y = FIRST_LEVEL_Y + level * LEVEL_CARDS_Y_OFFSET;
-            let levelButton = game.add.button(x, y, cardSpriteKey, this.onLevelCardClick);
-            levelButton.anchor.set(0.5, 0.5);
-            levelButton.levelIndex = levelData.levelIndex;
 
-            this.levelCardsLayer.add(levelButton);
+            let card;
+            if (levelData.levelIndex > game.userLevelData.levelIndexToComplete) {
+                card = game.add.image(x, y, cardSpriteKey);
+                //card.tint = UNSELECTED_LANGUAGE_TINT;
+            } else {
+                card = game.add.button(x, y, cardSpriteKey, this.onLevelCardClick);
+            }
+
+            card.anchor.set(0.5, 0.5);
+            card.levelIndex = levelData.levelIndex;
+
+            this.levelCardsLayer.add(card);
 
             if (level <= game.userLevelData.levelIndexToComplete) {
                 this.displayPlayerScore(x, y, levelData.levelIndex);
