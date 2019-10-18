@@ -120,7 +120,7 @@ titleScreenState.prototype = {
 
         let callback = function (button, pointer, isOver) {
             if (isOver) {
-                game.state.start("creditsState");
+                game.state.start("tutorialState");
             }
         }
 
