@@ -169,7 +169,7 @@ Bag.prototype = {
             if (thisBagSprite.x == collidedBagSprite.x) {
                 if (thisBagSprite.y < collidedBagSprite.y) {
                     //If I'm higher, let them pass
-                    this.tryCedePriority(thisBag, collidedBagSprite);
+                    this.tryCedePriority(thisBagSprite, collidedBagSprite);
                 }
                 //If we aren't on the same lane, we don't care.
             }
