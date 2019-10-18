@@ -32,6 +32,8 @@ levelSelectState.prototype = {
         this.displayBackground();
         this.displayLevelCards();
 
+        this.overlayLayer.add(createBackButton("titleScreenState"));
+
         ensureThatMenuMusicIsPlaying();
     },
 
@@ -66,7 +68,7 @@ levelSelectState.prototype = {
             let card;
             if (levelData.levelIndex > game.userLevelData.levelIndexToComplete) {
                 card = game.add.image(x, y, cardSpriteKey);
-                //card.tint = UNSELECTED_LANGUAGE_TINT;
+                card.tint = UNSELECTED_LANGUAGE_TINT;
             } else {
                 card = game.add.button(x, y, cardSpriteKey, this.onLevelCardClick);
             }

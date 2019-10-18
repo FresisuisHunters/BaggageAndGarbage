@@ -136,13 +136,3 @@ titleScreenState.prototype = {
         this.buttonLayer.add(text);
     },
 }
-
-function ensureThatMenuMusicIsPlaying() {
-    if (menuMusic == null) menuMusic = game.add.audio(MENU_MUSIC_KEY);
-    
-    if (!menuMusic.isPlaying) {
-        menuMusic.volume = MENU_MUSIC_VOLUME;
-        menuMusic.loop = true;
-        menuMusic.play();
-    }
-}
