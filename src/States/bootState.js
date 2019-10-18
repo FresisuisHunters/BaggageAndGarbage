@@ -15,6 +15,9 @@ bootState.prototype = {
     preload: function () {
         //Initialize Phaser
         game.time.desiredFps = 60;
+
+        //Load what we need for the loading screen
+        game.load.spritesheet(PLAY_BUTTON_SHEET_KEY, "resources/sprites/sheet_ButtonPlay.png", 256, 256, 4, 20, 10);
     },
 
     create: function () {
@@ -23,6 +26,7 @@ bootState.prototype = {
         }
         else {
             game.userLevelData = new Map();
+            game.userLevelData.levelIndexToComplete = 1;
         }
             
         console.log("localStorage" + localStorage.userLevelData);

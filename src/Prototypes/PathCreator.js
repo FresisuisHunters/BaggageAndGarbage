@@ -1,8 +1,8 @@
 const PATH_DRAW_TOLERANCE = 100;
 
-const CORRECT_PATH_COLOR = 0x00AA00;
+const CORRECT_PATH_COLOR = 0x00aa00;
 const WRONG_PATH_COLOR = 0xAA0000;
-const PREVIEW_ALPHA = 0.5;
+const PREVIEW_ALPHA = 0.75;
 
 const SFX_BUILT_PATH_KEY = "sfx_BuiltPath";
 const SFX_BUILT_PATH_VOLUME = 0.75;
@@ -56,11 +56,13 @@ PathCreator.prototype = {
             let endPoint = this.getGraphPointFromTouch(new Vector2D(pointer.x, pointer.y));
             if (endPoint != null) {
                 if (this.graph.tryAddPath(this.pathDrawProcess.startPoint, endPoint)) {
-                    new ConveyorBelt(pathLayer, this.pathDrawProcess.startPoint, endPoint, CONVEYOR_PATH_SCALE_FACTOR, null, CONVEYOR_BELT_SHEET_LANE);
+                    let conveyorBelt = new ConveyorBelt(pathLayer, this.pathDrawProcess.startPoint, endPoint, CONVEYOR_PATH_SCALE_FACTOR, null, CONVEYOR_BELT_SHEET_LANE);
+                    this.graph.addConveyorBelt(conveyorBelt);
                     this.builtPathSFX.play();
                 }
             }
 
+            this.graph.returnBeltsAndScannersToOriginalColors();
             this.pathDrawProcess = null;
         }
     },

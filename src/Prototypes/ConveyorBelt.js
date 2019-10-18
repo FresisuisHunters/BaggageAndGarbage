@@ -82,7 +82,7 @@ ConveyorBelt.prototype = {
     },
 
     setColor: function(color) {
-        this.beltTileSprite.tint = color;
+        if (game.renderType != Phaser.CANVAS) this.beltTileSprite.tint = color;
         for (let i = 0; i < this.railingImages.length; i++) {
             this.railingImages[i].tint = color;
         }
@@ -168,5 +168,10 @@ ConveyorBelt.prototype = {
 
             position = addVectors(position, deltaPosition);
         }
+    },
+
+    isVerticalConveyor : function() {
+        return this.start.y == LEVEL_DIMENSIONS.laneTopMargin;
     }
+
 }

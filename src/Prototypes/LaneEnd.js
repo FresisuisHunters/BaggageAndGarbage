@@ -14,7 +14,11 @@ const LANE_END_LENGTH = 300;
 const SFX_CORRECT_BAG_KEY = "sfx_CorrectBag";
 const SFX_CORRECT_BAG_VOLUME = 1;
 const SFX_WRONG_BAG_KEY = "sfx_WrongBag";
-const SFX_WRONG_BAG_VOLUME = 1;
+const SFX_WRONG_BAG_VOLUME = .5;
+
+const CORRECT_BAG_FEEDBACK_COLOR = 0x00FF00;
+const WRONG_BAG_SHAKE_SCALE = 20;
+const BAG_FEEDBACK_ANIMATION_LENGTH = 1;
 
 function LaneEnd(type, onBagKilled, bagList, position) {
     this.killThreshold = position.y + LANE_END_LENGTH;
@@ -35,13 +39,13 @@ function LaneEnd(type, onBagKilled, bagList, position) {
             beltSpriteSheet = CONVEYOR_BELT_SHEET_DANGER;
             break;
     }
-    let icon = new Phaser.Sprite(game, position.x, position.y + LANE_ICON_Y_OFFSET, iconSpriteKey, 0);
-    overlayLayer.add(icon);
-    icon.anchor.set(0.5, 0);
-    icon.scale.set(LANE_ICON_SCALE_FACTOR, LANE_ICON_SCALE_FACTOR);
+    this.icon = new Phaser.Sprite(game, position.x, position.y + LANE_ICON_Y_OFFSET, iconSpriteKey, 0);
+    overlayLayer.add(this.icon);
+    this.icon.anchor.set(0.5, 0);
+    this.icon.scale.set(LANE_ICON_SCALE_FACTOR, LANE_ICON_SCALE_FACTOR);
 
     //Create the ConveyorBelt
-    new ConveyorBelt(laneLayer, position, new Vector2D(position.x, position.y + LANE_END_LENGTH), 
+    this.conveyorBelt = new ConveyorBelt(laneLayer, position, new Vector2D(position.x, position.y + LANE_END_LENGTH), 
         CONVEYOR_LANE_SCALE_FACTOR, null, beltSpriteSheet);
 
     //Set up audio
@@ -49,6 +53,8 @@ function LaneEnd(type, onBagKilled, bagList, position) {
     this.correctSFX.volume = SFX_CORRECT_BAG_VOLUME;
     this.wrongSFX = game.add.audio(SFX_WRONG_BAG_KEY);
     this.wrongSFX.volume = SFX_WRONG_BAG_VOLUME;
+
+    this.currentAnimation = null;
 }
 
 LaneEnd.prototype = {
@@ -68,8 +74,14 @@ LaneEnd.prototype = {
                 console.error("A bag has type " + bag.type + ". That value doesn't make sense.");
         }
 
-        if (isCorrect) this.correctSFX.play();
-        else this.wrongSFX.play();
+        if (isCorrect) {
+            this.correctSFX.play();
+            this.startCorrectAnimation();
+        }
+        else {
+            this.wrongSFX.play();
+            this.startWrongAnimation();
+        } 
 
         this.onBagKilled(isCorrect);
 
@@ -95,5 +107,89 @@ LaneEnd.prototype = {
         this.bags.splice(bagIndex, 1);
 
         bag.sprite.destroy();
-    }
+    },
+
+    update: function() {
+        if (this.currentAnimation != null) {
+            if (this.currentAnimation.hasEnded) this.currentAnimation = null;
+            this.currentAnimation.update();
+        }
+    },
+
+    startCorrectAnimation: function() {
+        if (this.currentAnimation != null) {
+            this.currentAnimation.stop();
+        }
+
+        let newAnimation = {};
+        newAnimation.belt = this.conveyorBelt;
+        newAnimation.icon = this.icon;
+        
+        newAnimation.start = function() {
+            this.belt.setColor(CORRECT_BAG_FEEDBACK_COLOR);
+            this.icon.tint = CORRECT_BAG_FEEDBACK_COLOR;
+            this.t = 0;
+            this.hasEnded = false;
+        }
+
+        newAnimation.update = function() {
+            let dt = game.time.physicsElapsed / BAG_FEEDBACK_ANIMATION_LENGTH;
+            this.t += dt;
+
+            if (this.t < 1) {
+                let color = Phaser.Color.linear(CORRECT_BAG_FEEDBACK_COLOR, 0xFFFFFF, this.t);
+                this.belt.setColor(color);
+                this.icon.tint = color;
+            } else {
+                this.stop();
+            }
+        }
+
+        newAnimation.stop = function() {
+            this.belt.setColor(0xFFFFFF);
+            this.icon.tint = 0xFFFFFF;
+        }
+
+        this.currentAnimation = newAnimation;
+        newAnimation.start();
+    },
+
+    startWrongAnimation: function() {
+        if (this.currentAnimation != null) {
+            this.currentAnimation.stop();
+        }
+
+        let newAnimation = {};
+        newAnimation.icon = this.icon;
+        newAnimation.originalX = this.icon.x;
+        newAnimation.originalY = this.icon.y;
+        
+        newAnimation.start = function() {
+            this.t = 0;
+            this.hasEnded = false;
+        }
+
+        newAnimation.update = function() {
+            let dt = game.time.physicsElapsed / BAG_FEEDBACK_ANIMATION_LENGTH;
+            this.t += dt;
+
+            if (this.t < 1) {
+                let xOffset = ((Math.random() - 0.5) * 2 * WRONG_BAG_SHAKE_SCALE) * (1 - this.t);
+                let yOfsset = ((Math.random() - 0.5) * 2 * WRONG_BAG_SHAKE_SCALE) * (1 - this.t);
+
+                this.icon.x = this.originalX + xOffset;
+                this.icon.y = this.originalY + yOfsset;
+            } else {
+                this.stop();
+            }
+        }
+
+        newAnimation.stop = function() {
+            this.icon.x = this.originalX;
+            this.icon.y = this.originalY;
+        }
+
+        this.currentAnimation = newAnimation;
+        newAnimation.start();
+    },
 }

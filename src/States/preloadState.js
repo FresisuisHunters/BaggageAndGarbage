@@ -1,5 +1,10 @@
 "use strict";
 
+const JSON_KEY = "JSONLevel_";
+const LEVELS_JSON_DIR = "resources/levels/";
+const LEVEL_JSON_PREFIX = "lvl_";
+const LEVEL_JSON_SUFFIX = ".json";
+
 const BAG_SPRITE_FOLDER = "resources/sprites/bags/";
 const INTERIOR_SPRITE_FOLDER = "resources/sprites/bags/interiores/";
 
@@ -17,8 +22,12 @@ var preloadState = function (game) {
 preloadState.prototype = {
 
     preload: function () {
+        
+        this.showLoadingScreen();
+        
         this.loadBagSprites();
         this.loadInteriorSprites();
+        this.loadLevelsJSONs();
 
         //Cintas
         game.load.spritesheet(CONVEYOR_BELT_SHEET_LANE.KEY, "resources/sprites/sheet_ConveyorBelt.png", CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_SIZE, 
@@ -33,7 +42,16 @@ preloadState.prototype = {
         game.load.image(LANE_ICON_SPRITE_KEY_DANGER, "resources/sprites/img_LaneIcon_Danger.png");
         game.load.spritesheet(SCANNER_SHEET_KEY,"resources/sprites/sheet_Scanner.png", 256, 256, 3,20, 10);
 
+        // Sprites menu
+        game.load.image(MENU_BACKGROUND_KEY, "resources/sprites/img_MainMenuBackground.png");
+        game.load.image(MENU_INTERFACE_KEY, "resources/sprites/img_LevelSelectBackground.png");
+        game.load.image(LOGO_IMAGE_KEY, "resources/sprites/img_Logo.png");
+        game.load.image(EASY_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardEasy.png");
+        game.load.image(NORMAL_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardNormal.png");
+        game.load.image(HARD_LEVEL_CARD_SPRITE, "resources/sprites/img_LevelCardHard.png");
+
         //Audio
+        game.load.audio(MENU_MUSIC_KEY, "resources/audio/music_Menu.mp3");
         game.load.audio(GAMEPLAY_MUSIC_KEY, "resources/audio/music_Gameplay.mp3");
         game.load.audio(SFX_BUILT_PATH_KEY, "resources/audio/sfx_BuiltPath.mp3");
         game.load.audio(SFX_CORRECT_BAG_KEY, "resources/audio/sfx_CorrectBag.mp3");
@@ -52,7 +70,33 @@ preloadState.prototype = {
         game.load.image(UNOBTAINED_STAR_IMAGE_KEY, "resources/sprites/img_StarUnobtained.png");
         game.load.image(RETRY_BUTTON_IMAGE_KEY, "resources/sprites/img_RetryButton.png");
         game.load.image(HOME_BUTTON_IMAGE_KEY, "resources/sprites/img_HomeButton.png");
+
+        game.load.spritesheet(CREDITS_BUTTON_SHEET_KEY, "resources/sprites/sheet_ButtonCredits.png", 256, 256, 4, 20, 10);
+        game.load.image(SPANISH_PLANE_IMAGE_KEY, "resources/sprites/img_PlaneSpain.png");
+        game.load.image(ENGLISH_PLANE_IMAGE_KEY, "resources/sprites/img_PlaneUk.png");
         
+    },
+
+    showLoadingScreen: function() {
+        game.stage.backgroundColor = 0x91bfc2;
+
+        let loadingIcon = game.add.sprite(GAME_WIDTH / 2, TITLE_SCREEN_DIMENSIONS.playButtonY, PLAY_BUTTON_SHEET_KEY);
+        loadingIcon.anchor.setTo(0.5, 0.5);
+        loadingIcon.scale.setTo(TITLE_SCREEN_DIMENSIONS.playButtonScaleFactor, TITLE_SCREEN_DIMENSIONS.playButtonScaleFactor);
+        loadingIcon.animations.add("anim_Loading", [0, 1, 2], 6, true);
+        loadingIcon.animations.play("anim_Loading");
+    },
+
+    loadLevelsJSONs: function () {
+        for (let level = 1; level <= 3; ++level) {
+            let key = JSON_KEY + level;
+            let jsonFile = LEVELS_JSON_DIR + LEVEL_JSON_PREFIX + level + LEVEL_JSON_SUFFIX;
+            game.load.json(key, jsonFile, true);
+        }
+    },
+
+    loadLevelJSON: function() {
+
     },
 
     loadBagSpriteFromName: function(name) {
@@ -80,15 +124,7 @@ preloadState.prototype = {
     },
 
     create: function () {
-        //https://photonstorm.github.io/phaser-ce/Phaser.StateManager.html#start
-        //game.state.start("levelLoadState", true, false, "resources/levels/lvl_01.json");
-    },
-
-    update: function() {
-        if (game.input.activePointer.isDown) {
-            game.state.start("levelLoadState", true, false, "resources/levels/lvl_01.json");
-            
-        }
+        game.state.start("titleScreenState");
     },
     
     loadBagSprites: function() {

@@ -37,7 +37,7 @@ function Bag(bagType, position, graph, lanes) {
     this.initializeSprite();
     this.chooseInteriorSprite(this.sprite.key);
 
-    this.insideSprite = undefined; // TODO
+    this.sprite.bagsImCedingTo = [];
 }
 
 Bag.prototype = {
@@ -126,6 +126,7 @@ Bag.prototype = {
     update: function () {
         // Update collisions
         this.sprite.blockCountThisFrame = 0;
+        this.sprite.bagsImCedingTo.length = 0;
         game.physics.arcade.collide(this.sprite, bagLayer, this.collisionHandler, null, this);
 
         // Movement
@@ -168,7 +169,7 @@ Bag.prototype = {
             if (thisBagSprite.x == collidedBagSprite.x) {
                 if (thisBagSprite.y < collidedBagSprite.y) {
                     //If I'm higher, let them pass
-                    thisBagSprite.blockCountThisFrame++;
+                    this.tryCedePriority(thisBagSprite, collidedBagSprite);
                 }
                 //If we aren't on the same lane, we don't care.
             }
@@ -183,9 +184,9 @@ Bag.prototype = {
             
             if (thisIsMovingToTheRight == otherIsMovingToTheRight) {
                 if (thisIsMovingToTheRight) {
-                    if (thisBagSprite.x < collidedBagSprite.x) thisBagSprite.blockCountThisFrame++;
+                    if (thisBagSprite.x < collidedBagSprite.x) this.tryCedePriority(thisBagSprite, collidedBagSprite);
                 } else {
-                    if (thisBagSprite.x > collidedBagSprite.x) thisBagSprite.blockCountThisFrame++;
+                    if (thisBagSprite.x > collidedBagSprite.x) this.tryCedePriority(thisBagSprite, collidedBagSprite);
                 }
             }
         }
@@ -200,13 +201,13 @@ Bag.prototype = {
 
         if (bagInLane.y > bagInPath.y) {
             //If I'm lower than them, I've got priority.
-            bagInPath.blockCountThisFrame++;
+            this.tryCedePriority(bagInPath, bagInLane);
         } else {
             //If I'm higher than them, I've got priority unless they're sufficiently close to the lane.
             if (Math.abs(bagInLane.x - bagInPath.x) < MAX_DISTANCE_TO_LANE_FOR_PRIORITY) {
-                bagInLane.blockCountThisFrame++;
+                this.tryCedePriority(bagInLane, bagInPath);
             } else {
-                bagInPath.blockCountThisFrame++;
+                this.tryCedePriority(bagInPath, bagInLane);
             }
         }
     },
@@ -236,5 +237,29 @@ Bag.prototype = {
         }
 
         console.error("No LaneEnd was found for x:" + laneX);
+    },
+
+    tryCedePriority: function(thisBag, otherBag) {
+        //Recursive search for oneself in the other.
+        //If we found ourselves, don't cede.
+        let foundSelf = this.findSelfInCedingWeb(thisBag, otherBag);
+        
+        if (!foundSelf) {
+            thisBag.blockCountThisFrame++;
+            thisBag.bagsImCedingTo.push(otherBag);
+        }
+    },
+
+    findSelfInCedingWeb: function(self, searchedBag) {
+        for (let i = 0; i < searchedBag.bagsImCedingTo.length; i++) {
+            if (searchedBag.bagsImCedingTo[i] == self) {
+                return true;
+            } else {
+                let foundSelf = this.findSelfInCedingWeb(self, searchedBag.bagsImCedingTo[i]);
+                if (foundSelf) return true;
+            }
+        }
+
+        return false;
     }
 }
