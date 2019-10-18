@@ -44,7 +44,8 @@ const NEW_WAVE_OVERLAY_VALUES = {
     displayY : LEVEL_DIMENSIONS.laneTopMargin + 132,
     textOffsetX : 75,
     textOffsetY : 10,
-    scale : 1
+    scale : 1,
+    fadeSpeed : 1
 }
 
 const OBTAINED_STAR_IMAGE_KEY = "img_StarObtained";
@@ -297,23 +298,22 @@ gameplayState.prototype = {
         overlayLayer.add(sprite);
         overlayLayer.add(text);
 
+        // Hide both sprite and text
+        sprite.alpha = 0;
+        text.alpha = 0;
+
         // Store in this object both the sprite and its text
         this.newWaveOverlaySprite = sprite;
         this.newWaveOverlaySprite.text = text;
-
-        // Hide both sprite and text
-        sprite.visible = false;
-        text.visible = false;
+        this.newWaveOverlaySprite.show = false;
     },
 
     hideNewWaveOverlay : function() {
-        this.newWaveOverlaySprite.visible = false;
-        this.newWaveOverlaySprite.text.visible = false;
+        this.newWaveOverlaySprite.show = false;
     },
 
     displayNewWaveOverlay : function() {
-        this.newWaveOverlaySprite.visible = true;
-        this.newWaveOverlaySprite.text.visible = true;
+        this.newWaveOverlaySprite.show = true;
     },
 
     /*
@@ -353,6 +353,20 @@ gameplayState.prototype = {
         //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
         bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
 
+        // Hide/show new wave overlay, depending on current status
+        let sign = (this.newWaveOverlaySprite.show) ? 1 : -1;
+        let deltaAlpha = sign * NEW_WAVE_OVERLAY_VALUES.fadeSpeed * game.time.physicsElapsed;
+        this.newWaveOverlaySprite.alpha += deltaAlpha;
+        this.newWaveOverlaySprite.text.alpha += deltaAlpha;
+        if (this.newWaveOverlaySprite.alpha > 1) {
+            this.newWaveOverlaySprite.alpha = 1;
+            this.newWaveOverlaySprite.text.alpha = 1;
+        } else if (this.newWaveOverlaySprite.alpha < 0) {
+            this.newWaveOverlaySprite.alpha = 0;
+            this.newWaveOverlaySprite.text.alpha = 0;
+        }
+
+        // FPS display
         if (SHOW_FPS) {
             this.fspCounter.text = game.time.fps;
         }
