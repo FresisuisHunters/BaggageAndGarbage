@@ -9,9 +9,11 @@ bootState.prototype = {
         game.scale.scaleMode = Phaser.ScaleManager.USER_SCALE;
         game.scale.setResizeCallback(this.onResize, this);
         game.physics.startSystem(Phaser.Physics.ARCADE);
+        
 
+        
         if (this.game.device.android && this.game.device.chrome && this.game.device.chromeVersion >= 55) {
-            this.game.sound.setTouchLock();
+            this.game.sound.touchLocked = true;
             this.game.input.touch.addTouchLockCallback(function () {
                 if (this.noAudio || !this.touchLocked || this._unlockSource !== null) {
                     return true;
@@ -44,6 +46,7 @@ bootState.prototype = {
             }, this.game.sound, true);
         }
 
+        
         //game.sound.mute = MUTE_AUDIO;
     },
 
