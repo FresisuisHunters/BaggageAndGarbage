@@ -40,13 +40,11 @@ const SCORE_SCREEN_DIMENSIONS = {
 
 // New wave overlay variables
 const NEW_WAVE_OVERLAY_VALUES = {
-    spawnX : -500,  // Overlay is created out of canvas and it's brought into focus when necessary
-    spawnY : -500,
-    scale : 1,
     displayX : 1080 / 2,
     displayY : LEVEL_DIMENSIONS.laneTopMargin + 132,
     textOffsetX : 75,
-    textOffsetY : 10
+    textOffsetY : 10,
+    scale : 1
 }
 
 const OBTAINED_STAR_IMAGE_KEY = "img_StarObtained";
@@ -118,7 +116,7 @@ gameplayState.prototype = {
         //Crea los managers
         this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(),
             LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin);
-        this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
+        this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onWaveStart, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
 
         //Reproduce la música
@@ -276,6 +274,9 @@ gameplayState.prototype = {
         return mask;
     },
 
+    /*
+    Begining of new wave overlay related functions
+    */
     createNewWaveOverlay : function() {
         let x = NEW_WAVE_OVERLAY_VALUES.displayX;
         let y = NEW_WAVE_OVERLAY_VALUES.displayY;
@@ -287,7 +288,7 @@ gameplayState.prototype = {
 
         let textStyle = { font: "bold Arial", fontSize: "80px", fill: "#FFE500", align: "left", boundsAlignH: "right", boundsAlignV: "middle" };
 
-        // TODO: Make the display text language dependant via locationManager:getString()
+        // TODO: Get the text from locationManager:getString()
         let textX = x + NEW_WAVE_OVERLAY_VALUES.textOffsetX;
         let textY = y + NEW_WAVE_OVERLAY_VALUES.textOffsetY;
         let text = new Phaser.Text(game, textX, textY, "New wave\nincoming", textStyle);
@@ -295,7 +296,29 @@ gameplayState.prototype = {
 
         overlayLayer.add(sprite);
         overlayLayer.add(text);
+
+        // Store in this object both the sprite and its text
+        this.newWaveOverlaySprite = sprite;
+        this.newWaveOverlaySprite.text = text;
+
+        // Hide both sprite and text
+        sprite.visible = false;
+        text.visible = false;
     },
+
+    hideNewWaveOverlay : function() {
+        this.newWaveOverlaySprite.visible = false;
+        this.newWaveOverlaySprite.text.visible = false;
+    },
+
+    displayNewWaveOverlay : function() {
+        this.newWaveOverlaySprite.visible = true;
+        this.newWaveOverlaySprite.text.visible = true;
+    },
+
+    /*
+    End of new wave overlay related functions
+    */ 
 
     //GAME LOOP//
     /////////////
@@ -337,10 +360,17 @@ gameplayState.prototype = {
 
     //EVENTS//
     //////////
+    onWaveStart : function() {
+        let gameplayState = game.state.getCurrentState();
+        gameplayState.hideNewWaveOverlay();
+    },
+
     onNonLastWaveEnd: function () {
         this.graph.resetGraph();
-
         pathLayer.destroy(true, true);
+
+        let gameplayState = game.state.getCurrentState();
+        gameplayState.displayNewWaveOverlay();
     },
 
     onGameEnd: function () {
