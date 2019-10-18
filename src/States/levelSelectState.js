@@ -10,7 +10,7 @@ const NORMAL_LEVEL_CARD_SPRITE = "NormalLevel";
 const HARD_LEVEL_CARD_SPRITE = "HardLevel";
 
 const MENU_TEXT_X = 1080/2 - 140;
-const MENU_TEXT_Y = 45;
+const MENU_TEXT_Y = 90;
 
 const LEVEL_CARDS_X = 1080 / 2;
 const FIRST_LEVEL_Y = 450;
@@ -31,11 +31,14 @@ levelSelectState.prototype = {
         this.displayMenuText();
         this.displayBackground();
         this.displayLevelCards();
+
+        ensureThatMenuMusicIsPlaying();
     },
 
     displayMenuText : function() {
-        let textStyle = { font: "bold Arial", fontSize: "80px", fill: "#eee", align: "left", boundsAlignH: "right", boundsAlignV: "middle" };
-        let text = new Phaser.Text(game, MENU_TEXT_X, MENU_TEXT_Y, "SELECT YOUR\nDESTINATION", textStyle);
+        //0xFFE500
+        let textStyle = { font: "bold Arial", fontSize: "80px", fill: "#FFE500", align: "left", boundsAlignH: "right", boundsAlignV: "middle" };
+        let text = new Phaser.Text(game, MENU_TEXT_X, MENU_TEXT_Y, getString("DESTINATIONS"), textStyle);
         text.anchor.set(0, 0);
         this.overlayLayer.add(text);
     },

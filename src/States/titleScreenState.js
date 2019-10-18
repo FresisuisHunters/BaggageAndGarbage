@@ -40,9 +40,7 @@ titleScreenState.prototype = {
         this.showLanguageButtons();
         this.showCreditsButton();
 
-        if (menuMusic == null) menuMusic = game.add.audio(MENU_MUSIC_KEY);
-        menuMusic.volume = MENU_MUSIC_VOLUME;
-        menuMusic.play();
+        ensureThatMenuMusicIsPlaying();        
     },
 
     showBackground: function () {
@@ -139,3 +137,12 @@ titleScreenState.prototype = {
     },
 }
 
+function ensureThatMenuMusicIsPlaying() {
+    if (menuMusic == null) menuMusic = game.add.audio(MENU_MUSIC_KEY);
+    
+    if (!menuMusic.isPlaying) {
+        menuMusic.volume = MENU_MUSIC_VOLUME;
+        menuMusic.loop = true;
+        menuMusic.play();
+    }
+}

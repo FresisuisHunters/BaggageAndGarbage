@@ -15,6 +15,8 @@ creditsState.prototype = {
 
         this.showBackground();
         this.showBackButton();
+
+        ensureThatMenuMusicIsPlaying();
     },
 
     showBackground: function () {

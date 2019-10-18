@@ -8,7 +8,7 @@ const Languages = {
 function getString(key) {
     let value = localizationManager[key];
     if (value == null) {
-        console.error("La clave " + key + " no exist en LocalizationManager.");
+        console.error("La clave " + key + " no existe en LocalizationManager.");
         return "[ERROR]" + key;
     }
 
@@ -31,4 +31,8 @@ localizationManager["PLAY"] = {
 localizationManager["CREDITS"] = {
     en: "CREDITS",
     es: "CRÉDITOS"
+}
+localizationManager["DESTINATIONS"] = {
+    en:"Destinations",
+    es:"Destinaciones"
 }
