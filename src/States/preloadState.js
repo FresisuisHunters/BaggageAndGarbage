@@ -83,7 +83,7 @@ preloadState.prototype = {
         let loadingIcon = game.add.sprite(GAME_WIDTH / 2, TITLE_SCREEN_DIMENSIONS.playButtonY, PLAY_BUTTON_SHEET_KEY);
         loadingIcon.anchor.setTo(0.5, 0.5);
         loadingIcon.scale.setTo(TITLE_SCREEN_DIMENSIONS.playButtonScaleFactor, TITLE_SCREEN_DIMENSIONS.playButtonScaleFactor);
-        loadingIcon.animations.add("anim_Loading", [0, 1, 2], 12, true);
+        loadingIcon.animations.add("anim_Loading", [0, 1, 2], 6, true);
         loadingIcon.animations.play("anim_Loading");
     },
 
