@@ -11,7 +11,7 @@ Para utilizar WaveManger desde un estado de gameplay, hay que hacer estas cosas:
 - Llamar update() desde el update() del estado.
 - Pasar un callback onLastWaveDone al constructor. El callback se llamará cuando se acabé la última oleada.
 */
-function WaveManager(waves, graph, onNonLastWaveDone, onLastWaveDone, bagList, lanes, startY) {
+function WaveManager(waves, graph, onWaveStart, onNonLastWaveDone, onLastWaveDone, bagList, lanes, startY) {
     
     this.waves = waves;
     this.graph = graph;
@@ -35,6 +35,7 @@ function WaveManager(waves, graph, onNonLastWaveDone, onLastWaveDone, bagList, l
     this.offCooldownBelts = []
 
     //Assign the callbacks
+    this.onWaveStart = onWaveStart;
     this.onNonLastWaveDone = onNonLastWaveDone;
     this.onLastWaveDone = onLastWaveDone;
 }
@@ -49,6 +50,8 @@ WaveManager.prototype = {
         this.currentWave.totalBagAmount = this.currentWave.numA + this.currentWave.numB_Safe + this.currentWave.numB_Danger + this.currentWave.numC;
         this.currentWaveDoneBagAmount = 0;
         this.tSinceLastSpawn = 0;
+
+        this.onWaveStart();
     },
 
     update: function() {

@@ -5,6 +5,7 @@ var gameplayState = function (game) {
 
 const GAMEPLAY_BACKGROUND_IMAGE_KEY = "img_GameplayBackground";
 const GAMEPLAY_FOREGROUND_IMAGE_KEY = "img_GameplayForeground";
+const NEW_WAVE_OVERLAY_KEY = "img_NewWaveOverlay";
 const SCORE_BACKGROUND_IMAGE_KEY = "img_ScoreBackground"
 
 const GAMEPLAY_MUSIC_KEY = "music_Gameplay";
@@ -37,10 +38,20 @@ const SCORE_SCREEN_DIMENSIONS = {
     buttonScale: 1.75
 }
 
-const OBTAINED_STAR_IMAGE_KEY = "img_StarObtained"
-const UNOBTAINED_STAR_IMAGE_KEY = "img_StarUnobtained"
-const RETRY_BUTTON_IMAGE_KEY = "img_RetryButton"
-const HOME_BUTTON_IMAGE_KEY = "img_HomeButton"
+// New wave overlay variables
+const NEW_WAVE_OVERLAY_VALUES = {
+    displayX : 1080 / 2,
+    displayY : LEVEL_DIMENSIONS.laneTopMargin + 132,
+    textOffsetX : -150,
+    textOffsetY : 10,
+    scale : 1,
+    fadeSpeed : 1
+}
+
+const OBTAINED_STAR_IMAGE_KEY = "img_StarObtained";
+const UNOBTAINED_STAR_IMAGE_KEY = "img_StarUnobtained";
+const RETRY_BUTTON_IMAGE_KEY = "img_RetryButton";
+const HOME_BUTTON_IMAGE_KEY = "img_HomeButton";
 
 //Layers
 var backgroundLayer;
@@ -93,6 +104,9 @@ gameplayState.prototype = {
 
         this.createScanners(this.levelData.scanners, this.lanes);
 
+        // Creates the new wave overlay
+        this.createNewWaveOverlay();
+
         //Crea las máscaras
         this.pathMask = this.getPathMask(this.graph);
         pathLayer.mask = this.pathMask;
@@ -103,7 +117,7 @@ gameplayState.prototype = {
         //Crea los managers
         this.pathCreator = new PathCreator(this.graph, this.graph.getColumns(),
             LEVEL_DIMENSIONS.laneTopMargin, GAME_HEIGHT - LEVEL_DIMENSIONS.laneBottomMargin);
-        this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
+        this.waveManager = new WaveManager(this.levelData.waves, this.graph, this.onWaveStart, this.onNonLastWaveEnd, this.onGameEnd, this.bags, this.lanes, LEVEL_DIMENSIONS.laneTopMargin);
         this.scoreManager = new ScoreManager();
 
         //Reproduce la música
@@ -261,6 +275,66 @@ gameplayState.prototype = {
         return mask;
     },
 
+    /*
+    Begining of new wave overlay related functions
+    */
+    createNewWaveOverlay : function() {
+        let x = NEW_WAVE_OVERLAY_VALUES.displayX;
+        let y = NEW_WAVE_OVERLAY_VALUES.displayY;
+        let sprite = game.add.sprite(x, y, NEW_WAVE_OVERLAY_KEY);
+
+        let scale = NEW_WAVE_OVERLAY_VALUES.scale;
+        sprite.scale.setTo(scale, scale);
+        sprite.anchor.setTo(0.5, 0.5);
+
+        let textStyle = { font: "bold Arial", fontSize: "70px", fill: "#FFE500", align: "left", boundsAlignH: "right", boundsAlignV: "middle" };
+
+        // TODO: Get the text from locationManager:getString()
+        let textX = x + NEW_WAVE_OVERLAY_VALUES.textOffsetX;
+        let textY = y + NEW_WAVE_OVERLAY_VALUES.textOffsetY;
+        let text = new Phaser.Text(game, textX, textY, getString("NEW_WAVE_TEXT"), textStyle);
+        text.anchor.setTo(0, 0.5);
+
+        overlayLayer.add(sprite);
+        overlayLayer.add(text);
+
+        // Hide both sprite and text
+        sprite.alpha = 0;
+        text.alpha = 0;
+
+        // Store in this object both the sprite and its text
+        this.newWaveOverlaySprite = sprite;
+        this.newWaveOverlaySprite.text = text;
+        this.newWaveOverlaySprite.show = false;
+
+        this.newWaveOverlaySprite.update = function() {
+            // Hide/show new wave overlay, depending on current status
+            let sign = (this.show) ? 1 : -1;
+            let deltaAlpha = sign * NEW_WAVE_OVERLAY_VALUES.fadeSpeed * game.time.physicsElapsed;
+            this.alpha += deltaAlpha;
+            this.text.alpha += deltaAlpha;
+            if (this.alpha > 1) {
+                this.alpha = 1;
+                this.text.alpha = 1;
+            } else if (this.alpha < 0) {
+                this.alpha = 0;
+                this.text.alpha = 0;
+            }
+        }
+    },
+
+    hideNewWaveOverlay : function() {
+        this.newWaveOverlaySprite.show = false;
+    },
+
+    displayNewWaveOverlay : function() {
+        this.newWaveOverlaySprite.show = true;
+    },
+
+    /*
+    End of new wave overlay related functions
+    */ 
+
     //GAME LOOP//
     /////////////
     update: function () {
@@ -294,6 +368,9 @@ gameplayState.prototype = {
         //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
         bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
 
+        this.newWaveOverlaySprite.update();
+
+        // FPS display
         if (SHOW_FPS) {
             this.fspCounter.text = game.time.fps;
         }
@@ -301,10 +378,17 @@ gameplayState.prototype = {
 
     //EVENTS//
     //////////
+    onWaveStart : function() {
+        let gameplayState = game.state.getCurrentState();
+        gameplayState.hideNewWaveOverlay();
+    },
+
     onNonLastWaveEnd: function () {
         this.graph.resetGraph();
-
         pathLayer.destroy(true, true);
+
+        let gameplayState = game.state.getCurrentState();
+        gameplayState.displayNewWaveOverlay();
     },
 
     onGameEnd: function () {
@@ -411,7 +495,7 @@ gameplayState.prototype = {
         
         let goToMenu = function (button, pointer, isOver) {
             if (isOver) {
-                game.state.start("titleScreenState", true, false);
+                game.state.start("levelSelectState", true, false);
             }
         }
 
