@@ -22,6 +22,9 @@ var preloadState = function (game) {
 preloadState.prototype = {
 
     preload: function () {
+        
+        this.showLoadingScreen();
+        
         this.loadBagSprites();
         this.loadInteriorSprites();
         this.loadLevelsJSONs();
@@ -68,11 +71,20 @@ preloadState.prototype = {
         game.load.image(RETRY_BUTTON_IMAGE_KEY, "resources/sprites/img_RetryButton.png");
         game.load.image(HOME_BUTTON_IMAGE_KEY, "resources/sprites/img_HomeButton.png");
 
-        game.load.spritesheet(PLAY_BUTTON_SHEET_KEY, "resources/sprites/sheet_ButtonPlay.png", 256, 256, 4, 20, 10);
         game.load.spritesheet(CREDITS_BUTTON_SHEET_KEY, "resources/sprites/sheet_ButtonCredits.png", 256, 256, 4, 20, 10);
         game.load.image(SPANISH_PLANE_IMAGE_KEY, "resources/sprites/img_PlaneSpain.png");
         game.load.image(ENGLISH_PLANE_IMAGE_KEY, "resources/sprites/img_PlaneUk.png");
         
+    },
+
+    showLoadingScreen: function() {
+        game.stage.backgroundColor = 0x91bfc2;
+
+        let loadingIcon = game.add.sprite(GAME_WIDTH / 2, TITLE_SCREEN_DIMENSIONS.playButtonY, PLAY_BUTTON_SHEET_KEY);
+        loadingIcon.anchor.setTo(0.5, 0.5);
+        loadingIcon.scale.setTo(TITLE_SCREEN_DIMENSIONS.playButtonScaleFactor, TITLE_SCREEN_DIMENSIONS.playButtonScaleFactor);
+        loadingIcon.animations.add("anim_Loading", [0, 1, 2], 12, true);
+        loadingIcon.animations.play("anim_Loading");
     },
 
     loadLevelsJSONs: function () {
