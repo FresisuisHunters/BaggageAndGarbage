@@ -42,6 +42,8 @@ Scanner.prototype = {
         this.sprite.scale.set(SCANNER_SCALE_FACTOR, SCANNER_SCALE_FACTOR);
         this.sprite.anchor = new Phaser.Point(0.5, 0);
         this.end = this.start + this.sprite.height * this.sprite.scale.y;
+
+        this.scannerLength = this.end - this.start;
     },
 
     createWindowMask: function() {
@@ -63,11 +65,10 @@ Scanner.prototype = {
             this.currentBags.push(Bag);
 
             if (Bag.type == BagTypes.A || Bag.type == BagTypes.C) {
-                //let bagSprite = new Phaser.Sprite(game, this.windowCenterX, this.windowStartY, Bag.sprite.key);
                 let bagSprite = new Phaser.Sprite(game, 0, 0, Bag.interiorSpriteKey);
-                bagSprite.anchor.setTo(0.5, 1);
+                bagSprite.anchor.setTo(0.5, 0.5);
                 let iconSprite = new Phaser.Sprite(game, this.windowCenterX, this.windowStartY,Bag.sprite.key);
-                iconSprite.anchor.setTo(0.5, 1);
+                iconSprite.anchor.setTo(0.5, 0.5);
 
                 this.backgroundScanSprites.add(bagSprite);
                 this.scanSprites.add(iconSprite);
@@ -75,10 +76,9 @@ Scanner.prototype = {
                 iconSprite.addChildAt(bagSprite,0);
                 iconSprite.bringToTop();
                 bagSprite.sendToBack();
-
             } else {
                 let newInteriorSprite = this.scanSprites.create(this.windowCenterX, this.windowStartY, Bag.interiorSpriteKey);
-                newInteriorSprite.anchor.setTo(0.5, 1);
+                newInteriorSprite.anchor.setTo(0.5, 0.5);
             }
         }
     },
@@ -90,29 +90,27 @@ Scanner.prototype = {
     },
 
     UpdateScanner: function () {
-
-        let detectedDanger = false;
         if (this.currentBags.length > 0) {
-
-            //Actualiza la posición de los sprits interiores
+            // Actualiza la posición de los sprites interiores
             for (let i = 0; i < this.currentBags.length; i++) {
+                let bag = this.currentBags[i];
 
-                let t = game.math.min(1, (this.currentBags[i].sprite.y - (this.start - this.currentBags[i].sprite.height/2)) /
-                    (this.end - (this.start - this.currentBags[i].sprite.height )));
+                let bagPositionY = bag.position.y;
+                let portionPenetrated = (bagPositionY - this.start) / this.scannerLength;
 
-                this.scanSprites.getAt(i).y = game.math.linear(this.windowStartY, this.windowEndY + this.currentBags[i].sprite.height*1.5, t);       
+                let bagSpriteInScannerY = (1 - portionPenetrated) * this.windowStartY + portionPenetrated * this.windowEndY;
+                this.scanSprites.getAt(i).y = bagSpriteInScannerY;
             }
 
-            //Ve si alguna maleta ha salido
-            if (this.currentBags[0].position.y - this.currentBags[0].sprite.height > this.end
-                || this.currentBags[0].position.x != this.x) {
-                this.ExitBag();
-            }
+            // Ve si la maleta mas avanzada ha salido
+            let bag = this.currentBags[0];
+            let bagY = bag.position.y;
+            let bagSpriteHalfHeight = bag.sprite.height * bag.sprite.scale.y / 2;
+            let scannerEndY = this.end;
             
-            //Ve si hay peligro
-            for (let i = 0; i < this.currentBags.length; i++) {
-                if (this.currentBags[i].type == BagTypes.C || this.currentBags[i].type == BagTypes.B_Danger)
-                    detectedDanger = true;
+            let distanceBag_Scanner = bagY - scannerEndY;
+            if (distanceBag_Scanner >= bagSpriteHalfHeight) {
+                this.ExitBag();
             }
         }
 
@@ -120,12 +118,7 @@ Scanner.prototype = {
     },
 
     IsInScanner: function (point) {
-        if (point.x == this.x && point.y >= this.start && point.y <= this.end) {
-            return true;
-        }
-        else {
-            return false;
-        }
+        return point.x == this.x && point.y >= this.start && point.y <= this.end;
     },
 
     SetActive: function () {
@@ -145,7 +138,6 @@ Scanner.prototype = {
     },
 
     setColor : function(color) {
-        // TODO: Change tint properly
         this.sprite.tint = color;
     }
 }
