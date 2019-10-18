@@ -29,7 +29,7 @@ const SCORE_SCREEN_DIMENSIONS = {
     starY: 525,
     starRatingWidth: 325,
     starScaleFactor: 0.8,
-    numberRightX: 750,
+    numberRightX: 550,
     wrongNumberY: 735,
     correctNumberY: 960,
     buttonY: 1600,
@@ -55,7 +55,6 @@ Empieza levelLoadState con un path a un JSON de nivel.
 levelLoadState se encargará de empezar el estado de gaemplay cuando todo esté listo.
 */
 gameplayState.prototype = {
-
     //INICIALIZACIÓN//
     //////////////////
     init: function (levelData) {
@@ -108,6 +107,8 @@ gameplayState.prototype = {
         this.scoreManager = new ScoreManager();
 
         //Reproduce la música
+        if (menuMusic.isPlaying) menuMusic.stop();
+
         this.music = game.add.audio(GAMEPLAY_MUSIC_KEY);
         this.music.volume = GAMEPLAY_MUSIC_VOLUME;
         this.music.loop = true;
@@ -115,6 +116,16 @@ gameplayState.prototype = {
 
         //Empieza la primera oleada
         this.waveManager.startNextWave();
+
+        if (SHOW_FPS) {
+            let textStyle = { font: "bold Arial", fontSize: "140px", fill: "#f00", align: "left", boundsAlignH: "right", boundsAlignV: "middle" };
+
+            this.fspCounter = new Phaser.Text(game, 0, 0, "--", textStyle);
+            this.fspCounter.anchor.setTo(0, 0);
+            overlayLayer.add(this.fspCounter);
+
+            game.time.advancedTiming = true;
+        }
     },
 
     createBackground: function () {
@@ -253,10 +264,9 @@ gameplayState.prototype = {
     //GAME LOOP//
     /////////////
     update: function () {
-
         if (!this.gameHasEnded) {
             this.pathCreator.update();
-            this.waveManager.update(game.time.physicsElapsed);
+            this.waveManager.update();
         }
 
         //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
@@ -272,12 +282,21 @@ gameplayState.prototype = {
             this.bags[i].update();
 
         }
+        
         for (let j = 0; j < this.scanners.length; j++) {
             this.scanners[j].UpdateScanner();
         }
 
+        for (let i = 0; i < this.lanes.length; i++) {
+            this.lanes[i].laneEnd.update();
+        }
+
         //Hace que las maletas se dibujen en orden de su posición y - haciendo que las que estén más arriba se dibujen detrás de las que estén más abajo
         bagLayer.sort('y', Phaser.Group.SORT_ASCENDING);
+
+        if (SHOW_FPS) {
+            this.fspCounter.text = game.time.fps;
+        }
     },
 
     //EVENTS//
@@ -375,14 +394,14 @@ gameplayState.prototype = {
         }
 
         //Show correct and wrong bag counts
-        let textStyle = { font: "bold Arial", fontSize: "140px", fill: "#fff", align: "right", boundsAlignH: "right", boundsAlignV: "middle" };
+        let textStyle = { font: "bold Arial", fontSize: "120px", fill: "#fff", align: "left", boundsAlignH: "left", boundsAlignV: "middle" };
 
         let wrongText = new Phaser.Text(game, SCORE_SCREEN_DIMENSIONS.numberRightX, SCORE_SCREEN_DIMENSIONS.wrongNumberY, wrongBagCount, textStyle);
-        wrongText.anchor.setTo(1, 0.5);
+        wrongText.anchor.setTo(0, 0.5);
         scoreLayer.add(wrongText);
 
         let correctText = new Phaser.Text(game, SCORE_SCREEN_DIMENSIONS.numberRightX, SCORE_SCREEN_DIMENSIONS.correctNumberY, correctBagCount, textStyle);
-        correctText.anchor.setTo(1, 0.5);
+        correctText.anchor.setTo(0, 0.5);
         scoreLayer.add(correctText);
 
         //Prepare the button callbacks
@@ -392,7 +411,7 @@ gameplayState.prototype = {
         
         let goToMenu = function (button, pointer, isOver) {
             if (isOver) {
-                game.state.start("menuState", true, false);
+                game.state.start("titleScreenState", true, false);
             }
         }
 

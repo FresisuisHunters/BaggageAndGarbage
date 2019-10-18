@@ -1,6 +1,6 @@
 "use strict"
 
-const TIME_BETWEEN_BAG_SPAWNS = 2;
+const TIME_BETWEEN_BAG_SPAWNS = 3;
 const CONVEYOR_SPAWN_COOLDOWN = 3;
 
 const TIME_BETWEEN_WAVES = 4;
@@ -51,16 +51,16 @@ WaveManager.prototype = {
         this.tSinceLastSpawn = 0;
     },
 
-    update: function(dt) {
+    update: function() {
         //If we're currently on a wave
         if (this.currentWave) {
             //Are there bags to spawn left?
             if (!this.waveIsEmpty(this.currentWave)) {
                 
                 //Increment the timers
-                this.tSinceLastSpawn += dt;
+                this.tSinceLastSpawn += game.time.physicsElapsed;
                 for (let i = 0; i < this.timesSinceSpawnAtConveyorBelt.length; i++) {
-                    this.timesSinceSpawnAtConveyorBelt[i] += dt;
+                    this.timesSinceSpawnAtConveyorBelt[i] += game.time.physicsElapsed;
                 }
 
                 //Spawn a bag if it's been long enough
@@ -78,7 +78,7 @@ WaveManager.prototype = {
             }
             else {
                 //Wait until it's time to start the next wave
-                this.timeSinceWaveEnd += dt;
+                this.timeSinceWaveEnd += game.time.physicsElapsed;
 
                 if (this.timeSinceWaveEnd > TIME_BETWEEN_WAVES) {
                     this.startNextWave();
