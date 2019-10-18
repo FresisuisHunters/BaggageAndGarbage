@@ -217,11 +217,11 @@ gameplayState.prototype = {
     },
 
     createSpeedUpButton: function () {
-        let x = 240;
-        let y = 20;
+        let x = GAME_WIDTH - LEVEL_DIMENSIONS.scannerScreenWidth + 5;
+        let y = LEVEL_DIMENSIONS.laneTopMargin + 23;
 
         this.speedUpButton = game.add.button(x, y, SPEED_UP_BUTTON_UP_IMAGE_KEY, this.speedUpButtonCallback);
-        this.speedUpButton.anchor.setTo(0, 0);
+        this.speedUpButton.anchor.setTo(1, 1);
         this.speedUpButton.scale.setTo(1.5, 1.5);
         this.speedUpButton.down = false;
 
@@ -235,7 +235,7 @@ gameplayState.prototype = {
         backButton.x = 4;
         backButton.y = 5;
 
-        backButton.scale.setTo(0.87, 0.87);
+        backButton.scale.setTo(0.5, 0.5);
 
         overlayLayer.add(backButton);
     },
