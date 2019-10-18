@@ -98,6 +98,7 @@ gameplayState.prototype = {
         this.createLaneEnds(this.graph, this.onBagKilled, this.bags);
         this.createLaneConveyorBelts(this.graph.getColumns());
         this.createSpeedUpButton();
+        this.createHomeButton();
 
         this.mask = this.getPathMask(this.graph);
         pathLayer.mask = this.mask;
@@ -216,15 +217,27 @@ gameplayState.prototype = {
     },
 
     createSpeedUpButton: function () {
-        let x = 20;
-        let y = 20;
+        let x = GAME_WIDTH - LEVEL_DIMENSIONS.scannerScreenWidth + 5;
+        let y = LEVEL_DIMENSIONS.laneTopMargin + 23;
 
         this.speedUpButton = game.add.button(x, y, SPEED_UP_BUTTON_UP_IMAGE_KEY, this.speedUpButtonCallback);
-        this.speedUpButton.anchor.setTo(0, 0);
+        this.speedUpButton.anchor.setTo(1, 1);
         this.speedUpButton.scale.setTo(1.5, 1.5);
         this.speedUpButton.down = false;
 
         overlayLayer.add(this.speedUpButton);
+    },
+
+    createHomeButton: function() {
+        let backButton = createBackButton("levelSelectState");
+
+        backButton.anchor.setTo(0, 0);
+        backButton.x = 4;
+        backButton.y = 5;
+
+        backButton.scale.setTo(0.5, 0.5);
+
+        overlayLayer.add(backButton);
     },
 
     speedUpButtonCallback: function (button, pointer, isOver) {

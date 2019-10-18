@@ -5,7 +5,7 @@ const CANVAS_MARGIN = 0;
 const POWER_OF_2_SCALING_ONLY = false;
 const USE_ANTIALIASING = false;
 
-const SHOW_FPS = true;
+const SHOW_FPS = false;
 
 const MUTE_AUDIO = false;
 
