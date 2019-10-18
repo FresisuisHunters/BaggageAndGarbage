@@ -91,8 +91,6 @@ Scanner.prototype = {
 
     UpdateScanner: function () {
 
-        if (!this.isActive) return;
-
         let detectedDanger = false;
         if (this.currentBags.length > 0) {
 
@@ -117,6 +115,8 @@ Scanner.prototype = {
                     detectedDanger = true;
             }
         }
+
+        this.scanSprites.visible = this.isActive;
     },
 
     IsInScanner: function (point) {

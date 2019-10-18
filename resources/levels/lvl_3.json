@@ -1,40 +1,40 @@
 {
     "difficulty":2,
     "levelIndex":3,
-    "bagSpeed": 70,
+    "bagSpeed": 90,
     "lanes": {
         "count": 5,
-        "types": ["D", "S", "S", "S", "D"]
+        "types": ["S", "D", "S", "D", "S"]
     },
     "waves": [
         {
             "numA": 1,
-            "numB_Safe": 1,
-            "numB_Danger": 1,
-            "numC": 2
-        },
-        {
-            "numA": 1,
-            "numB_Safe": 0,
+            "numB_Safe": 2,
             "numB_Danger": 2,
-            "numC": 3
+            "numC": 1
         },
         {
             "numA": 2,
             "numB_Safe": 2,
-            "numB_Danger": 2,
-            "numC": 3
+            "numB_Danger": 4,
+            "numC": 1
+        },
+        {
+            "numA": 2,
+            "numB_Safe": 4,
+            "numB_Danger": 4,
+            "numC": 2
         }
     ],
     "scanners": [
         {
-            "lane":2,
-            "y":600
+            "lane":0,
+            "y":300
         },
         {
-            "lane":3,
+            "lane":4,
             "y":600
         }
     ],
-    "starThresholds": [4, 2, 0]
+    "starThresholds": [6, 4, 0]
 }
