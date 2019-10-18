@@ -5,9 +5,10 @@ var levelSelectState = function (game) {
 
 const MENU_BACKGROUND_KEY = "MenuBackground";
 const MENU_INTERFACE_KEY = "MenuInterface";
-const EASY_LEVEL_CARD_SPRITE = "EasyLevel";
-const NORMAL_LEVEL_CARD_SPRITE = "NormalLevel";
-const HARD_LEVEL_CARD_SPRITE = "HardLevel";
+const TUTORIAL_LEVEL_CARD_KEY = "TutorialLevel";
+const EASY_LEVEL_CARD_KEY = "EasyLevel";
+const NORMAL_LEVEL_CARD_KEY = "NormalLevel";
+const HARD_LEVEL_CARD_KEY = "HardLevel";
 
 const MENU_TEXT_X = 1080/2 - 140;
 const MENU_TEXT_Y = 90;
@@ -56,6 +57,15 @@ levelSelectState.prototype = {
     },
 
     displayLevelCards: function () {
+        // Tutorial card
+        let tutorialCardX = LEVEL_CARDS_X;
+        let tutorialCardY = FIRST_LEVEL_Y;
+        let tutorialCardButton = game.add.button(tutorialCardX, tutorialCardY, TUTORIAL_LEVEL_CARD_KEY, this.onTutorialCardClick);
+        tutorialCardButton.anchor.set(0.5, 0.5);
+        this.levelCardsLayer.add(tutorialCardButton);
+        this.displayPlayText(tutorialCardX, tutorialCardY);
+
+        // Other levels
         for (let level = 1; level <= 3; ++level) {
             let key = JSON_KEY + level;
             let levelData = game.cache.getJSON(key);
@@ -63,7 +73,7 @@ levelSelectState.prototype = {
             let cardSpriteKey = this.getSpriteKey(levelData.difficulty);
 
             let x = LEVEL_CARDS_X;
-            let y = FIRST_LEVEL_Y + level * LEVEL_CARDS_Y_OFFSET;
+            let y = FIRST_LEVEL_Y + level * LEVEL_CARDS_Y_OFFSET; // +1 because of tutorial card
 
             let card;
             if (levelData.levelIndex > game.userLevelData.levelIndexToComplete) {
@@ -88,14 +98,22 @@ levelSelectState.prototype = {
     getSpriteKey: function (difficulty) {
         switch (difficulty) {
             case 0:
-                return EASY_LEVEL_CARD_SPRITE;
+                return EASY_LEVEL_CARD_KEY;
             case 1:
-                return NORMAL_LEVEL_CARD_SPRITE;
+                return NORMAL_LEVEL_CARD_KEY;
             case 2:
-                return HARD_LEVEL_CARD_SPRITE;
+                return HARD_LEVEL_CARD_KEY;
             default:
                 console.error("Unknow difficulty value \"" + difficulty + "\" found in level JSON");
         }
+    },
+
+    onTutorialCardClick : function(button) {
+        // TODO: Borrar esta comprobacion
+        console.error("Falta implementar el estado tutorialState");
+        return;
+
+        game.state.start("tutorialState");
     },
 
     onLevelCardClick : function(button, pointer, isOver) {
