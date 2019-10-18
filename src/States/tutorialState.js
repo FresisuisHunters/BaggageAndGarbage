@@ -34,22 +34,18 @@ tutorialState.prototype = {
 
         this.homeButton = createBackButton("titleScreenState");
         
-        this.previousButtonEnabled = new Phaser.Button(game, this.homeButton.left, this.homeButton.bottom, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showPreviousPageButtonCallback, this);
-        this.previousButtonEnabled.scale.x *= -1;
-        this.previousButtonEnabled.anchor.setTo(1, 1);
+        this.previousButton = new Phaser.Button(game, this.homeButton.left, this.homeButton.bottom, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showPreviousPageButtonCallback, this);
+        this.previousButton.scale.x *= -1;
+        this.previousButton.anchor.setTo(1, 1);
 
-        this.previousButtonDisabled = new Phaser.Button(game, this.homeButton.left, this.homeButton.bottom, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showPreviousPageButtonCallback, this);
-        this.previousButtonDisabled.scale.x *= -1;
-        this.previousButtonDisabled.anchor.setTo(1, 1);
-        
-        this.buttonLayer.add(this.previousButtonEnabled);
+        this.buttonLayer.add(this.previousButton);
 
         this.homeButton.anchor.setTo(0.5, 1);
         this.homeButton.x = GAME_WIDTH / 2;
         this.homeButton.y = this.previousButton.bottom;
         this.buttonLayer.add(this.homeButton);
 
-        this.nextButton = new Phaser.Button(game, GAME_WIDTH - this.previousButtonEnabled.x, this.homeButton.bottom, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showNextPageButtonCallback, this);
+        this.nextButton = new Phaser.Button(game, GAME_WIDTH - this.previousButton.x, this.homeButton.bottom, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showNextPageButtonCallback, this);
         this.nextButton.anchor.setTo(1, 1);
         this.buttonLayer.add(this.nextButton);
     },
@@ -60,7 +56,14 @@ tutorialState.prototype = {
         this.pages[newIndex].visible = true;
 
         if (newIndex == 0){
-            //this.
+            this.disableButton(this.previousButton);
+            this.enableButton(this.nextButton);
+        } else if (newIndex == TUTORIAL_PAGE_COUNT - 1) {
+            this.disableButton(this.nextButton);
+            this.enableButton(this.previousButton);
+        } else {
+            this.enableButton(this.nextButton);
+            this.enableButton(this.previousButton);
         }
     },
 
@@ -79,6 +82,12 @@ tutorialState.prototype = {
     },
 
     disableButton: function(button) {
+        button.visible = false;
         button.inputEnabled = false;
+    },
+
+    enableButton: function(button) {
+        button.visible = true;
+        button.inputEnabled = true;
     }
 }
