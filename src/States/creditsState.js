@@ -3,7 +3,7 @@ var creditsState = function (game) {
 
 }
 
-const CREDITS_BACKGROUND_IMAGE_KEY = "MenuBackground";
+const CREDITS_BACKGROUND_IMAGE_KEY = "img_Credits";
 const BACK_BUTTON_MARGIN = 30;
 const BACK_BUTTON_SCALE_FACTOR = 1;
 
@@ -15,7 +15,6 @@ creditsState.prototype = {
 
         this.showBackground();
         this.buttonLayer.add(createBackButton("titleScreenState"));
-
 
         ensureThatMenuMusicIsPlaying();
     },

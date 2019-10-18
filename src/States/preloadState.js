@@ -61,6 +61,7 @@ preloadState.prototype = {
         game.load.image(GAMEPLAY_BACKGROUND_IMAGE_KEY, "resources/sprites/img_GameplayBackground.png");
         game.load.image(GAMEPLAY_FOREGROUND_IMAGE_KEY, "resources/sprites/img_GameplayForeground.png");
         game.load.image(SCORE_BACKGROUND_IMAGE_KEY, "resources/sprites/img_ScoreBackground.png")
+        game.load.image(CREDITS_BACKGROUND_IMAGE_KEY, "resources/sprites/img_Credits.png")
 
         //UI
         game.load.image("img_ScannerBelt", "resources/sprites/img_ScannerBelt.png");
