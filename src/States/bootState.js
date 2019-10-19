@@ -6,7 +6,8 @@ var bootState = function (game) {
 
 }
 
-const BACKGROUND_PLAIN_COLOR = "#89abad";
+//iconst BACKGROUND_PLAIN_COLOR = "#90aaac";
+const BACKGROUND_PLAIN_COLOR = "#91bfc2";
 const ASPECT_RATIO_FOR_BACKGROUND = 0.6 * 1920 / 1080;
 
 bootState.prototype = {
@@ -42,7 +43,7 @@ bootState.prototype = {
             localStorage.userLevelData = JSON.stringify(game.userLevelData);
         }
         
-        console.log("localStorage" + localStorage.userLevelData);
+        //console.log("localStorage" + localStorage.userLevelData);
 
         localizationManager.currentLanguage = game.userLevelData.language;
         game.state.start("preloadState");
@@ -60,14 +61,17 @@ bootState.prototype = {
             || document.body.clientHeight;
         availableHeight -= CANVAS_MARGIN;
 
-        console.log("Scaling for available dimensions: (" + availableWidth + ", " + availableHeight + ")");
+        //console.log("Scaling for available dimensions: (" + availableWidth + ", " + availableHeight + ")");
 
         let availableAspectRatio = availableWidth / availableHeight;
 
-        let newBackground = (availableAspectRatio >= ASPECT_RATIO_FOR_BACKGROUND) ? "url(Concept Art/UI/fondoWeb.png)" : BACKGROUND_PLAIN_COLOR;
+        let newBackground = (availableAspectRatio >= ASPECT_RATIO_FOR_BACKGROUND) ? "url(resources/webpage/fondoWeb.png)" : BACKGROUND_PLAIN_COLOR;
         let docBackground = document.getElementById("backgroundId");
-        docBackground.style.background = "";    // Unassign background before-hand
+        
         docBackground.style.background = newBackground;
+        docBackground.style.backgroundRepeat = "repeat no-repeat";
+        
+        if (availableAspectRatio >= ASPECT_RATIO_FOR_BACKGROUND) docBackground.style.backgroundColor = "#959595";
 
         let scaleFactor;
         if (POWER_OF_2_SCALING_ONLY) {
