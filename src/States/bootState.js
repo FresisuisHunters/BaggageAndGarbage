@@ -66,8 +66,8 @@ bootState.prototype = {
 
         let newBackground = (availableAspectRatio >= ASPECT_RATIO_FOR_BACKGROUND) ? "url(Concept Art/UI/fondoWeb.png)" : BACKGROUND_PLAIN_COLOR;
         let docBackground = document.getElementById("backgroundId");
-        docBackground.style.background = "";    // Unassing background before-hand
-        docBackground.style.background = newBackground;    // Unassing background before-hand
+        docBackground.style.background = "";    // Unassign background before-hand
+        docBackground.style.background = newBackground;
 
         let scaleFactor;
         if (POWER_OF_2_SCALING_ONLY) {
