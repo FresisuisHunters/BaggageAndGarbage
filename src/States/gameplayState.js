@@ -91,8 +91,7 @@ gameplayState.prototype = {
         pathLayer = game.add.group();
         bagLayer = game.add.group();
         overlayLayer = game.add.group();
-        this.createBackground();
-
+        
         //Crea los carriles
         this.createGraph();
         this.createLaneEnds(this.graph, this.onBagKilled, this.bags);
@@ -104,6 +103,8 @@ gameplayState.prototype = {
         pathLayer.mask = this.mask;
 
         this.createScanners(this.levelData.scanners, this.lanes);
+
+        this.createBackground();
 
         // Creates the new wave overlay
         this.createNewWaveOverlay();
@@ -149,7 +150,10 @@ gameplayState.prototype = {
         scannerBelt.x = GAME_WIDTH;
         scannerBelt.y = 0;
         scannerBelt.scale.set(1.2, 1.15);
-        scannerBelt.autoScroll(0, BAG_MOVEMENT_SPEED / scannerBelt.scale.y);
+
+        let screenToRealProportion =  (this.scanners[0].windowEndY - this.scanners[0].windowStartY) / this.scanners[0].scannerLength;
+
+        scannerBelt.autoScroll(0, BAG_MOVEMENT_SPEED / scannerBelt.scale.y * screenToRealProportion);
 
         backgroundLayer.add(scannerBelt);
 
