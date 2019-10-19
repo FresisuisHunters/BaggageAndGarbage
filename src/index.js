@@ -17,8 +17,6 @@ if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigat
     var IS_MOBILE = false;
 }
 
-localizationManager.currentLanguage = Languages.English;
-
 //Add states
 game.state.add("bootState", bootState);
 game.state.add("preloadState", preloadState);
@@ -28,5 +26,12 @@ game.state.add("tutorialState", tutorialState);
 game.state.add("levelSelectState", levelSelectState);
 game.state.add("levelLoadState", levelLoadState);
 game.state.add("gameplayState", gameplayState);
+
+function UnlockAllLevels()
+{
+    game.userLevelData.levelIndexToComplete = Infinity;
+    console.log("DEV COMMAND - ALL LEVELS TEMPORARILY UNLOCKED");
+    game.state.start("levelSelectState");
+}
 
 game.state.start("bootState");

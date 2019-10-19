@@ -102,6 +102,10 @@ titleScreenState.prototype = {
         let callback = function(button, pointer, isOver) {
             if (isOver && button.language != localizationManager.currentLanguage) {
                 localizationManager.currentLanguage = button.language;
+                
+                game.userLevelData.language = button.language;
+                localStorage.userLevelData = JSON.stringify(game.userLevelData);
+
                 game.state.start("titleScreenState");
             }
         }
@@ -113,7 +117,6 @@ titleScreenState.prototype = {
         plane.language = language;
         this.buttonLayer.add(plane);
         planes.push(plane);
-        
     },
 
     showCreditsButton: function() {

@@ -6,6 +6,9 @@ var bootState = function (game) {
 
 }
 
+const BACKGROUND_PLAIN_COLOR = "#90aaac";
+const ASPECT_RATIO_FOR_BACKGROUND = 0.6 * 1920 / 1080;
+
 bootState.prototype = {
 
     init: function () {
@@ -13,45 +16,7 @@ bootState.prototype = {
         game.scale.setResizeCallback(this.onResize, this);
         game.physics.startSystem(Phaser.Physics.ARCADE);
         
-
-        /*
-        if (this.game.device.android && this.game.device.chrome && this.game.device.chromeVersion >= 55) {
-            this.game.sound.touchLocked = true;
-            this.game.input.touch.addTouchLockCallback(function () {
-                if (this.noAudio || !this.touchLocked || this._unlockSource !== null) {
-                    return true;
-                }
-                if (this.usingWebAudio) {
-                    // Create empty buffer and play it
-                    // The SoundManager.update loop captures the state of it and then resets touchLocked to false
-        
-                    var buffer = this.context.createBuffer(1, 1, 22050);
-                    this._unlockSource = this.context.createBufferSource();
-                    this._unlockSource.buffer = buffer;
-                    this._unlockSource.connect(this.context.destination);
-        
-                    if (this._unlockSource.start === undefined) {
-                        this._unlockSource.noteOn(0);
-                    }
-                    else {
-                        this._unlockSource.start(0);
-                    }
-        
-                    //Hello Chrome 55!
-                    if (this._unlockSource.context.state === 'suspended') {
-                        this._unlockSource.context.resume();
-                    }
-                }
-        
-                //  We can remove the event because we've done what we needed (started the unlock sound playing)
-                return true;
-        
-            }, this.game.sound, true);
-        }
-
-        */
-        
-        //game.sound.mute = MUTE_AUDIO;
+        game.sound.mute = MUTE_AUDIO;
     },
 
     preload: function () {
@@ -59,20 +24,27 @@ bootState.prototype = {
         game.time.desiredFps = 60;
 
         //Load what we need for the loading screen
-        game.load.spritesheet(PLAY_BUTTON_SHEET_KEY, "resources/sprites/sheet_ButtonPlay.png", 256, 256, 4, 20, 10);
+        game.load.spritesheet(PLAY_BUTTON_SHEET_KEY, "resources/sprites/UI/sheet_ButtonPlay.png", 256, 256, 4, 20, 10);
     },
 
     create: function () {
         if (localStorage.userLevelData !== null && localStorage.userLevelData !== undefined) {
             game.userLevelData = JSON.parse(localStorage.userLevelData);
+            if (game.userLevelData.language === undefined) {
+                game.userLevelData.language = Languages.English;
+            }
         }
         else {
             game.userLevelData = new Map();
             game.userLevelData.levelIndexToComplete = 1;
-        }
-            
-        console.log("localStorage" + localStorage.userLevelData);
+            game.userLevelData.language = Languages.English;
 
+            localStorage.userLevelData = JSON.stringify(game.userLevelData);
+        }
+        
+        //console.log("localStorage" + localStorage.userLevelData);
+
+        localizationManager.currentLanguage = game.userLevelData.language;
         game.state.start("preloadState");
     },
 
@@ -88,7 +60,17 @@ bootState.prototype = {
             || document.body.clientHeight;
         availableHeight -= CANVAS_MARGIN;
 
-        console.log("Scaling for available dimensions: (" + availableWidth + ", " + availableHeight + ")");
+        //console.log("Scaling for available dimensions: (" + availableWidth + ", " + availableHeight + ")");
+
+        let availableAspectRatio = availableWidth / availableHeight;
+
+        let newBackground = (availableAspectRatio >= ASPECT_RATIO_FOR_BACKGROUND) ? "url(resources/webpage/fondoWeb.png)" : BACKGROUND_PLAIN_COLOR;
+        let docBackground = document.getElementById("backgroundId");
+        
+        docBackground.style.background = newBackground;
+        docBackground.style.backgroundRepeat = "repeat no-repeat";
+        
+        if (availableAspectRatio >= ASPECT_RATIO_FOR_BACKGROUND) docBackground.style.backgroundColor = "#959595";
 
         let scaleFactor;
         if (POWER_OF_2_SCALING_ONLY) {
