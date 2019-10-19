@@ -143,7 +143,6 @@ Bag.prototype = {
     },
 
     moveInGraph: function () {
-
         let movementResult = this.graph.requestMove(this.position, this.movementParameters, BAG_MOVEMENT_SPEED * game.time.physicsElapsed);
         this.sprite.positionBeforeBeingBlocked = this.position;
         this.sprite.lastPosition = this.position;

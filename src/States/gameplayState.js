@@ -91,8 +91,7 @@ gameplayState.prototype = {
         pathLayer = game.add.group();
         bagLayer = game.add.group();
         overlayLayer = game.add.group();
-        this.createBackground();
-
+        
         //Crea los carriles
         this.createGraph();
         this.createLaneEnds(this.graph, this.onBagKilled, this.bags);
@@ -104,6 +103,8 @@ gameplayState.prototype = {
         pathLayer.mask = this.mask;
 
         this.createScanners(this.levelData.scanners, this.lanes);
+
+        this.createBackground();
 
         // Creates the new wave overlay
         this.createNewWaveOverlay();
@@ -144,13 +145,15 @@ gameplayState.prototype = {
     },
 
     createBackground: function () {
-
         let scannerBelt = new Phaser.TileSprite(game, GAME_WIDTH, 0, 512, 256, "img_ScannerBelt");
         scannerBelt.anchor.set(1, 0);
         scannerBelt.x = GAME_WIDTH;
         scannerBelt.y = 0;
         scannerBelt.scale.set(1.2, 1.15);
-        scannerBelt.autoScroll(0, BAG_MOVEMENT_SPEED / scannerBelt.scale.y);
+
+        let screenToRealProportion =  (this.scanners[0].windowEndY - this.scanners[0].windowStartY) / this.scanners[0].scannerLength;
+
+        scannerBelt.autoScroll(0, BAG_MOVEMENT_SPEED / scannerBelt.scale.y * screenToRealProportion);
 
         backgroundLayer.add(scannerBelt);
 
@@ -218,7 +221,7 @@ gameplayState.prototype = {
 
     createSpeedUpButton: function () {
         let x = GAME_WIDTH - LEVEL_DIMENSIONS.scannerScreenWidth + 5;
-        let y = LEVEL_DIMENSIONS.laneTopMargin + 23;
+        let y = LEVEL_DIMENSIONS.laneTopMargin - 5; // +20
 
         this.speedUpButton = game.add.button(x, y, SPEED_UP_BUTTON_UP_IMAGE_KEY, this.speedUpButtonCallback);
         this.speedUpButton.anchor.setTo(1, 1);
@@ -359,15 +362,23 @@ gameplayState.prototype = {
         //Se recorre hacia atrás porque una maleta puede destruirse durante su update. Hacia adelante nos saltaríamos una maleta cuando eso pasa.
         for (let i = this.bags.length - 1; i >= 0; i--) {
             for (let j = 0; j < this.scanners.length; j++) {
-                if (this.scanners[j].x == this.bags[i].position.x &&
-                    this.scanners[j].start <= (this.bags[i].position.y + this.bags[i].sprite.height / 2) &&
-                    this.bags[i].position.y < this.scanners[j].end) {
-                    this.scanners[j].EnterBag(this.bags[i]);
+                let bag = this.bags[i];
+                let bagX = bag.position.x;
+                let bagY = bag.position.y;
+                let bagHalfHeight = bag.sprite.height * bag.sprite.scale.y / 2;
+
+                let scanner = this.scanners[j];
+                let scannerX = scanner.x;
+                let scannerStartY = scanner.start;
+
+                let scannerAndBagAreInSameLane = bagX == scannerX;
+                let distanceBag_Scanner = scannerStartY - bagY;
+                if (scannerAndBagAreInSameLane && distanceBag_Scanner <= bagHalfHeight) {
+                    scanner.EnterBag(bag);
                 }
             }
 
             this.bags[i].update();
-
         }
         
         for (let j = 0; j < this.scanners.length; j++) {
