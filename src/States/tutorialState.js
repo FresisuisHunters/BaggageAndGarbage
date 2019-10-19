@@ -3,17 +3,35 @@ var tutorialState = function (game) {
 
 }
 
-const TUTORIAL_PAGE_COUNT = 2;
+const TUTORIAL_PAGE_COUNT = 6;
 const TUTORIAL_PAGE_IMAGE_KEY_PREFIX = "img_Tutorial_";
+const TUTORIAL_PAGE_TEXT_KEY_PREFIX = "TUTORIAL_PAGE_";
+
+const TUTORIAL_TEXT_DIMENSIONS = {
+    startY: 1300,
+    width: 775,
+    height: 100,
+    fontSize: 42,
+    firstPageFontSize: 35,
+    lineSpacing: 0
+}
+
 
 tutorialState.prototype = {
     create: function() {
+        ensureThatMenuMusicIsPlaying();
+        
         this.pages = [];
         this.pageLayer = game.add.group();
         this.buttonLayer = game.add.group();
 
+        let background = new Phaser.Image(game, 0, 0, MENU_BACKGROUND_KEY);
+        background.anchor.set(0, 0);
+        this.pageLayer.add(background);
+
         this.createPages();
         this.createButtons();
+        this.createText();
 
         this.currentPageIndex = 0;
         this.setPageIndex(0);
@@ -34,20 +52,42 @@ tutorialState.prototype = {
 
         this.homeButton = createBackButton("levelSelectState");
         
-        this.previousButton = new Phaser.Button(game, this.homeButton.left, this.homeButton.bottom, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showPreviousPageButtonCallback, this);
-        this.previousButton.scale.x *= -1;
-        this.previousButton.anchor.setTo(1, 1);
-
-        this.buttonLayer.add(this.previousButton);
-
-        this.homeButton.anchor.setTo(0.5, 1);
+        this.homeButton.anchor.setTo(0.5, 0.5);
         this.homeButton.x = GAME_WIDTH / 2;
-        this.homeButton.y = this.previousButton.bottom;
+        this.homeButton.y = GAME_HEIGHT - 120;
         this.buttonLayer.add(this.homeButton);
 
-        this.nextButton = new Phaser.Button(game, GAME_WIDTH - this.previousButton.x, this.homeButton.bottom, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showNextPageButtonCallback, this);
-        this.nextButton.anchor.setTo(1, 1);
+
+        let margin = 40;
+        let arrowButtonScaleFactor = 1.7;
+
+        this.previousButton = new Phaser.Button(game, margin, this.homeButton.y, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showPreviousPageButtonCallback, this);
+        this.previousButton.scale.x *= -arrowButtonScaleFactor;
+        this.previousButton.scale.y = arrowButtonScaleFactor;
+        this.previousButton.anchor.setTo(1, 0.5);
+        this.buttonLayer.add(this.previousButton);
+        
+        this.nextButton = new Phaser.Button(game, GAME_WIDTH - this.previousButton.x, this.previousButton.y, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showNextPageButtonCallback, this);
+        this.nextButton.anchor.setTo(1, 0.5);
+        this.nextButton.scale.setTo(arrowButtonScaleFactor, arrowButtonScaleFactor);
         this.buttonLayer.add(this.nextButton);
+    },
+
+    createText: function() {
+        let textStyle = { font: "Roboto Slab", fontSize: TUTORIAL_TEXT_DIMENSIONS.fontSize + "px", fill: "#000", align: "center", 
+            boundsAlignH: "center", boundsAlignV: "middle" };
+        this.text = new Phaser.Text(game, 0, 0, "", textStyle);
+        this.text.wordWrap = true;
+        this.text.wordWrapWidth = TUTORIAL_TEXT_DIMENSIONS.width;
+        this.text.lineSpacing = TUTORIAL_TEXT_DIMENSIONS.lineSpacing;
+
+        this.text.strokeThickness = 1;
+
+        this.text.setTextBounds((GAME_WIDTH / 2) - (TUTORIAL_TEXT_DIMENSIONS.width / 2), 
+            TUTORIAL_TEXT_DIMENSIONS.startY, TUTORIAL_TEXT_DIMENSIONS.width, TUTORIAL_TEXT_DIMENSIONS.height);
+        
+
+        this.buttonLayer.add(this.text);
     },
 
     setPageIndex: function(newIndex) {
@@ -65,6 +105,19 @@ tutorialState.prototype = {
             this.enableButton(this.nextButton);
             this.enableButton(this.previousButton);
         }
+
+        //Show the appropiate text. Index 0 has no text.
+        if(newIndex == 0) {
+            this.text.visible = false;
+        } else {
+            let string = getString(TUTORIAL_PAGE_TEXT_KEY_PREFIX + newIndex);
+            this.text.text = string;
+            this.text.visible = true;
+        }
+
+        if (newIndex == 1) this.text.fontSize = TUTORIAL_TEXT_DIMENSIONS.firstPageFontSize + "px";
+        else this.text.fontSize = TUTORIAL_TEXT_DIMENSIONS.fontSize + "px";
+        
     },
 
     showPreviousPageButtonCallback: function(button, pointer, isOver) {

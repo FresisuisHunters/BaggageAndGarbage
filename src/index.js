@@ -7,7 +7,7 @@ const USE_ANTIALIASING = false;
 
 const SHOW_FPS = false;
 
-const MUTE_AUDIO = false;
+const MUTE_AUDIO = true;
 
 if(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
     var game = new Phaser.Game(GAME_WIDTH, GAME_HEIGHT, Phaser.CANVAS, 'gameDiv', null, false, USE_ANTIALIASING);

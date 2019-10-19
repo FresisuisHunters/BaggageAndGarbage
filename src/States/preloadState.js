@@ -15,6 +15,13 @@ var C_TYPE_BAG_SPRITE_KEYS = [];
 var SAFE_INTERIOR_SPRITE_KEYS = {};
 var DANGEROUS_INTERIOR_SPRITE_KEYS = {};
 
+
+//Especifica las fuentes que se van a descargar de Google Fonts
+var WebFontConfig = {
+    google: { families: ["Roboto Slab"] }
+};
+
+
 var preloadState = function (game) {
 
 }
@@ -22,12 +29,14 @@ var preloadState = function (game) {
 preloadState.prototype = {
 
     preload: function () {
-        
         this.showLoadingScreen();
         
         this.loadBagSprites();
         this.loadInteriorSprites();
         this.loadLevelsJSONs();
+
+        //Carga las fuentes de Google Fonts
+        game.load.script('webfont', '//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js');
 
         //Cintas
         game.load.spritesheet(CONVEYOR_BELT_SHEET_LANE.KEY, "resources/sprites/sheet_ConveyorBelt.png", CONVEYOR_BELT_SPRITE_SIZE, CONVEYOR_BELT_SPRITE_SIZE, 
