@@ -19,6 +19,8 @@ const TUTORIAL_TEXT_DIMENSIONS = {
 
 tutorialState.prototype = {
     create: function() {
+        ensureThatMenuMusicIsPlaying();
+        
         this.pages = [];
         this.pageLayer = game.add.group();
         this.buttonLayer = game.add.group();
