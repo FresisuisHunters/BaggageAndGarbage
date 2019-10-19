@@ -7,9 +7,7 @@ var bootState = function (game) {
 }
 
 const BACKGROUND_PLAIN_COLOR = "#000000";
-const ASPECT_RATIO = 1080 / 1920;
-const MIN_ASPECT_RATIO = 0.85 * ASPECT_RATIO;
-const MAX_ASPECT_RATIO = 4;
+const ASPECT_RATIO_FOR_BACKGROUND = 0.85 * 1920 / 1080;
 
 bootState.prototype = {
 
@@ -68,9 +66,10 @@ bootState.prototype = {
 
         // TODO: Borrar. Esto es solo para testear
         let string = "W: " + availableWidth + "\nH: " + availableHeight + "\nAR: " + availableAspectRatio;
-        localizationManager["PLAY"].en = string;
+        localizationManager["PLAY"].en = localizationManager["PLAY"].es = string;
+        // Fin TODO
 
-        if (availableAspectRatio >= MIN_ASPECT_RATIO && availableAspectRatio <= MAX_ASPECT_RATIO) {
+        if (availableAspectRatio >= ASPECT_RATIO_FOR_BACKGROUND) {
             document.body.style.background = "Concept Art/UI/fondoWeb.png";
         } else {
             document.body.style.background = BACKGROUND_PLAIN_COLOR;
