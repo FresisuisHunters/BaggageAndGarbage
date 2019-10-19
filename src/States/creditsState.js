@@ -14,7 +14,12 @@ creditsState.prototype = {
         this.buttonLayer = game.add.group();
 
         this.showBackground();
-        this.buttonLayer.add(createBackButton("titleScreenState"));
+        let backButton = createBackButton("titleScreenState");
+        backButton.anchor.set(0, 0);
+        backButton.scale.set(0.75, 0.75);
+        backButton.position.x = 0;
+        backButton.position.y = 0;
+        this.buttonLayer.add(backButton);
 
         ensureThatMenuMusicIsPlaying();
     },

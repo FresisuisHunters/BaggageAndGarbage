@@ -31,10 +31,14 @@ bootState.prototype = {
         else {
             game.userLevelData = new Map();
             game.userLevelData.levelIndexToComplete = 1;
+            game.userLevelData.language = Languages.English;
+
+            localStorage.userLevelData = JSON.stringify(game.userLevelData);
         }
-            
+        
         console.log("localStorage" + localStorage.userLevelData);
 
+        localizationManager.currentLanguage = game.userLevelData.language;
         game.state.start("preloadState");
     },
 
