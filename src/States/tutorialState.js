@@ -25,6 +25,10 @@ tutorialState.prototype = {
         this.pageLayer = game.add.group();
         this.buttonLayer = game.add.group();
 
+        let background = new Phaser.Image(game, 0, 0, MENU_BACKGROUND_KEY);
+        background.anchor.set(0, 0);
+        this.pageLayer.add(background);
+
         this.createPages();
         this.createButtons();
         this.createText();
