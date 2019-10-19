@@ -66,6 +66,10 @@ bootState.prototype = {
 
         let availableAspectRatio = availableWidth / availableHeight;
 
+        // TODO: Borrar. Esto es solo para testear
+        let string = "W: " + availableWidth + "\nH: " + availableHeight + "\nAR: " + availableAspectRatio;
+        localizationManager["PLAY"].en = string;
+
         if (availableAspectRatio >= MIN_ASPECT_RATIO && availableAspectRatio <= MAX_ASPECT_RATIO) {
             document.body.style.background = "Concept Art/UI/fondoWeb.png";
         } else {
