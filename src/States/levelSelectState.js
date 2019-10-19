@@ -108,12 +108,10 @@ levelSelectState.prototype = {
         }
     },
 
-    onTutorialCardClick : function(button) {
-        // TODO: Borrar esta comprobacion
-        console.error("Falta implementar el estado tutorialState");
-        return;
-
-        game.state.start("tutorialState");
+    onTutorialCardClick : function(button, pointer, isOver) {
+        if (isOver) {
+            game.state.start("tutorialState");
+        }
     },
 
     onLevelCardClick : function(button, pointer, isOver) {
