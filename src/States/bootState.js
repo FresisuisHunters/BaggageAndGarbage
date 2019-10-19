@@ -6,6 +6,11 @@ var bootState = function (game) {
 
 }
 
+const BACKGROUND_PLAIN_COLOR = "#000000";
+const ASPECT_RATIO = 1080 / 1920;
+const MIN_ASPECT_RATIO = 0.85 * ASPECT_RATIO;
+const MAX_ASPECT_RATIO = 4;
+
 bootState.prototype = {
 
     init: function () {
@@ -58,6 +63,14 @@ bootState.prototype = {
         availableHeight -= CANVAS_MARGIN;
 
         console.log("Scaling for available dimensions: (" + availableWidth + ", " + availableHeight + ")");
+
+        let availableAspectRatio = availableWidth / availableHeight;
+
+        if (availableAspectRatio >= MIN_ASPECT_RATIO && availableAspectRatio <= MAX_ASPECT_RATIO) {
+            document.body.style.background = "Concept Art/UI/fondoWeb.png";
+        } else {
+            document.body.style.background = BACKGROUND_PLAIN_COLOR;
+        }
 
         let scaleFactor;
         if (POWER_OF_2_SCALING_ONLY) {
