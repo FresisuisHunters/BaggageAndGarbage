@@ -7,7 +7,7 @@ var bootState = function (game) {
 }
 
 const BACKGROUND_PLAIN_COLOR = "#89abad";
-const ASPECT_RATIO_FOR_BACKGROUND = 0.85 * 1920 / 1080;
+const ASPECT_RATIO_FOR_BACKGROUND = 0.6 * 1920 / 1080;
 
 bootState.prototype = {
 
