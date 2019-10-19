@@ -16,6 +16,7 @@ const TUTORIAL_TEXT_DIMENSIONS = {
     lineSpacing: 0
 }
 
+
 tutorialState.prototype = {
     create: function() {
         this.pages = [];
@@ -27,7 +28,7 @@ tutorialState.prototype = {
         this.createText();
 
         this.currentPageIndex = 0;
-        this.setPageIndex(1);
+        this.setPageIndex(0);
     },
 
     createPages: function() {
@@ -45,19 +46,24 @@ tutorialState.prototype = {
 
         this.homeButton = createBackButton("levelSelectState");
         
-        this.previousButton = new Phaser.Button(game, this.homeButton.left, this.homeButton.bottom, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showPreviousPageButtonCallback, this);
-        this.previousButton.scale.x *= -1;
-        this.previousButton.anchor.setTo(1, 1);
-
-        this.buttonLayer.add(this.previousButton);
-
-        this.homeButton.anchor.setTo(0.5, 1);
+        this.homeButton.anchor.setTo(0.5, 0.5);
         this.homeButton.x = GAME_WIDTH / 2;
-        this.homeButton.y = this.previousButton.bottom;
+        this.homeButton.y = GAME_HEIGHT - 120;
         this.buttonLayer.add(this.homeButton);
 
-        this.nextButton = new Phaser.Button(game, GAME_WIDTH - this.previousButton.x, this.homeButton.bottom, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showNextPageButtonCallback, this);
-        this.nextButton.anchor.setTo(1, 1);
+
+        let margin = 40;
+        let arrowButtonScaleFactor = 1.7;
+
+        this.previousButton = new Phaser.Button(game, margin, this.homeButton.y, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showPreviousPageButtonCallback, this);
+        this.previousButton.scale.x *= -arrowButtonScaleFactor;
+        this.previousButton.scale.y = arrowButtonScaleFactor;
+        this.previousButton.anchor.setTo(1, 0.5);
+        this.buttonLayer.add(this.previousButton);
+        
+        this.nextButton = new Phaser.Button(game, GAME_WIDTH - this.previousButton.x, this.previousButton.y, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showNextPageButtonCallback, this);
+        this.nextButton.anchor.setTo(1, 0.5);
+        this.nextButton.scale.setTo(arrowButtonScaleFactor, arrowButtonScaleFactor);
         this.buttonLayer.add(this.nextButton);
     },
 

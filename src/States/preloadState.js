@@ -140,8 +140,7 @@ preloadState.prototype = {
     },
 
     create: function () {
-        //game.state.start("titleScreenState");
-        game.state.start("tutorialState");
+        game.state.start("titleScreenState");
     },
     
     loadBagSprites: function() {
