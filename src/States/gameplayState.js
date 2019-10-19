@@ -305,7 +305,6 @@ gameplayState.prototype = {
 
         let textStyle = { font: "bold Arial", fontSize: "70px", fill: "#FFE500", align: "left", boundsAlignH: "right", boundsAlignV: "middle" };
 
-        // TODO: Get the text from locationManager:getString()
         let textX = x + NEW_WAVE_OVERLAY_VALUES.textOffsetX;
         let textY = y + NEW_WAVE_OVERLAY_VALUES.textOffsetY;
         let text = new Phaser.Text(game, textX, textY, getString("NEW_WAVE_TEXT"), textStyle);
