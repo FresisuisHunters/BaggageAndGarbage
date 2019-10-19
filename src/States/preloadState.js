@@ -46,10 +46,10 @@ preloadState.prototype = {
         game.load.image(MENU_BACKGROUND_KEY, "resources/sprites/img_MainMenuBackground.png");
         game.load.image(MENU_INTERFACE_KEY, "resources/sprites/img_LevelSelectBackground.png");
         game.load.image(LOGO_IMAGE_KEY, "resources/sprites/img_Logo.png");
-        game.load.image(TUTORIAL_LEVEL_CARD_KEY, "resources/sprites/img_LevelCardTutorial.png");
-        game.load.image(EASY_LEVEL_CARD_KEY, "resources/sprites/img_LevelCardEasy.png");
-        game.load.image(NORMAL_LEVEL_CARD_KEY, "resources/sprites/img_LevelCardNormal.png");
-        game.load.image(HARD_LEVEL_CARD_KEY, "resources/sprites/img_LevelCardHard.png");
+        game.load.image(TUTORIAL_LEVEL_CARD_KEY, "resources/sprites/UI/img_LevelCardTutorial.png");
+        game.load.image(EASY_LEVEL_CARD_KEY, "resources/sprites/UI/img_LevelCardEasy.png");
+        game.load.image(NORMAL_LEVEL_CARD_KEY, "resources/sprites/UI/img_LevelCardNormal.png");
+        game.load.image(HARD_LEVEL_CARD_KEY, "resources/sprites/UI/img_LevelCardHard.png");
 
         //Audio
         game.load.audio(MENU_MUSIC_KEY, "resources/audio/music_Menu.mp3");
@@ -67,20 +67,24 @@ preloadState.prototype = {
         //UI
         game.load.image("img_ScannerBelt", "resources/sprites/img_ScannerBelt.png");
         game.load.image(NEW_WAVE_OVERLAY_KEY, "resources/sprites/img_NewWaveOverlay.png");
-        game.load.image(SPEED_UP_BUTTON_DOWN_IMAGE_KEY, "resources/sprites/img_FastForwardActivated.png");
-        game.load.image(SPEED_UP_BUTTON_UP_IMAGE_KEY, "resources/sprites/img_FastForwardDeactivated.png");
-        game.load.image(OBTAINED_STAR_IMAGE_KEY, "resources/sprites/img_StarObtained.png");
-        game.load.image(UNOBTAINED_STAR_IMAGE_KEY, "resources/sprites/img_StarUnobtained.png");
-        game.load.image(RETRY_BUTTON_IMAGE_KEY, "resources/sprites/img_RetryButton.png");
-        game.load.image(HOME_BUTTON_IMAGE_KEY, "resources/sprites/img_HomeButton.png");
+        game.load.image(SPEED_UP_BUTTON_DOWN_IMAGE_KEY, "resources/sprites/UI/img_FastForwardActivated.png");
+        game.load.image(SPEED_UP_BUTTON_UP_IMAGE_KEY, "resources/sprites/UI/img_FastForwardDeactivated.png");
+        game.load.image(OBTAINED_STAR_IMAGE_KEY, "resources/sprites/UI/img_StarObtained.png");
+        game.load.image(UNOBTAINED_STAR_IMAGE_KEY, "resources/sprites/UI/img_StarUnobtained.png");
+        game.load.image(RETRY_BUTTON_IMAGE_KEY, "resources/sprites/UI/img_RetryButton.png");
+        game.load.image(HOME_BUTTON_IMAGE_KEY, "resources/sprites/UI/img_HomeButton.png");
 
-        game.load.spritesheet(CREDITS_BUTTON_SHEET_KEY, "resources/sprites/sheet_ButtonCredits.png", 256, 256, 4, 20, 10);
-        game.load.image(SPANISH_PLANE_IMAGE_KEY, "resources/sprites/img_PlaneSpain.png");
-        game.load.image(ENGLISH_PLANE_IMAGE_KEY, "resources/sprites/img_PlaneUk.png");
+        game.load.spritesheet(CREDITS_BUTTON_SHEET_KEY, "resources/sprites/UI/sheet_ButtonCredits.png", 256, 256, 4, 20, 10);
+        game.load.image(SPANISH_PLANE_IMAGE_KEY, "resources/sprites/UI/img_PlaneSpain.png");
+        game.load.image(ENGLISH_PLANE_IMAGE_KEY, "resources/sprites/UI/img_PlaneUk.png");
 
         //Tutorial
-        game.load.image("img_Tutorial_1", "resources/sprites/img_Tutorial_1.png");
-        game.load.image("img_Tutorial_2", "resources/sprites/img_Tutorial_2.png");
+        game.load.image("img_Tutorial_1", "resources/sprites/tutorial/img_Tutorial_1.png");
+        game.load.image("img_Tutorial_2", "resources/sprites/tutorial/img_Tutorial_2.png");
+        game.load.image("img_Tutorial_3", "resources/sprites/tutorial/img_Tutorial_3.png");
+        game.load.image("img_Tutorial_4", "resources/sprites/tutorial/img_Tutorial_4.png");
+        game.load.image("img_Tutorial_5", "resources/sprites/tutorial/img_Tutorial_5.png");
+        game.load.image("img_Tutorial_6", "resources/sprites/tutorial/img_Tutorial_6.png");
         
     },
 

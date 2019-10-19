@@ -13,45 +13,7 @@ bootState.prototype = {
         game.scale.setResizeCallback(this.onResize, this);
         game.physics.startSystem(Phaser.Physics.ARCADE);
         
-
-        /*
-        if (this.game.device.android && this.game.device.chrome && this.game.device.chromeVersion >= 55) {
-            this.game.sound.touchLocked = true;
-            this.game.input.touch.addTouchLockCallback(function () {
-                if (this.noAudio || !this.touchLocked || this._unlockSource !== null) {
-                    return true;
-                }
-                if (this.usingWebAudio) {
-                    // Create empty buffer and play it
-                    // The SoundManager.update loop captures the state of it and then resets touchLocked to false
-        
-                    var buffer = this.context.createBuffer(1, 1, 22050);
-                    this._unlockSource = this.context.createBufferSource();
-                    this._unlockSource.buffer = buffer;
-                    this._unlockSource.connect(this.context.destination);
-        
-                    if (this._unlockSource.start === undefined) {
-                        this._unlockSource.noteOn(0);
-                    }
-                    else {
-                        this._unlockSource.start(0);
-                    }
-        
-                    //Hello Chrome 55!
-                    if (this._unlockSource.context.state === 'suspended') {
-                        this._unlockSource.context.resume();
-                    }
-                }
-        
-                //  We can remove the event because we've done what we needed (started the unlock sound playing)
-                return true;
-        
-            }, this.game.sound, true);
-        }
-
-        */
-        
-        //game.sound.mute = MUTE_AUDIO;
+        game.sound.mute = MUTE_AUDIO;
     },
 
     preload: function () {
@@ -59,7 +21,7 @@ bootState.prototype = {
         game.time.desiredFps = 60;
 
         //Load what we need for the loading screen
-        game.load.spritesheet(PLAY_BUTTON_SHEET_KEY, "resources/sprites/sheet_ButtonPlay.png", 256, 256, 4, 20, 10);
+        game.load.spritesheet(PLAY_BUTTON_SHEET_KEY, "resources/sprites/UI/sheet_ButtonPlay.png", 256, 256, 4, 20, 10);
     },
 
     create: function () {
