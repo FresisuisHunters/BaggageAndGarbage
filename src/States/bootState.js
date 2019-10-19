@@ -27,6 +27,9 @@ bootState.prototype = {
     create: function () {
         if (localStorage.userLevelData !== null && localStorage.userLevelData !== undefined) {
             game.userLevelData = JSON.parse(localStorage.userLevelData);
+            if (game.userLevelData.language === undefined) {
+                game.userLevelData.language = Languages.English;
+            }
         }
         else {
             game.userLevelData = new Map();
