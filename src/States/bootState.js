@@ -6,7 +6,7 @@ var bootState = function (game) {
 
 }
 
-const BACKGROUND_PLAIN_COLOR = "#000000";
+const BACKGROUND_PLAIN_COLOR = "#89abad";
 const ASPECT_RATIO_FOR_BACKGROUND = 0.85 * 1920 / 1080;
 
 bootState.prototype = {
@@ -63,11 +63,6 @@ bootState.prototype = {
         console.log("Scaling for available dimensions: (" + availableWidth + ", " + availableHeight + ")");
 
         let availableAspectRatio = availableWidth / availableHeight;
-
-        // TODO: Borrar. Esto es solo para testear
-        let string = "W: " + availableWidth + "\nH: " + availableHeight + "\nAR: " + availableAspectRatio;
-        localizationManager["PLAY"].en = localizationManager["PLAY"].es = string;
-        // Fin TODO
 
         if (availableAspectRatio >= ASPECT_RATIO_FOR_BACKGROUND) {
             document.body.style.background = "Concept Art/UI/fondoWeb.png";
