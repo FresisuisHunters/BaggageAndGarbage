@@ -82,3 +82,6 @@ Los requisitos exactos para cada número de estrellas se define por cada nivel, 
 - **0 estrellas:** Muchos fallos.
 
 Si se consiguen 1 o más estrellas, se desbloquea el siguiente nivel (el cual será más difícil que el anterior).
+
+# Diagrama de Flujo
+![alt text](https://github.com/FresisuisHunters/BaggageAndGarbage/blob/master/FinalArt/Flowchart.png)
