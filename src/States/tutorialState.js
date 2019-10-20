@@ -7,6 +7,8 @@ const TUTORIAL_PAGE_COUNT = 6;
 const TUTORIAL_PAGE_IMAGE_KEY_PREFIX = "img_Tutorial_";
 const TUTORIAL_PAGE_TEXT_KEY_PREFIX = "TUTORIAL_PAGE_";
 
+const TUTORIAL_ARROW_IMAGE_KEY = "img_Arrow";
+
 const TUTORIAL_TEXT_DIMENSIONS = {
     startY: 1300,
     width: 775,
@@ -58,16 +60,16 @@ tutorialState.prototype = {
         this.buttonLayer.add(this.homeButton);
 
 
-        let margin = 40;
-        let arrowButtonScaleFactor = 1.7;
+        let margin = 30;
+        let arrowButtonScaleFactor = 1;
 
-        this.previousButton = new Phaser.Button(game, margin, this.homeButton.y, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showPreviousPageButtonCallback, this);
+        this.previousButton = new Phaser.Button(game, margin, this.homeButton.y, TUTORIAL_ARROW_IMAGE_KEY, this.showPreviousPageButtonCallback, this);
         this.previousButton.scale.x *= -arrowButtonScaleFactor;
         this.previousButton.scale.y = arrowButtonScaleFactor;
         this.previousButton.anchor.setTo(1, 0.5);
         this.buttonLayer.add(this.previousButton);
         
-        this.nextButton = new Phaser.Button(game, GAME_WIDTH - this.previousButton.x, this.previousButton.y, SPEED_UP_BUTTON_DOWN_IMAGE_KEY, this.showNextPageButtonCallback, this);
+        this.nextButton = new Phaser.Button(game, GAME_WIDTH - this.previousButton.x, this.previousButton.y, TUTORIAL_ARROW_IMAGE_KEY, this.showNextPageButtonCallback, this);
         this.nextButton.anchor.setTo(1, 0.5);
         this.nextButton.scale.setTo(arrowButtonScaleFactor, arrowButtonScaleFactor);
         this.buttonLayer.add(this.nextButton);
