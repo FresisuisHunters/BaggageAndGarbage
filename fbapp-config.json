@@ -8,8 +8,8 @@
         "custom_update_templates": {},
         "surfaceable_stats": {},
         "match_player_config": {
-            "min_context_size": 0,
-            "max_context_size": 0
+            "min_context_size": 2,
+            "max_context_size": 20
         }
     }
 }
