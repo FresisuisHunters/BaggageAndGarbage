@@ -20,7 +20,7 @@ const TITLE_SCREEN_DIMENSIONS = {
     languageButtonScaleFactor: 1,
     languageButtonSeparation: 10,
     creditsButtonMargin: 30,
-    creditsButtonScaleFactor: 1,
+    creditsButtonScaleFactor: 0.8,
 }
 
 
@@ -127,14 +127,15 @@ titleScreenState.prototype = {
             }
         }
 
-        let button = new Phaser.Button(game, TITLE_SCREEN_DIMENSIONS.creditsButtonMargin, GAME_HEIGHT - TITLE_SCREEN_DIMENSIONS.creditsButtonMargin + 20, CREDITS_BUTTON_SHEET_KEY, callback, 2, 1, 3, 2);
+        let button = new Phaser.Button(game, TITLE_SCREEN_DIMENSIONS.creditsButtonMargin, GAME_HEIGHT - TITLE_SCREEN_DIMENSIONS.creditsButtonMargin,
+             CREDITS_BUTTON_SHEET_KEY, callback, 1, 0, 1, 1);
         button.anchor.setTo(0, 1);
         button.scale.setTo(TITLE_SCREEN_DIMENSIONS.creditsButtonScaleFactor, TITLE_SCREEN_DIMENSIONS.creditsButtonScaleFactor);
         this.buttonLayer.add(button);
 
         let textStyle = { font: "bold Arial", fontSize: "60px", fill: "#000", align: "left", boundsAlignH: "left", boundsAlignV: "middle" };
 
-        let text = new Phaser.Text(game, button.right, button.bottom - 30, getString("CREDITS"), textStyle);
+        let text = new Phaser.Text(game, button.right + 15, button.bottom, getString("CREDITS"), textStyle);
         text.anchor.setTo(0, 1);
         this.buttonLayer.add(text);
     },
