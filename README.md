@@ -8,12 +8,14 @@
   * [Escáneres](#escáneres)
   * [Estructura de un nivel](#estructura-de-un-nivel)
   * [Puntuación](#puntuación)
+- [Diagrama de flujo](#diagrama-de-flujo)
 
 # Concepto general
 Vienen oleadas de maletas al aeropuerto. Algunas seguras, otras no tanto. Tu trabajo es llevar las maletas a la cinta mecánica correcta en función de su seguridad. Para ello, creas pequeñas cintas llamadas *caminos* que conectan los *carriles* principales.
 El juego dispone de tres niveles de dificultad, y está arquitecturado de forma que hace muy fácil añadir más.
 
 ![alt text](https://github.com/FresisuisHunters/BaggageAndGarbage/blob/master/Concept%20Art/UI/mockup_gameplay.png?raw=true)
+
 
 # Mecánicas
 ## Maletas
@@ -39,6 +41,7 @@ Cuando llega al final de un carril (en la parte de abajo de la pantalla) se dest
 
 Las maletas intentan mantener una distancia mínima entre ellas, con un sistema de prioridades en función de su posición.
 
+
 ## Caminos
 Los caminos son las líneas que el jugador crea. Empiezan en un carril, y terminan en otro adyacente. Pueden ir en horizontal o diagonal, hacia o abajo, siempre y cuando vaya de un carril a otro.
 Para crear un camino el jugador hace click en/toca un carril, y suelta encima de otro. Se crea un camino recto entre un punto y otro.
@@ -48,6 +51,7 @@ Para crear un camino el jugador hace click en/toca un carril, y suelta encima de
 - No se puede crear un camino que cruce uno preexistente.
 - Un camino no puede entrar a (o salir de) un escáner.
 - Debe haber una distancia mínima entre dos caminos
+
 
 ## Escáneres
 Un escáner es un objeto que está encima de un carril, en un punto determinado. 
@@ -59,6 +63,7 @@ En el caso de las maletas de tipo A y C, se muestra la maleta junto a un indicad
 
 ### Múltiples escáneres
 En algunos niveles, hay múltiples escáneres. La pantalla de escáner sólo muestra un escáner el escáner activo. Para cambiar qué escáner está activo, el jugador hace click sobre/toca el escáner que desee activar.
+
 
 ## Estructura de un nivel
 Un nivel tiene X número de oleadas.
@@ -72,6 +77,7 @@ Se ordenan las maletas a crear de forma aleatoria. Una a una, van apareciendo ca
 Una vez han aparecido todas las maletas de la oleada, no aparecen más maletas hasta que todas las de la oleada llegan abajo.
 Cuando todas llegan abajo, empieza la siguiente oleada tras una breve pausa para dar un respiro al jugador. Este proceso se repite hasta que pasen todas las oleadas del nivel.
 
+
 ## Puntuación
 Al final del nivel se da una puntuación de entre 0 y 3 estrellas.
 El número de estrellas dependerá de la cantidad de maletas que hayan acabado en el sitio equivocado.
@@ -82,6 +88,7 @@ Los requisitos exactos para cada número de estrellas se define por cada nivel, 
 - **0 estrellas:** Muchos fallos.
 
 Si se consiguen 1 o más estrellas, se desbloquea el siguiente nivel (el cual será más difícil que el anterior).
+
 
 # Diagrama de Flujo
 ![alt text](https://github.com/FresisuisHunters/BaggageAndGarbage/blob/master/FinalArt/Flowchart.png)
