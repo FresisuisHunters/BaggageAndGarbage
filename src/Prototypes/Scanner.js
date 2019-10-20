@@ -109,7 +109,7 @@ Scanner.prototype = {
             let scannerEndY = this.end;
             
             let distanceBag_Scanner = bagY - scannerEndY;
-            if (distanceBag_Scanner >= bagSpriteHalfHeight) {
+            if (distanceBag_Scanner >= bagSpriteHalfHeight || bag.position.x != this.x) {
                 this.ExitBag();
             }
         }
