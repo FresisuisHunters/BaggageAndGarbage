@@ -26,8 +26,12 @@ El juego dispone de tres niveles de dificultad, y está arquitecturado de forma 
 
 ### Apariencia de los tipos
 - Tipo A: Tienen una etiqueta con un ✅ claramente visible. Por lo general, son de colores vivos.
+![Maleta de tipo A](https://github.com/FresisuisHunters/BaggageAndGarbage/blob/master/resources/sprites/bags/img_Maleta_A_ID01_02.png)
 - Tipo B: No tienen etiqueta, y tienden a colores más apagados. De diseño tienden a una pinta más sospechosa.
-- Tipo C: Muy exageradas. En algunos casos ni siquiera son maletas, como por ejemplo el RPG en envoltorio de regalo.
+![Maleta de tipo B](https://github.com/FresisuisHunters/BaggageAndGarbage/blob/master/resources/sprites/bags/img_Maleta_B_ID04_01_00.png)
+- Tipo C: Muy exageradas. En algunos casos ni siquiera son maletas.
+
+![Maleta de tipo C](https://github.com/FresisuisHunters/BaggageAndGarbage/blob/master/resources/sprites/bags/img_Maleta_C_ID14_01.png)
 
 ### Comportamiento
 Una maleta empieza al principio de cualquiera de los carriles. El sistema de oleadas se encarga de crearlas y colocarlas.
