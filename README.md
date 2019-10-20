@@ -1,4 +1,4 @@
-![Baggage & Garbage](https://github.com/FresisuisHunters/BaggageAndGarbage/blob/master/Concept%20Art/Logos/logo%20juego.png?raw=true) 
+![Baggage & Garbage](https://github.com/FresisuisHunters/BaggageAndGarbage/blob/master/resources/sprites/img_Logo.png) 
 
 # Índice
 - [Concepto general](#concepto-general)
